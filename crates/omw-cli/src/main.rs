@@ -32,11 +32,21 @@ fn main() {
         },
         "terminal" => {
             let mut mux = TerminalMultiplexer::new();
-            mux.spawn_session("pty-1", "Main Shell", "/workspace");
-            mux.spawn_session("pty-2", "Meta-Harness Agent", "/workspace");
+            mux.spawn_session("pty-1", "Main Shell", ".");
+            mux.spawn_session("pty-2", "Meta-Harness Agent", ".");
             println!("Active Terminal Sessions: {}", mux.sessions.len());
             for (idx, sess) in mux.sessions.iter().enumerate() {
                 println!("  [{}] {} ({}) - {:?}", idx, sess.title, sess.id, sess.status);
+            }
+        }
+        "exec" => {
+            let program = args.get(2).map(|s| s.as_str()).unwrap_or("git");
+            let subargs: Vec<&str> = args.iter().skip(3).map(|s| s.as_str()).collect();
+            let mut mux = TerminalMultiplexer::new();
+            mux.spawn_session("cli-exec", "CLI Runner", ".");
+            match mux.execute("cli-exec", program, &subargs) {
+                Ok(output) => print!("{}", output),
+                Err(err) => eprintln!("Execution error: {}", err),
             }
         }
         "harness" => {
@@ -63,7 +73,7 @@ fn main() {
             println!("Oh My Works (OMW) CLI v0.1.0");
         }
         other => {
-            eprintln!("Unknown command: '{}'. Available: status, terminal, harness, memory, version", other);
+            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, version", other);
             std::process::exit(1);
         }
     }

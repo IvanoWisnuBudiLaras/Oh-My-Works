@@ -41,6 +41,7 @@ cargo test
 ```bash
 cargo run -p omw-cli -- status
 cargo run -p omw-cli -- terminal
+cargo run -p omw-cli -- exec git status
 cargo run -p omw-cli -- harness
 cargo run -p omw-cli -- memory
 ```

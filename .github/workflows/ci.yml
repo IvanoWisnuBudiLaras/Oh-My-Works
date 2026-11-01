@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux GUI dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
+
+      - name: Run Workspace Tests
+        run: cargo test --workspace --exclude omw-desktop-app
+
+      - name: Check Desktop Tauri Backend (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: cargo check -p omw-desktop-app
+
+      - name: Check Desktop Tauri Backend (Windows)
+        if: matrix.os == 'windows-latest'
+        run: cargo check -p omw-desktop-app
