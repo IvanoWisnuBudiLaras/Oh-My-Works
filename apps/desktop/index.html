@@ -7,10 +7,18 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   <style>
     :root {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      --app-font: 'Inter', system-ui, -apple-system, sans-serif;
+      --app-mono: 'JetBrains Mono', monospace;
+      --accent-color: #06b6d4;
+      --accent-glow: rgba(6, 182, 212, 0.25);
+      --card-radius: 1rem;
+      font-family: var(--app-font);
+    }
+    body {
+      font-family: var(--app-font);
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
@@ -149,6 +157,9 @@
       </button>
       <button type="button" data-tab="sessions" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
         <span>🤖</span> 7. Unified Agent Sessions (Cindy Model)
+      </button>
+      <button type="button" data-tab="studio" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
+        <span>🎨</span> 8. Design &amp; Theme Studio (Live Preview)
       </button>
     </nav>
   </header>
@@ -757,6 +768,170 @@
       <!-- Sessions List -->
       <div id="unifiedSessionsList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[620px] overflow-y-auto pr-1">
         <!-- Injected dynamically via JavaScript -->
+      </div>
+    </section>
+
+    <!-- 8. DESIGN & THEME STUDIO (LIVE PREVIEW) -->
+    <section id="view-studio" class="workspace-view hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base sm:text-lg font-bold text-white">Design Preview Sandbox &amp; Theme Studio</h2>
+            <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">Live Reactive Canvas</span>
+          </div>
+          <p class="text-xs text-slate-300 mt-1">
+            Uji tampilan UI interaktif dengan data dummy, ganti tipografi font, sesuaikan palet warna template, dan terapkan langsung secara live ke seluruh workspace OMW.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-700/80 hover:border-slate-600">
+            <input type="checkbox" id="studioApplyGlobal" checked class="rounded border-slate-700 text-cyan-500 focus:ring-0">
+            <span>Terapkan Global ke Seluruh App</span>
+          </label>
+          <button id="btnCopyDesignTokens" type="button" class="btn-fluid px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-600/30 text-cyan-200 border border-cyan-400/30 hover:bg-cyan-600/50 flex items-center gap-1.5">
+            <span>📋</span> Salin Token CSS
+          </button>
+          <button id="btnResetDesignStudio" type="button" class="btn-fluid px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700">
+            <span>🔄</span> Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls Grid: Font, Color, and Preset Selector -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <!-- 1. Font Selector -->
+        <div class="glass-card rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>🔤</span> Pilih Font (Tipografi)
+            </label>
+            <span id="labelActiveFont" class="text-[10px] font-mono text-cyan-300">Inter</span>
+          </div>
+          <div class="grid grid-cols-2 gap-1.5" id="fontPickerGrid">
+            <button type="button" data-font="Inter" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 truncate">
+              Inter (Clean UI)
+            </button>
+            <button type="button" data-font="Plus Jakarta Sans" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-['Plus_Jakarta_Sans']">
+              Plus Jakarta Sans
+            </button>
+            <button type="button" data-font="Outfit" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-['Outfit']">
+              Outfit (Geometric)
+            </button>
+            <button type="button" data-font="Space Grotesk" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-['Space_Grotesk']">
+              Space Grotesk
+            </button>
+            <button type="button" data-font="JetBrains Mono" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-mono">
+              JetBrains Mono
+            </button>
+            <button type="button" data-font="Fira Code" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-mono">
+              Fira Code
+            </button>
+            <button type="button" data-font="Playfair Display" class="font-chip col-span-2 px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-['Playfair_Display'] italic">
+              Playfair Display (Editorial Serif)
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Template Color Palette Selector -->
+        <div class="glass-card rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>🎨</span> Warna Template &amp; Palet
+            </label>
+            <span id="labelActiveTheme" class="text-[10px] font-mono text-cyan-300">Cyber Cyan</span>
+          </div>
+          <div class="grid grid-cols-3 gap-1.5" id="colorThemeGrid">
+            <button type="button" data-theme="cyan" data-hex="#06b6d4" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-cyan-400 shrink-0"></span>
+              <span class="truncate">Cyan</span>
+            </button>
+            <button type="button" data-theme="tokyo" data-hex="#6366f1" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-indigo-500 shrink-0"></span>
+              <span class="truncate">Tokyo</span>
+            </button>
+            <button type="button" data-theme="emerald" data-hex="#10b981" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-emerald-500 shrink-0"></span>
+              <span class="truncate">Emerald</span>
+            </button>
+            <button type="button" data-theme="frost" data-hex="#38bdf8" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-sky-400 shrink-0"></span>
+              <span class="truncate">Frost</span>
+            </button>
+            <button type="button" data-theme="amber" data-hex="#f59e0b" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-amber-400 shrink-0"></span>
+              <span class="truncate">Amber</span>
+            </button>
+            <button type="button" data-theme="obsidian" data-hex="#84cc16" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-lime-400 shrink-0"></span>
+              <span class="truncate">Lime OLED</span>
+            </button>
+          </div>
+          <!-- Custom Color & Radius Picker -->
+          <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between gap-2 text-[11px]">
+            <div class="flex items-center gap-1.5">
+              <input type="color" id="studioCustomColorPicker" value="#06b6d4" class="w-5 h-5 rounded cursor-pointer border-0 bg-transparent" />
+              <input type="text" id="studioCustomColorText" value="#06b6d4" class="w-16 bg-slate-900 border border-slate-700 rounded px-1 text-[10px] font-mono text-white focus:outline-none focus:border-cyan-400" />
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] text-slate-400">Radius:</span>
+              <select id="studioRadiusSelect" class="bg-slate-900 border border-slate-700 rounded px-1 py-0.5 text-[10px] text-white">
+                <option value="4px">Tajam (4px)</option>
+                <option value="12px" selected>Normal (12px)</option>
+                <option value="20px">Halus (20px)</option>
+                <option value="9999px">Kapsul (Pill)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Dummy Data Presets -->
+        <div class="glass-card rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>📋</span> Preset Data Dummy
+            </label>
+            <span id="labelActivePreset" class="text-[10px] font-mono text-cyan-300">SaaS Analytics</span>
+          </div>
+          <div class="space-y-1.5" id="dummyPresetList">
+            <button type="button" data-preset="saas" class="dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center justify-between">
+              <span>💼 SaaS Analytics &amp; KPIs</span>
+              <span class="text-[10px] text-cyan-300 font-mono">Aktif</span>
+            </button>
+            <button type="button" data-preset="agent_chat" class="dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-between">
+              <span>🤖 Meta-AI Agent Conversation</span>
+            </button>
+            <button type="button" data-preset="ecommerce" class="dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-between">
+              <span>🛒 Mobile Checkout (Guyub.id)</span>
+            </button>
+            <button type="button" data-preset="components" class="dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-between">
+              <span>🧩 UI Component Kit Sandbox</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Interactive Dummy Canvas -->
+      <div class="glass-card rounded-2xl p-5 border border-slate-800/90 shadow-2xl transition-all duration-300" id="studioPreviewCanvas">
+        <!-- Inner Dummy Container populated dynamically -->
+        <div id="dummyCanvasContent">
+          <!-- Default SaaS Preview -->
+        </div>
+      </div>
+
+      <!-- Code Inspector (CSS Variables & Tailwind Config) -->
+      <div class="glass-card rounded-xl p-3.5 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-white font-mono flex items-center gap-1.5">
+            <span>💻</span> Generated Design Tokens (CSS Variables)
+          </span>
+          <span class="text-[10px] text-slate-400">Salin ke project atau file CSS Anda</span>
+        </div>
+        <pre id="studioTokensPre" class="p-3 bg-slate-950/90 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto border border-slate-800/80">:root {
+  --font-family: 'Inter', system-ui, sans-serif;
+  --accent-color: #06b6d4;
+  --accent-glow: rgba(6, 182, 212, 0.25);
+  --card-radius: 12px;
+}</pre>
       </div>
     </section>
 
@@ -1493,6 +1668,419 @@
         });
       }
 
+      // DESIGN & THEME STUDIO ENGINE
+      const studioState = {
+        font: 'Inter',
+        theme: 'cyan',
+        hex: '#06b6d4',
+        radius: '12px',
+        preset: 'saas',
+        applyGlobal: true
+      };
+
+      const fontFamilies = {
+        'Inter': "'Inter', system-ui, sans-serif",
+        'Plus Jakarta Sans': "'Plus Jakarta Sans', system-ui, sans-serif",
+        'Outfit': "'Outfit', system-ui, sans-serif",
+        'Space Grotesk': "'Space Grotesk', system-ui, sans-serif",
+        'JetBrains Mono': "'JetBrains Mono', monospace",
+        'Fira Code': "'Fira Code', monospace",
+        'Playfair Display': "'Playfair Display', Georgia, serif"
+      };
+
+      function hexToRgba(hex, alpha) {
+        let c = hex.replace('#', '');
+        if (c.length === 3) c = c.split('').map(x => x + x).join('');
+        const num = parseInt(c, 16);
+        const r = (num >> 16) & 255;
+        const g = (num >> 8) & 255;
+        const b = num & 255;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+
+      function updateStudioStyles() {
+        const fontStr = fontFamilies[studioState.font] || fontFamilies['Inter'];
+        const glow = hexToRgba(studioState.hex, 0.28);
+        const canvas = document.getElementById('studioPreviewCanvas');
+
+        // Update labels
+        document.getElementById('labelActiveFont').textContent = studioState.font;
+        document.getElementById('labelActiveTheme').textContent = studioState.theme.toUpperCase();
+        document.getElementById('labelActivePreset').textContent = studioState.preset;
+
+        // Apply to Preview Canvas
+        if (canvas) {
+          canvas.style.fontFamily = fontStr;
+          canvas.style.setProperty('--accent-color', studioState.hex);
+          canvas.style.setProperty('--accent-glow', glow);
+          canvas.style.setProperty('--card-radius', studioState.radius);
+        }
+
+        // Apply globally if checked
+        if (studioState.applyGlobal) {
+          document.documentElement.style.setProperty('--app-font', fontStr);
+          document.documentElement.style.setProperty('--accent-color', studioState.hex);
+          document.documentElement.style.setProperty('--accent-glow', glow);
+          document.body.style.fontFamily = fontStr;
+        } else {
+          document.documentElement.style.setProperty('--app-font', fontFamilies['Inter']);
+          document.documentElement.style.setProperty('--accent-color', '#06b6d4');
+          document.body.style.fontFamily = fontFamilies['Inter'];
+        }
+
+        // Update Token Code block
+        const pre = document.getElementById('studioTokensPre');
+        if (pre) {
+          pre.textContent = `:root {\n  --font-family: ${fontStr};\n  --color-primary: ${studioState.hex};\n  --color-glow: ${glow};\n  --border-radius: ${studioState.radius};\n  --theme-preset: '${studioState.theme}';\n}`;
+        }
+
+        // Update UI chips active state
+        document.querySelectorAll('.font-chip').forEach(btn => {
+          const isCurrent = btn.getAttribute('data-font') === studioState.font;
+          btn.className = isCurrent
+            ? 'font-chip px-2 py-1 text-left rounded-lg text-[11px] font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 truncate'
+            : 'font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate';
+        });
+
+        document.querySelectorAll('.theme-chip').forEach(btn => {
+          const isCurrent = btn.getAttribute('data-theme') === studioState.theme;
+          btn.className = isCurrent
+            ? 'theme-chip p-1.5 rounded-lg text-left text-[10px] font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center gap-1.5'
+            : 'theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5';
+        });
+
+        document.querySelectorAll('.dummy-preset-btn').forEach(btn => {
+          const isCurrent = btn.getAttribute('data-preset') === studioState.preset;
+          btn.className = isCurrent
+            ? 'dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center justify-between'
+            : 'dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-between';
+          btn.innerHTML = btn.innerHTML.replace(/<span class="text-\[10px\].*?<\/span>/, '');
+          if (isCurrent) {
+            btn.innerHTML += `<span class="text-[10px] text-cyan-300 font-mono">Aktif</span>`;
+          }
+        });
+
+        renderDummyContent();
+      }
+
+      function renderDummyContent() {
+        const container = document.getElementById('dummyCanvasContent');
+        if (!container) return;
+
+        const hex = studioState.hex;
+        const rad = studioState.radius;
+
+        if (studioState.preset === 'saas') {
+          container.innerHTML = `
+            <div class="space-y-4">
+              <!-- Top Banner & Filters -->
+              <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white shadow-lg" style="background-color: ${hex}; border-radius: ${rad}">
+                    ⚡
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-white tracking-tight">Executive Dashboard &amp; Analytics</h3>
+                    <p class="text-xs text-slate-400">Dummy Data Mode • Menguji tipografi &amp; palet warna template</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-bold text-white shadow-md" style="background-color: ${hex}; border-radius: ${rad}">
+                    + Buat Agen Baru
+                  </button>
+                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 border border-slate-700" style="border-radius: ${rad}">
+                    Export CSV
+                  </button>
+                </div>
+              </div>
+
+              <!-- Metric Cards Grid -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="p-3 bg-slate-900/90 border border-slate-800 space-y-1" style="border-radius: ${rad}">
+                  <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Total Pendapatan</span>
+                  <div class="text-lg font-bold text-white">$48,290.40</div>
+                  <span class="text-[10px] font-semibold" style="color: ${hex}">+24.8% vs bulan lalu</span>
+                </div>
+                <div class="p-3 bg-slate-900/90 border border-slate-800 space-y-1" style="border-radius: ${rad}">
+                  <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Token Efisiensi</span>
+                  <div class="text-lg font-bold text-white">71.5x Hemat</div>
+                  <span class="text-[10px] text-emerald-400">Graph Memory Aktif</span>
+                </div>
+                <div class="p-3 bg-slate-900/90 border border-slate-800 space-y-1" style="border-radius: ${rad}">
+                  <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Response Latency</span>
+                  <div class="text-lg font-bold text-white">240ms</div>
+                  <span class="text-[10px] text-cyan-400">Zero GC Pause</span>
+                </div>
+                <div class="p-3 bg-slate-900/90 border border-slate-800 space-y-1" style="border-radius: ${rad}">
+                  <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Guardian Uptime</span>
+                  <div class="text-lg font-bold text-white">99.99%</div>
+                  <span class="text-[10px] text-slate-400">0 Kernel Stall</span>
+                </div>
+              </div>
+
+              <!-- Dummy Table List -->
+              <div class="border border-slate-800 overflow-hidden" style="border-radius: ${rad}">
+                <div class="p-2.5 bg-slate-900/80 border-b border-slate-800 flex items-center justify-between">
+                  <span class="text-xs font-bold text-white">Tugas AI Harness Berjalan</span>
+                  <span class="text-[11px] text-slate-400">4 Task Terjadwal</span>
+                </div>
+                <div class="divide-y divide-slate-800/80 text-xs">
+                  <div class="p-2.5 flex items-center justify-between bg-slate-950/40">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full" style="background-color: ${hex}"></span>
+                      <span class="font-medium text-white">Reverse Engineering Realtime Collab (REA)</span>
+                    </div>
+                    <span class="px-2 py-0.5 text-[10px] rounded font-semibold text-white" style="background-color: ${hex}">SUKSES</span>
+                  </div>
+                  <div class="p-2.5 flex items-center justify-between bg-slate-950/40">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                      <span class="font-medium text-white">Strix Penetration Autonomous Pentest</span>
+                    </div>
+                    <span class="px-2 py-0.5 text-[10px] rounded font-semibold bg-emerald-500/20 text-emerald-300">0 KERENTANAN</span>
+                  </div>
+                  <div class="p-2.5 flex items-center justify-between bg-slate-950/40">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span class="font-medium text-white">Docker Slim Layer Compression (842MB → 29MB)</span>
+                    </div>
+                    <span class="px-2 py-0.5 text-[10px] rounded font-semibold bg-amber-500/20 text-amber-300">SELESAI (96.5%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (studioState.preset === 'agent_chat') {
+          container.innerHTML = `
+            <div class="space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">🤖</span>
+                  <div>
+                    <h4 class="text-xs font-bold text-white">Meta-AI Harness Orchestration Thread</h4>
+                    <span class="text-[10px] text-slate-400">Model: Sonnet 4.6 • Zero-alloc context</span>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 text-[10px] font-mono rounded text-white" style="background-color: ${hex}">Live Stream</span>
+              </div>
+
+              <!-- Message 1: User -->
+              <div class="p-3 bg-slate-900 border border-slate-800" style="border-radius: ${rad}">
+                <div class="text-[10px] font-mono font-bold text-slate-400 mb-1">USER (Ivano):</div>
+                <p class="text-xs text-slate-200">Bedah arsitektur backend Go + Rust, audit keamanan dengan Strix, dan deploy kontainer ke 1Panel server.</p>
+              </div>
+
+              <!-- Message 2: Agent Thinking & Result -->
+              <div class="p-3 bg-slate-950/80 border space-y-2" style="border-radius: ${rad}; border-color: ${hex}">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-mono font-bold" style="color: ${hex}">OMW META-AGENT:</span>
+                  <span class="text-[10px] font-mono text-slate-400">18.4 KB context • 140ms</span>
+                </div>
+                <div class="text-xs text-slate-300 space-y-1.5">
+                  <p>1. Mengaktifkan <strong>REA Mimic Engine</strong> untuk reverse engineering komponen target.</p>
+                  <p>2. Menjalankan <strong>Strix PoC exploit scanner</strong>: semua celah SQLi dan XSS telah dimitigasi.</p>
+                  <p>3. Binary Rust terkompilasi dalam mode <code>--release</code> dengan ukuran footprint hanya 4.2 MB.</p>
+                </div>
+                <div class="p-2 bg-slate-900 rounded font-mono text-[11px] text-cyan-300 border border-slate-800">
+                  ✓ Pipeline selesai dalam 420ms (0 byte leak, PSI 0.00%)
+                </div>
+              </div>
+
+              <!-- Interactive Prompt Input -->
+              <div class="flex items-center gap-2 pt-1">
+                <input type="text" placeholder="Tulis instruksi tambahan ke sub-agent..." class="flex-1 bg-slate-900 border border-slate-700 px-3 py-1.5 text-xs text-white focus:outline-none" style="border-radius: ${rad}" />
+                <button type="button" class="btn-fluid px-4 py-1.5 text-xs font-bold text-white" style="background-color: ${hex}; border-radius: ${rad}">
+                  Kirim
+                </button>
+              </div>
+            </div>
+          `;
+        } else if (studioState.preset === 'ecommerce') {
+          container.innerHTML = `
+            <div class="max-w-xl mx-auto space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <h3 class="text-xs font-bold text-white">Ringkasan Checkout Transaksi (Guyub.id)</h3>
+                <span class="text-[10px] font-mono text-slate-400">ID: INV-2026-9921</span>
+              </div>
+
+              <div class="p-3.5 bg-slate-900/90 border border-slate-800 space-y-2.5" style="border-radius: ${rad}">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-300">Langganan Dedicated OMW Server (1 Bulan)</span>
+                  <span class="font-bold text-white">$149.00</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-300">Add-on Anti-OOM Kernel Watchdog</span>
+                  <span class="font-bold text-white">$29.00</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-300">Diskon Komunitas Developer (Guyub)</span>
+                  <span class="font-bold" style="color: ${hex}">-$18.00</span>
+                </div>
+                <div class="pt-2 border-t border-slate-800 flex justify-between text-sm font-bold text-white">
+                  <span>Total Tagihan:</span>
+                  <span style="color: ${hex}">$160.00</span>
+                </div>
+              </div>
+
+              <div class="flex gap-2">
+                <input type="text" value="GUYUB2026" class="flex-1 bg-slate-900 border border-slate-700 px-3 py-1.5 text-xs text-white uppercase" style="border-radius: ${rad}" />
+                <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 border border-slate-700" style="border-radius: ${rad}">Terapkan Voucher</button>
+              </div>
+
+              <button type="button" class="btn-fluid w-full py-2.5 text-xs font-bold text-white shadow-lg tracking-wide uppercase" style="background-color: ${hex}; border-radius: ${rad}">
+                Bayar &amp; Luncurkan Workspace Sekarang
+              </button>
+            </div>
+          `;
+        } else if (studioState.preset === 'components') {
+          container.innerHTML = `
+            <div class="space-y-4">
+              <h4 class="text-xs font-bold text-white border-b border-slate-800 pb-2">UI Component Library Preview</h4>
+
+              <!-- Buttons Row -->
+              <div class="space-y-1.5">
+                <span class="text-[10px] text-slate-400 uppercase font-mono">Button Variants:</span>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-bold text-white shadow-md" style="background-color: ${hex}; border-radius: ${rad}">
+                    Primary Action
+                  </button>
+                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-bold border" style="color: ${hex}; border-color: ${hex}; border-radius: ${rad}">
+                    Outline Accent
+                  </button>
+                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700" style="border-radius: ${rad}">
+                    Secondary
+                  </button>
+                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-medium text-rose-300 bg-rose-500/10 border border-rose-500/30" style="border-radius: ${rad}">
+                    Danger
+                  </button>
+                </div>
+              </div>
+
+              <!-- Inputs & Controls Row -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="space-y-1">
+                  <label class="text-[10px] text-slate-400 font-medium">Text Field</label>
+                  <input type="text" value="Oh My Works" class="w-full bg-slate-900 border border-slate-700 px-2.5 py-1.5 text-xs text-white focus:outline-none" style="border-radius: ${rad}" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[10px] text-slate-400 font-medium">Dropdown Selector</label>
+                  <select class="w-full bg-slate-900 border border-slate-700 px-2 py-1.5 text-xs text-white" style="border-radius: ${rad}">
+                    <option>Option Alpha</option>
+                    <option>Option Beta</option>
+                  </select>
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[10px] text-slate-400 font-medium">Badge Tags</label>
+                  <div class="flex items-center gap-1.5 pt-1">
+                    <span class="px-2 py-0.5 text-[10px] font-semibold text-white rounded" style="background-color: ${hex}">Active</span>
+                    <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30">Passing</span>
+                    <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-500/20 text-amber-300 rounded border border-amber-500/30">Warning</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // Studio Event Handlers
+      document.querySelectorAll('.font-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          studioState.font = btn.getAttribute('data-font');
+          updateStudioStyles();
+          showToast('Font diubah ke ' + studioState.font);
+        });
+      });
+
+      document.querySelectorAll('.theme-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          studioState.theme = btn.getAttribute('data-theme');
+          studioState.hex = btn.getAttribute('data-hex');
+          document.getElementById('studioCustomColorPicker').value = studioState.hex;
+          document.getElementById('studioCustomColorText').value = studioState.hex;
+          updateStudioStyles();
+          showToast('Tema palet diubah ke ' + studioState.theme.toUpperCase());
+        });
+      });
+
+      const colorPicker = document.getElementById('studioCustomColorPicker');
+      const colorText = document.getElementById('studioCustomColorText');
+      if (colorPicker) {
+        colorPicker.addEventListener('input', (e) => {
+          studioState.hex = e.target.value;
+          studioState.theme = 'custom';
+          colorText.value = studioState.hex;
+          updateStudioStyles();
+        });
+      }
+      if (colorText) {
+        colorText.addEventListener('change', (e) => {
+          let val = e.target.value.trim();
+          if (!val.startsWith('#')) val = '#' + val;
+          if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+            studioState.hex = val;
+            studioState.theme = 'custom';
+            colorPicker.value = val;
+            updateStudioStyles();
+            showToast('Warna custom diterapkan: ' + val);
+          }
+        });
+      }
+
+      const radiusSelect = document.getElementById('studioRadiusSelect');
+      if (radiusSelect) {
+        radiusSelect.addEventListener('change', (e) => {
+          studioState.radius = e.target.value;
+          updateStudioStyles();
+        });
+      }
+
+      document.querySelectorAll('.dummy-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          studioState.preset = btn.getAttribute('data-preset');
+          updateStudioStyles();
+          showToast('Preset dummy data: ' + studioState.preset);
+        });
+      });
+
+      const applyGlobalCheck = document.getElementById('studioApplyGlobal');
+      if (applyGlobalCheck) {
+        applyGlobalCheck.addEventListener('change', (e) => {
+          studioState.applyGlobal = e.target.checked;
+          updateStudioStyles();
+          showToast(e.target.checked ? 'Gaya diterapkan ke seluruh aplikasi' : 'Gaya hanya diaktifkan pada sandbox preview');
+        });
+      }
+
+      const btnCopyTokens = document.getElementById('btnCopyDesignTokens');
+      if (btnCopyTokens) {
+        btnCopyTokens.addEventListener('click', () => {
+          const pre = document.getElementById('studioTokensPre');
+          if (pre && navigator.clipboard) {
+            navigator.clipboard.writeText(pre.textContent);
+            showToast('Token CSS berhasil disalin ke clipboard!');
+          }
+        });
+      }
+
+      const btnResetStudio = document.getElementById('btnResetDesignStudio');
+      if (btnResetStudio) {
+        btnResetStudio.addEventListener('click', () => {
+          studioState.font = 'Inter';
+          studioState.theme = 'cyan';
+          studioState.hex = '#06b6d4';
+          studioState.radius = '12px';
+          studioState.preset = 'saas';
+          studioState.applyGlobal = true;
+          if (colorPicker) colorPicker.value = '#06b6d4';
+          if (colorText) colorText.value = '#06b6d4';
+          if (radiusSelect) radiusSelect.value = '12px';
+          if (applyGlobalCheck) applyGlobalCheck.checked = true;
+          updateStudioStyles();
+          showToast('Design Studio di-reset ke pengaturan standar OMW');
+        });
+      }
+
       // Initial render
       renderSynthesisCards();
       renderTerminals();
@@ -1500,6 +2088,7 @@
       loadUnifiedSessions();
       pollLiveTelemetry();
       setInterval(pollLiveTelemetry, 3000);
+      updateStudioStyles();
     })();
   </script>
 </body>

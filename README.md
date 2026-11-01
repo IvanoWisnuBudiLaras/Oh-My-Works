@@ -25,7 +25,7 @@ Oh-My-Works/
 │   ├── omw-session/      # Multi-Agent Session Harvester & Adapter (Cindy-inspired: Prime, Claude, Codex, Hermes)
 │   └── omw-cli/          # Fast CLI entrypoint for telemetry and daemon control
 ├── apps/
-│   ├── desktop/          # Desktop UI application & interactive workspace (Tauri v2)
+│   ├── desktop/          # Desktop UI workspace, Design & Theme Studio, and Cindy-model Session Harvester (Tauri v2)
 │   └── server-daemon/    # Zero-dependency, ultra-lightweight telemetry daemon (<1MB, stdlib HTTP)
 └── docs/
     ├── prd_oh_my_works.md                                              # Complete PRD & 8 Pillars Architecture
