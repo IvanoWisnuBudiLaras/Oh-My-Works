@@ -423,10 +423,10 @@
 
     .modal-overlay.show { display: grid; }
 
-    /* Antigravity IDE Settings Window (2-Column JetBrains Preferences) */
+    /* Antigravity Settings Window */
     .antigravity-settings-box {
-      width: 860px;
-      height: 620px;
+      width: 900px;
+      height: 640px;
       max-width: calc(100vw - 32px);
       max-height: calc(100vh - 32px);
       background: var(--panel);
@@ -655,11 +655,36 @@
     .modal-item:hover { background: var(--panel-hover); color: var(--text-bright); }
     .modal-item.active { background: var(--panel-active); color: var(--accent); }
 
+    /* Skills Marketplace & Management */
+    .skills-filter-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .skills-scope-btn {
+      padding: 5px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .skills-scope-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
     .skills-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 8px;
-      max-height: 240px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+      max-height: 320px;
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -667,26 +692,91 @@
     .skill-card {
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 8px 10px;
+      border-radius: 8px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
+      transition: border-color 0.12s ease;
+    }
+
+    .skill-card:hover { border-color: var(--border-focus); }
+    .skill-card.disabled { opacity: 0.55; }
+
+    .skill-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .skill-name {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--text-bright);
     }
 
-    .skill-meta {
-      font-size: 10.5px;
+    .skill-source-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      background: var(--panel);
+      padding: 2px 6px;
+      border-radius: 4px;
       color: var(--text-muted);
+    }
+
+    .skill-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+      max-height: 32px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .skill-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .btn-skill-action {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+    }
+
+    .btn-skill-action:hover { color: var(--text-bright); border-color: var(--border-focus); }
+    .btn-skill-action.toggle-on { color: var(--green); border-color: var(--green); }
+    .btn-skill-action.toggle-off { color: var(--amber); border-color: var(--amber); }
+    .btn-skill-action.delete { color: var(--red); }
+    .btn-skill-action.delete:hover { border-color: var(--red); }
+
+    /* Custom Item List (Servers, Combos) */
+    .item-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .item-row {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
     }
 
     .code-block {
@@ -792,7 +882,7 @@
   <div class="modal-overlay" id="settingsModal">
     <div class="antigravity-settings-box">
       <div class="antigravity-header">
-        <span>Antigravity IDE &bull; Unified Harness Preferences</span>
+        <span>Antigravity IDE &bull; Unified Preferences</span>
         <button type="button" class="btn-close-canvas" id="btnHideSettings">[Esc]</button>
       </div>
       
@@ -803,7 +893,7 @@
           <button type="button" class="nav-tab-btn" data-tab="tab-router">Servers &amp; Providers</button>
           <button type="button" class="nav-tab-btn" data-tab="tab-combos">Model Gabungan &amp; Tokens</button>
           <button type="button" class="nav-tab-btn" data-tab="tab-soul">Preferences &amp; SOUL.md</button>
-          <button type="button" class="nav-tab-btn" data-tab="tab-mcp">MCP, Skills &amp; Plugins</button>
+          <button type="button" class="nav-tab-btn" data-tab="tab-mcp">MCP, Skills &amp; Web Skills</button>
         </div>
 
         <!-- Tab 1: Unified Permissions -->
@@ -836,61 +926,49 @@
 
         <!-- Tab 2: Servers & Providers -->
         <div class="settings-tab-content" id="tab-router">
-          <div class="setting-group">
-            <label class="setting-label">Primary Router Server IP</label>
-            <div class="setting-desc">Primary endpoint for completions (Default 9Router port 20128).</div>
-            <input type="text" class="setting-input" id="cfgServerUrl" value="http://127.0.0.1:20128" />
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <label class="setting-label">Active Router Endpoints</label>
+              <div class="setting-desc">Kelola server endpoint: tambah, hapus, aktifkan, atau nonaktifkan.</div>
+            </div>
+            <button type="button" class="btn-secondary" id="btnAddServer">+ Add Server</button>
+          </div>
+          <div class="item-list-container" id="serverListContainer">
+            <!-- Server items rendered dynamically -->
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">OmniRoute Secondary Fallback IP</label>
-            <div class="setting-desc">Fallback endpoint (Default OmniRoute port 20129).</div>
-            <input type="text" class="setting-input" id="cfgOmniUrl" value="http://127.0.0.1:20129" />
-          </div>
-
-          <div class="setting-group">
-            <label class="setting-label">Router API Key / Password</label>
-            <div class="setting-desc">Bearer authentication key for router proxy.</div>
+            <label class="setting-label">Primary API Key / Bearer Password</label>
             <input type="password" class="setting-input" id="cfgApiKey" value="sk-9d6e79acb260096f-53jdmp-b86fbd6e" />
           </div>
 
           <div class="setting-group">
-            <label class="setting-label">Active Provider Catalog (OmniRoute / 9Router)</label>
-            <div class="setting-desc">24+ Provider node catalog: Cerebras, Groq, Nebius, Venice, SiliconFlow, OpenAI, Anthropic, Gemini, Kimi, GLM.</div>
-            <input type="text" class="setting-input" id="cfgProviderList" readonly value="cerebras, groq, nebius, venice, siliconflow, openai, anthropic, gemini, kimi, glm" />
+            <label class="setting-label">OmniRoute Provider Network</label>
+            <div class="setting-desc">24+ Provider node catalog (Cerebras, Groq, Nebius, Venice, SiliconFlow, OpenAI, Anthropic, Gemini, Kimi, GLM).</div>
+            <input type="text" class="setting-input" readonly value="cerebras, groq, nebius, venice, siliconflow, openai, anthropic, gemini, kimi, glm" />
           </div>
         </div>
 
         <!-- Tab 3: Model Gabungan & Token Allocation -->
         <div class="settings-tab-content" id="tab-combos">
-          <div class="setting-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <label class="setting-label">Daftar Model Gabungan (Combos)</label>
+              <div class="setting-desc">Model ensemble untuk perutean token dan delegasi tugas.</div>
+            </div>
+            <button type="button" class="btn-secondary" id="btnAddCombo">+ Add Combo</button>
+          </div>
+          <div class="item-list-container" id="combosListContainer">
+            <!-- Combo items rendered dynamically -->
+          </div>
+
+          <div class="setting-group" style="margin-top:8px;">
             <label class="setting-label">Algoritma Pembagian Token (OmniRoute Combo Algorithm)</label>
-            <div class="setting-desc">Metode alokasi token dan perutean prompt antar model gabungan.</div>
             <select class="setting-select" id="cfgComboAlgo">
               <option value="dynamic">Dynamic Complexity Allocation (Auto Context Sizing)</option>
               <option value="reasoning-split">Reasoning Split Pipeline (Lead Planner ➔ Specialist Coder)</option>
               <option value="weighted-lb">Weighted Token Load Balancer (70% Provider A / 30% Provider B)</option>
               <option value="cascade">Cascade Tiered Fallback (Fast Flash ➔ Pro on Timeout/OOM)</option>
-            </select>
-          </div>
-
-          <div class="setting-group">
-            <label class="setting-label">Lead Reasoning Engine (Planner)</label>
-            <select class="setting-select" id="cfgLeadEngine">
-              <option value="ag/gemini-4-argon-high">Google: ag/gemini-4-argon-high</option>
-              <option value="ag/claude-opus-5-5-high">Anthropic: ag/claude-opus-5-5-high</option>
-              <option value="ivano/gpt-5.6-luna">OpenAI: ivano/gpt-5.6-luna</option>
-              <option value="Haltech">OmniRoute: Haltech Autonomous Lead</option>
-            </select>
-          </div>
-
-          <div class="setting-group">
-            <label class="setting-label">Specialist Coder Engine (Executor)</label>
-            <select class="setting-select" id="cfgSpecialistEngine">
-              <option value="cbcn/deepseek-v4-pro">DeepSeek: cbcn/deepseek-v4-pro</option>
-              <option value="cbcn/deepseek-v4.1-flash">DeepSeek: cbcn/deepseek-v4.1-flash</option>
-              <option value="ivano/qwen-3.8-max">Alibaba: ivano/qwen-3.8-max</option>
-              <option value="cbcn/glm-5.3">Zhipu: cbcn/glm-5.3</option>
             </select>
           </div>
         </div>
@@ -915,14 +993,19 @@
           </div>
         </div>
 
-        <!-- Tab 5: MCP, Skills & Plugins -->
+        <!-- Tab 5: MCP, Skills & Web Skills -->
         <div class="settings-tab-content" id="tab-mcp">
-          <div class="setting-group">
-            <label class="setting-label">Discovered Skills &amp; MCP Servers</label>
-            <div class="setting-desc">Ditemukan dari Claude Code (~/.claude/skills), Prime Agent (~/.prime), dan DeepSeek Harness.</div>
-            <div class="skills-grid" id="skillsGridContainer">
-              <!-- Dynamically populated from /skills -->
+          <div class="skills-filter-bar">
+            <div style="flex:1;">
+              <input type="text" class="modal-input" id="skillSearchInput" placeholder="Filter skills or search Web Skills (skills.sh / MCP)..." />
             </div>
+            <button type="button" class="skills-scope-btn active" id="btnScopeInstalled">Installed (<span id="installedCount">0</span>)</button>
+            <button type="button" class="skills-scope-btn" id="btnScopeWeb">Web Skills.sh</button>
+            <button type="button" class="btn-secondary" id="btnAddCustomSkill" style="font-size:11px;">+ Add Skill</button>
+          </div>
+
+          <div class="skills-grid" id="skillsGridContainer">
+            <!-- Dynamically populated skills -->
           </div>
         </div>
       </div>
@@ -956,6 +1039,33 @@
         permAutoSplit: true
       };
 
+      // Dynamic Servers List
+      let serversList = JSON.parse(localStorage.getItem('omw_servers_list') || JSON.stringify([
+        { id: 'srv-1', name: '9Router Primary', url: 'http://127.0.0.1:20128', enabled: true },
+        { id: 'srv-2', name: 'OmniRoute Fallback', url: 'http://127.0.0.1:20129', enabled: true }
+      ]));
+
+      // Dynamic Combos List
+      let combosList = JSON.parse(localStorage.getItem('omw_combos_list') || JSON.stringify([
+        { id: 'cmb-1', name: 'Auto Ensemble (Gemini + DeepSeek)', lead: 'ag/gemini-4-argon-high', spec: 'cbcn/deepseek-v4-pro', algo: 'reasoning-split', enabled: true },
+        { id: 'cmb-2', name: 'Haltech Autonomous Router', lead: 'Haltech', spec: 'cbcn/deepseek-v4.1-flash', algo: 'dynamic', enabled: true },
+        { id: 'cmb-3', name: 'Code Review Specialist', lead: 'ag/claude-opus-5-5-high', spec: 'cbcn/deepseek-v4-pro', algo: 'cascade', enabled: false }
+      ]));
+
+      // Web Skills Catalog (skills.sh & MCP Directory)
+      const WEB_SKILLS_CATALOG = [
+        { name: 'vercel-labs/agent-skills', source: 'skills.sh', desc: 'React, Next.js, and Vercel fullstack tooling', installed: false },
+        { name: 'modelcontextprotocol/postgres', source: 'mcp-catalog', desc: 'PostgreSQL database query, inspect, and schema manager', installed: false },
+        { name: 'modelcontextprotocol/sqlite', source: 'mcp-catalog', desc: 'Embedded SQLite inspector and query engine', installed: false },
+        { name: 'modelcontextprotocol/brave-search', source: 'mcp-catalog', desc: 'Brave search API integration for live web intelligence', installed: false },
+        { name: 'modelcontextprotocol/puppeteer', source: 'mcp-catalog', desc: 'Headless Chromium browser automation and scraper', installed: false },
+        { name: 'notionhq/notion-mcp', source: 'mcp-catalog', desc: 'Notion pages, databases, and workspace sync', installed: false },
+        { name: 'linear/linear-mcp', source: 'mcp-catalog', desc: 'Linear issue tracking, sprints, and cycle operations', installed: false },
+        { name: 'docker/container-tools', source: 'skills.sh', desc: 'Docker images, container orchestration, and Dockerfile linter', installed: false },
+        { name: 'kubernetes/k8s-ops', source: 'skills.sh', desc: 'Kubectl operations, pod logs, and deployment manifests', installed: false },
+        { name: 'tailwind/css-assistant', source: 'skills.sh', desc: 'Tailwind CSS classes optimizer and component generator', installed: false }
+      ];
+
       let currentTheme = localStorage.getItem('omw_theme') || 'dark';
       document.documentElement.setAttribute('data-theme', currentTheme);
 
@@ -967,6 +1077,9 @@
         "ivano/gemini-3.7-flash", "ivano/deepseek-v4-pro", "ivano/qwen-3.8-max", "ivano/kimi-k3",
         "auto", "paid", "Haltech", "oc/union-alpha"
       ];
+
+      let installedSkills = [];
+      let currentSkillScope = 'installed';
 
       let sessions = [
         { id: 'sess-1', title: 'Antigravity Workspace Init', messages: [] }
@@ -1007,6 +1120,10 @@
       const btnSummonSoul = document.getElementById('btnSummonSoul');
       const skillsGridContainer = document.getElementById('skillsGridContainer');
       const syncStatusLabel = document.getElementById('syncStatusLabel');
+      const skillSearchInput = document.getElementById('skillSearchInput');
+      const btnScopeInstalled = document.getElementById('btnScopeInstalled');
+      const btnScopeWeb = document.getElementById('btnScopeWeb');
+      const installedCount = document.getElementById('installedCount');
 
       navTabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1020,13 +1137,12 @@
       });
 
       async function openSettings() {
-        document.getElementById('cfgServerUrl').value = config.serverUrl;
-        document.getElementById('cfgOmniUrl').value = config.omniUrl;
         document.getElementById('cfgApiKey').value = config.apiKey;
         document.getElementById('cfgComboAlgo').value = config.comboAlgo;
-        document.getElementById('cfgLeadEngine').value = config.leadEngine;
-        document.getElementById('cfgSpecialistEngine').value = config.specialistEngine;
         document.getElementById('cfgUserTraits').value = config.userTraits;
+
+        renderServers();
+        renderCombos();
 
         // Fetch SOUL.md from daemon
         try {
@@ -1038,32 +1154,296 @@
         } catch (e) {}
 
         // Fetch Skills from daemon
+        await loadSkills();
+        settingsModal.classList.add('show');
+      }
+
+      async function loadSkills() {
         try {
           const res = await fetch(`${config.daemonUrl}/skills`);
           if (res.ok) {
             const data = await res.json();
-            renderSkills(data.skills || []);
+            installedSkills = data.skills || [];
+            installedCount.textContent = installedSkills.length;
+            renderSkills();
           }
-        } catch (e) {}
-
-        settingsModal.classList.add('show');
+        } catch (e) {
+          renderSkills();
+        }
       }
 
-      function renderSkills(skills) {
-        skillsGridContainer.innerHTML = '';
-        skills.forEach(s => {
-          const card = document.createElement('div');
-          card.className = 'skill-card';
-          card.innerHTML = `
-            <div class="skill-name">${escapeHtml(s.name)}</div>
-            <div class="skill-meta">
-              <span>${escapeHtml(s.source)}</span>
-              <span style="color:var(--green)">ENABLED</span>
+      // Render Servers
+      function renderServers() {
+        const container = document.getElementById('serverListContainer');
+        container.innerHTML = '';
+        serversList.forEach(srv => {
+          const row = document.createElement('div');
+          row.className = 'item-row';
+          row.innerHTML = `
+            <div>
+              <strong>${escapeHtml(srv.name)}</strong>
+              <span style="color:var(--text-muted);margin-left:8px;">${escapeHtml(srv.url)}</span>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button type="button" class="btn-skill-action ${srv.enabled ? 'toggle-on' : 'toggle-off'}" data-action="toggle-server" data-id="${srv.id}">
+                ${srv.enabled ? 'Active' : 'Disabled'}
+              </button>
+              <button type="button" class="btn-skill-action delete" data-action="del-server" data-id="${srv.id}">Delete</button>
             </div>
           `;
-          skillsGridContainer.appendChild(card);
+          container.appendChild(row);
         });
       }
+
+      document.getElementById('btnAddServer').addEventListener('click', () => {
+        const name = prompt('Nama Server Router:', 'Custom Proxy');
+        if (!name) return;
+        const url = prompt('Endpoint URL Server:', 'http://127.0.0.1:8000');
+        if (!url) return;
+        serversList.push({ id: 'srv-' + Date.now(), name, url, enabled: true });
+        localStorage.setItem('omw_servers_list', JSON.stringify(serversList));
+        renderServers();
+      });
+
+      document.getElementById('serverListContainer').addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        const action = btn.getAttribute('data-action');
+        if (action === 'toggle-server') {
+          const s = serversList.find(x => x.id === id);
+          if (s) {
+            s.enabled = !s.enabled;
+            localStorage.setItem('omw_servers_list', JSON.stringify(serversList));
+            renderServers();
+          }
+        } else if (action === 'del-server') {
+          if (confirm('Hapus server ini?')) {
+            serversList = serversList.filter(x => x.id !== id);
+            localStorage.setItem('omw_servers_list', JSON.stringify(serversList));
+            renderServers();
+          }
+        }
+      });
+
+      // Render Combos
+      function renderCombos() {
+        const container = document.getElementById('combosListContainer');
+        container.innerHTML = '';
+        combosList.forEach(cmb => {
+          const row = document.createElement('div');
+          row.className = 'item-row';
+          row.innerHTML = `
+            <div>
+              <strong>${escapeHtml(cmb.name)}</strong>
+              <div style="font-size:10.5px;color:var(--text-muted);">
+                Lead: ${escapeHtml(cmb.lead)} &bull; Specialist: ${escapeHtml(cmb.spec)} &bull; [${escapeHtml(cmb.algo)}]
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button type="button" class="btn-skill-action ${cmb.enabled ? 'toggle-on' : 'toggle-off'}" data-action="toggle-combo" data-id="${cmb.id}">
+                ${cmb.enabled ? 'Active' : 'Disabled'}
+              </button>
+              <button type="button" class="btn-skill-action delete" data-action="del-combo" data-id="${cmb.id}">Delete</button>
+            </div>
+          `;
+          container.appendChild(row);
+        });
+      }
+
+      document.getElementById('btnAddCombo').addEventListener('click', () => {
+        const name = prompt('Nama Model Gabungan:', 'Custom Trio Ensemble');
+        if (!name) return;
+        const lead = prompt('Lead Reasoning Engine:', 'ag/gemini-4-argon-high') || 'ag/gemini-4-argon-high';
+        const spec = prompt('Specialist Coder Engine:', 'cbcn/deepseek-v4-pro') || 'cbcn/deepseek-v4-pro';
+        combosList.push({ id: 'cmb-' + Date.now(), name, lead, spec, algo: 'reasoning-split', enabled: true });
+        localStorage.setItem('omw_combos_list', JSON.stringify(combosList));
+        renderCombos();
+      });
+
+      document.getElementById('combosListContainer').addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        const action = btn.getAttribute('data-action');
+        if (action === 'toggle-combo') {
+          const c = combosList.find(x => x.id === id);
+          if (c) {
+            c.enabled = !c.enabled;
+            localStorage.setItem('omw_combos_list', JSON.stringify(combosList));
+            renderCombos();
+          }
+        } else if (action === 'del-combo') {
+          if (confirm('Hapus model gabungan ini?')) {
+            combosList = combosList.filter(x => x.id !== id);
+            localStorage.setItem('omw_combos_list', JSON.stringify(combosList));
+            renderCombos();
+          }
+        }
+      });
+
+      // Render Skills (Installed vs Web Skills Directory with instant search)
+      function renderSkills() {
+        skillsGridContainer.innerHTML = '';
+        const q = skillSearchInput.value.toLowerCase().trim();
+
+        if (currentSkillScope === 'installed') {
+          const filtered = installedSkills.filter(s => s.name.toLowerCase().includes(q) || (s.source && s.source.toLowerCase().includes(q)));
+          if (filtered.length === 0) {
+            skillsGridContainer.innerHTML = '<div style="color:var(--text-muted);font-family:monospace;padding:12px;">No matching installed skills. Coba beralih ke tab [Web Skills.sh].</div>';
+            return;
+          }
+
+          filtered.forEach(s => {
+            const card = document.createElement('div');
+            card.className = `skill-card ${s.enabled === false ? 'disabled' : ''}`;
+            card.innerHTML = `
+              <div class="skill-top">
+                <span class="skill-name">${escapeHtml(s.name)}</span>
+                <span class="skill-source-tag">${escapeHtml(s.source || 'local')}</span>
+              </div>
+              <div class="skill-desc">${escapeHtml(s.path || 'Local harness extension')}</div>
+              <div class="skill-actions">
+                <button type="button" class="btn-skill-action ${s.enabled !== false ? 'toggle-on' : 'toggle-off'}" data-action="toggle-skill" data-name="${escapeHtml(s.name)}">
+                  ${s.enabled !== false ? 'Enabled' : 'Disabled'}
+                </button>
+                <button type="button" class="btn-skill-action delete" data-action="delete-skill" data-name="${escapeHtml(s.name)}">Uninstall</button>
+              </div>
+            `;
+            skillsGridContainer.appendChild(card);
+          });
+        } else {
+          // Web Skills Marketplace view
+          const filtered = WEB_SKILLS_CATALOG.filter(w => w.name.toLowerCase().includes(q) || w.desc.toLowerCase().includes(q));
+          filtered.forEach(w => {
+            const isInstalled = installedSkills.some(x => x.name.toLowerCase() === w.name.toLowerCase() || x.name.toLowerCase().includes(w.name.split('/').pop().toLowerCase()));
+            const card = document.createElement('div');
+            card.className = 'skill-card';
+            card.innerHTML = `
+              <div class="skill-top">
+                <span class="skill-name">${escapeHtml(w.name)}</span>
+                <span class="skill-source-tag">${escapeHtml(w.source)}</span>
+              </div>
+              <div class="skill-desc">${escapeHtml(w.desc)}</div>
+              <div class="skill-actions">
+                ${isInstalled 
+                  ? '<span style="font-family:monospace;font-size:10.5px;color:var(--green);padding:3px 6px;">[Installed]</span>'
+                  : `<button type="button" class="btn-skill-action" style="color:var(--accent);border-color:var(--accent);" data-action="install-web-skill" data-pkg="${escapeHtml(w.name)}">+ Install</button>`
+                }
+              </div>
+            `;
+            skillsGridContainer.appendChild(card);
+          });
+        }
+      }
+
+      // Scope Switcher
+      btnScopeInstalled.addEventListener('click', () => {
+        currentSkillScope = 'installed';
+        btnScopeInstalled.classList.add('active');
+        btnScopeWeb.classList.remove('active');
+        renderSkills();
+      });
+
+      btnScopeWeb.addEventListener('click', () => {
+        currentSkillScope = 'web';
+        btnScopeWeb.classList.add('active');
+        btnScopeInstalled.classList.remove('active');
+        renderSkills();
+      });
+
+      skillSearchInput.addEventListener('input', renderSkills);
+
+      // Skill Actions (Toggle, Delete, Install)
+      skillsGridContainer.addEventListener('click', async (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const action = btn.getAttribute('data-action');
+
+        if (action === 'toggle-skill') {
+          const name = btn.getAttribute('data-name');
+          const skill = installedSkills.find(s => s.name === name);
+          if (skill) {
+            const newStatus = skill.enabled === false ? true : false;
+            skill.enabled = newStatus;
+            renderSkills();
+
+            try {
+              await fetch(`${config.daemonUrl}/skills/toggle`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, enabled: newStatus })
+              });
+            } catch (e) {}
+          }
+        } else if (action === 'delete-skill') {
+          const name = btn.getAttribute('data-name');
+          if (confirm(`Hapus skill "${name}"?`)) {
+            installedSkills = installedSkills.filter(s => s.name !== name);
+            installedCount.textContent = installedSkills.length;
+            renderSkills();
+
+            try {
+              await fetch(`${config.daemonUrl}/skills/delete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+              });
+            } catch (e) {}
+          }
+        } else if (action === 'install-web-skill') {
+          const pkg = btn.getAttribute('data-pkg');
+          btn.textContent = 'Installing...';
+          btn.disabled = true;
+
+          // Add to local installed skills
+          const shortName = pkg.includes('/') ? pkg.split('/').pop() : pkg;
+          installedSkills.push({
+            name: shortName,
+            source: 'skills.sh',
+            path: `npx skills add ${pkg}`,
+            enabled: true
+          });
+          installedCount.textContent = installedSkills.length;
+
+          try {
+            await fetch(`${config.daemonUrl}/skills/toggle`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: shortName, enabled: true })
+            });
+          } catch (e) {}
+
+          setTimeout(() => {
+            currentSkillScope = 'installed';
+            btnScopeInstalled.classList.add('active');
+            btnScopeWeb.classList.remove('active');
+            renderSkills();
+          }, 300);
+        }
+      });
+
+      // Add Custom Skill / Tool manually
+      document.getElementById('btnAddCustomSkill').addEventListener('click', async () => {
+        const name = prompt('Nama skill atau package (contoh: my-tool atau owner/repo):');
+        if (!name) return;
+        installedSkills.push({
+          name: name.trim(),
+          source: 'custom-harness',
+          path: 'Custom registered skill',
+          enabled: true
+        });
+        installedCount.textContent = installedSkills.length;
+        renderSkills();
+
+        try {
+          await fetch(`${config.daemonUrl}/skills/toggle`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name.trim(), enabled: true })
+          });
+        } catch (e) {}
+      });
 
       function closeSettings() {
         settingsModal.classList.remove('show');
@@ -1079,12 +1459,8 @@
 
       // Save and Broadcast across all harnesses
       btnSaveSettings.addEventListener('click', async () => {
-        config.serverUrl = document.getElementById('cfgServerUrl').value.trim() || 'http://127.0.0.1:20128';
-        config.omniUrl = document.getElementById('cfgOmniUrl').value.trim() || 'http://127.0.0.1:20129';
         config.apiKey = document.getElementById('cfgApiKey').value.trim();
         config.comboAlgo = document.getElementById('cfgComboAlgo').value;
-        config.leadEngine = document.getElementById('cfgLeadEngine').value;
-        config.specialistEngine = document.getElementById('cfgSpecialistEngine').value;
         config.userTraits = document.getElementById('cfgUserTraits').value.trim();
 
         config.permSyncAll = document.getElementById('permSyncAll').checked;
@@ -1093,12 +1469,8 @@
         config.permCindy = document.getElementById('permCindy').checked;
         config.permAutoSplit = document.getElementById('permAutoSplit').checked;
 
-        localStorage.setItem('omw_server_url', config.serverUrl);
-        localStorage.setItem('omw_omni_url', config.omniUrl);
         localStorage.setItem('omw_api_key', config.apiKey);
         localStorage.setItem('omw_combo_algo', config.comboAlgo);
-        localStorage.setItem('omw_lead_engine', config.leadEngine);
-        localStorage.setItem('omw_spec_engine', config.specialistEngine);
         localStorage.setItem('omw_traits', config.userTraits);
 
         // Save SOUL.md to daemon
@@ -1114,7 +1486,7 @@
           await fetch(`${config.daemonUrl}/settings`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(config)
+            body: JSON.stringify({ config, servers: serversList, combos: combosList })
           });
         } catch (e) {}
 
@@ -1247,7 +1619,7 @@
         return body;
       }
 
-      // Prompt Submit & AI Response with Aggregator Routing
+      // Prompt Submit & AI Response with Dynamic Server Failover
       async function handleSend() {
         const text = promptInput.value.trim();
         if (!text) return;
@@ -1273,7 +1645,10 @@
 
         aiMsg.content = '';
 
-        const completionUrl = `${config.serverUrl.replace(/\/+$/, '')}/v1/chat/completions`;
+        // Pick enabled servers
+        const activeServers = serversList.filter(s => s.enabled);
+        const primaryServer = activeServers[0]?.url || 'http://127.0.0.1:20128';
+        const completionUrl = `${primaryServer.replace(/\/+$/, '')}/v1/chat/completions`;
         const headers = {
           'Content-Type': 'application/json',
           'Authorization': config.apiKey.startsWith('Bearer ') ? config.apiKey : `Bearer ${config.apiKey}`
@@ -1286,10 +1661,11 @@
             body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
           });
 
-          // Auto-fallback to OmniRoute if primary 9Router fails
-          if (!res.ok && config.omniUrl) {
+          // Auto-fallback to next active server
+          if (!res.ok && activeServers.length > 1) {
             try {
-              res = await fetch(`${config.omniUrl.replace(/\/+$/, '')}/v1/chat/completions`, {
+              const fallbackUrl = `${activeServers[1].url.replace(/\/+$/, '')}/v1/chat/completions`;
+              res = await fetch(fallbackUrl, {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
@@ -1354,7 +1730,8 @@
 
       // Sync Models from Router
       async function syncModels() {
-        const modelsUrl = `${config.serverUrl.replace(/\/+$/, '')}/v1/models`;
+        const primaryServer = serversList.find(s => s.enabled)?.url || 'http://127.0.0.1:20128';
+        const modelsUrl = `${primaryServer.replace(/\/+$/, '')}/v1/models`;
         const auth = config.apiKey.startsWith('Bearer ') ? config.apiKey : `Bearer ${config.apiKey}`;
         try {
           const res = await fetch(modelsUrl, { headers: { 'Authorization': auth } });

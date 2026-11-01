@@ -26,9 +26,10 @@ fn handle_client(mut stream: TcpStream) {
     let home = home_dir();
     let omw_dir = home.join(".omw");
     let _ = fs::create_dir_all(&omw_dir);
+    let skills_file = omw_dir.join("skills.json");
 
     if req_line.starts_with("OPTIONS") {
-        let resp = "HTTP/1.1 204 No Content\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST, OPTIONS\r\nAccess-Control-Allow-Headers: Content-Type, Authorization\r\nConnection: close\r\n\r\n";
+        let resp = "HTTP/1.1 204 No Content\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST, DELETE, OPTIONS\r\nAccess-Control-Allow-Headers: Content-Type, Authorization\r\nConnection: close\r\n\r\n";
         let _ = stream.write_all(resp.as_bytes());
         return;
     }
@@ -36,7 +37,6 @@ fn handle_client(mut stream: TcpStream) {
     let (status, content_type, body) = if req_line.contains("/soul") {
         let soul_path = omw_dir.join("SOUL.md");
         if req_line.starts_with("POST") {
-            // Extract body after empty line
             if let Some(pos) = req_str.find("\r\n\r\n") {
                 let payload = &req_str[pos + 4..];
                 let _ = fs::write(&soul_path, payload);
@@ -47,35 +47,70 @@ fn handle_client(mut stream: TcpStream) {
             let json = serde_json::json!({ "soul": content });
             ("200 OK", "application/json", json.to_string())
         }
-    } else if req_line.contains("/skills") {
-        // Collect skills from ~/.claude/skills and ~/.prime/agent/skills
-        let mut skill_list = Vec::new();
-        let claude_skills = home.join(".claude").join("skills");
-        if let Ok(entries) = fs::read_dir(claude_skills) {
-            for entry in entries.flatten() {
-                let name = entry.file_name().to_string_lossy().to_string();
-                skill_list.push(serde_json::json!({
-                    "name": name,
-                    "source": "claude-code",
-                    "path": entry.path().to_string_lossy(),
-                    "enabled": true
-                }));
-            }
-        }
-        let prime_skills = home.join(".prime").join("agent").join("skills");
-        if let Ok(entries) = fs::read_dir(prime_skills) {
-            for entry in entries.flatten() {
-                let name = entry.file_name().to_string_lossy().to_string();
-                if !skill_list.iter().any(|s| s["name"] == name) {
-                    skill_list.push(serde_json::json!({
-                        "name": name,
-                        "source": "prime-agent",
-                        "path": entry.path().to_string_lossy(),
-                        "enabled": true
-                    }));
+    } else if req_line.contains("/skills/toggle") {
+        if let Some(pos) = req_str.find("\r\n\r\n") {
+            let payload = &req_str[pos + 4..];
+            if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+                if let (Some(name), Some(enabled)) = (val["name"].as_str(), val["enabled"].as_bool()) {
+                    let mut current: serde_json::Value = fs::read_to_string(&skills_file)
+                        .ok()
+                        .and_then(|s| serde_json::from_str(&s).ok())
+                        .unwrap_or_else(|| serde_json::json!({}));
+                    current[name] = serde_json::json!(enabled);
+                    let _ = fs::write(&skills_file, current.to_string());
                 }
             }
         }
+        ("200 OK", "application/json", r#"{"status":"updated"}"#.to_string())
+    } else if req_line.contains("/skills/delete") {
+        if let Some(pos) = req_str.find("\r\n\r\n") {
+            let payload = &req_str[pos + 4..];
+            if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+                if let Some(name) = val["name"].as_str() {
+                    let mut current: serde_json::Value = fs::read_to_string(&skills_file)
+                        .ok()
+                        .and_then(|s| serde_json::from_str(&s).ok())
+                        .unwrap_or_else(|| serde_json::json!({}));
+                    if let Some(obj) = current.as_object_mut() {
+                        obj.remove(name);
+                    }
+                    let _ = fs::write(&skills_file, current.to_string());
+                }
+            }
+        }
+        ("200 OK", "application/json", r#"{"status":"deleted"}"#.to_string())
+    } else if req_line.contains("/skills") {
+        // Collect installed skills across harnesses
+        let mut skill_map = std::collections::BTreeMap::new();
+        let disabled_map: serde_json::Value = fs::read_to_string(&skills_file)
+            .ok()
+            .and_then(|s| serde_json::from_str(&s).ok())
+            .unwrap_or_else(|| serde_json::json!({}));
+
+        let skill_dirs = [
+            (home.join(".claude").join("skills"), "claude-code"),
+            (home.join(".prime").join("agent").join("skills"), "prime-agent"),
+            (home.join(".agents").join("skills"), "agents-core"),
+        ];
+
+        for (dir, src) in skill_dirs {
+            if let Ok(entries) = fs::read_dir(dir) {
+                for entry in entries.flatten() {
+                    let name = entry.file_name().to_string_lossy().to_string();
+                    let enabled = disabled_map.get(&name).and_then(|v| v.as_bool()).unwrap_or(true);
+                    skill_map.entry(name.clone()).or_insert_with(|| {
+                        serde_json::json!({
+                            "name": name,
+                            "source": src,
+                            "path": entry.path().to_string_lossy(),
+                            "enabled": enabled
+                        })
+                    });
+                }
+            }
+        }
+
+        let skill_list: Vec<_> = skill_map.into_values().collect();
         let json = serde_json::json!({ "skills": skill_list });
         ("200 OK", "application/json", json.to_string())
     } else if req_line.contains("/settings") {
