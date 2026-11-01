@@ -2179,6 +2179,8 @@ name = "omw-harness"
 version = "0.1.0"
 dependencies = [
  "omw-core",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -2191,6 +2193,7 @@ version = "0.1.0"
 dependencies = [
  "omw-core",
  "omw-guardian",
+ "omw-harness",
  "omw-session",
  "serde_json",
 ]

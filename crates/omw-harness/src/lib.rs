@@ -1,6 +1,8 @@
 //! Meta-AI Harness: Multi-agent coordination and task delegation.
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AgentStatus {
     Idle,
     Running,
@@ -8,7 +10,7 @@ pub enum AgentStatus {
     Failed(String),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Subagent {
     pub id: String,
     pub name: String,
@@ -16,7 +18,7 @@ pub struct Subagent {
     pub status: AgentStatus,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Task {
     pub id: String,
     pub title: String,
@@ -25,7 +27,7 @@ pub struct Task {
     pub result: Option<String>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct HarnessOrchestrator {
     pub agents: Vec<Subagent>,
     pub tasks: Vec<Task>,
