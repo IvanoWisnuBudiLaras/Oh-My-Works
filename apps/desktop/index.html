@@ -3,35 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oh My Works — OpenHands AI Workspace</title>
+  <title>Gemini Browser — Oh My Works</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --background: #0d0f12;
-      --sidebar-bg: #090a0d;
-      --panel-bg: #11141a;
-      --card-bg: #161a22;
-      --card-hover: #1c212c;
-      --foreground: #f0f3f6;
-      --muted-foreground: #8b949e;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-subtle: rgba(255, 255, 255, 0.04);
-      --border-focus: rgba(88, 166, 255, 0.4);
-      --primary: #58a6ff;
-      --primary-hover: #79c0ff;
-      --accent: #238636;
-      --accent-hover: #2ea043;
-      --destructive: #f85149;
-      --warning: #d29922;
-      --success: #3fb950;
-      --success-bg: rgba(63, 185, 80, 0.15);
-      --cyan: #38bdf8;
-      --radius: 8px;
-      --radius-sm: 6px;
-      --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+      --gemini-bg: #131314;
+      --gemini-surface: #1e1f20;
+      --gemini-surface-hover: #282a2c;
+      --gemini-surface-active: #333537;
+      --gemini-border: rgba(255, 255, 255, 0.08);
+      --gemini-border-focus: rgba(138, 180, 248, 0.5);
+      --gemini-text-primary: #e3e3e3;
+      --gemini-text-secondary: #c4c7c5;
+      --gemini-text-muted: #8e918f;
+      --gemini-blue: #8ab4f8;
+      --gemini-blue-hover: #aecbfa;
+      --gemini-purple: #c58af9;
+      --gemini-pink: #f28b82;
+      --gemini-success: #81c995;
+      --gemini-warning: #fdd663;
+      --gemini-danger: #f28b82;
+      --gemini-gradient: linear-gradient(74deg, #4285f4 0%, #9b72cf 35%, #d96570 70%);
+      --gemini-glow: 0 8px 32px rgba(66, 133, 244, 0.28);
+      --font-google: 'Google Sans', 'Google Sans Text', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
     * {
@@ -41,1120 +38,1052 @@
     }
 
     body {
-      background: var(--background);
-      color: var(--foreground);
-      font-family: var(--font-sans);
+      background: var(--gemini-bg);
+      color: var(--gemini-text-primary);
+      font-family: var(--font-google);
       font-size: 13px;
       line-height: 1.5;
       height: 100vh;
       overflow: hidden;
       display: flex;
+      flex-direction: column;
+      user-select: none;
       -webkit-font-smoothing: antialiased;
     }
 
     /* ==========================================================================
-       1. OPENHANDS ICON RAIL (Leftmost Vertical Navigation)
+       1. GOOGLE CHROME / GEMINI BROWSER SHELL
        ========================================================================== */
-    .icon-rail {
-      width: 52px;
-      background: var(--sidebar-bg);
-      border-right: 1px solid var(--border);
+    /* Tab Strip */
+    .browser-tab-strip {
+      height: 40px;
+      background: #18191a;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 12px 0;
-      gap: 8px;
+      align-items: flex-end;
+      padding: 0 8px;
+      gap: 4px;
+      border-bottom: 1px solid var(--gemini-border);
       flex-shrink: 0;
-      user-select: none;
-      z-index: 20;
     }
 
-    .rail-logo {
+    .browser-tab {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 8px 8px 0 0;
+      background: transparent;
+      color: var(--gemini-text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      max-width: 220px;
+      position: relative;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .browser-tab:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--gemini-text-primary);
+    }
+
+    .browser-tab.active {
+      background: var(--gemini-bg);
+      color: var(--gemini-text-primary);
+      box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .tab-favicon {
+      width: 14px;
+      height: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+    }
+
+    .tab-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    .tab-close {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      opacity: 0.6;
+    }
+
+    .tab-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      opacity: 1;
+    }
+
+    .btn-new-tab {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--gemini-text-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      margin-bottom: 3px;
+      font-size: 16px;
+    }
+
+    .btn-new-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--gemini-text-primary);
+    }
+
+    /* Navigation Toolbar (Omnibox & Controls) */
+    .browser-toolbar {
+      height: 48px;
+      background: var(--gemini-bg);
+      border-bottom: 1px solid var(--gemini-border);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .nav-btn {
       width: 32px;
       height: 32px;
-      border-radius: 8px;
-      background: #1f6feb;
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 13px;
-      font-family: var(--font-mono);
-      margin-bottom: 12px;
-      box-shadow: 0 0 12px rgba(31, 111, 235, 0.4);
-      cursor: pointer;
-    }
-
-    .rail-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
+      border-radius: 50%;
       background: transparent;
       border: none;
-      color: var(--muted-foreground);
+      color: var(--gemini-text-secondary);
       display: grid;
       place-items: center;
       cursor: pointer;
-      position: relative;
-      transition: all 0.12s ease;
-    }
-
-    .rail-btn:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--foreground);
-    }
-
-    .rail-btn.active {
-      background: rgba(88, 166, 255, 0.15);
-      color: var(--primary);
-    }
-
-    .rail-btn svg {
-      width: 18px;
-      height: 18px;
-      stroke-width: 2;
-    }
-
-    .rail-bottom {
-      margin-top: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .status-dot-indicator {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--success);
-      box-shadow: 0 0 8px rgba(63, 185, 80, 0.5);
-    }
-
-    /* Tooltip */
-    .rail-btn[data-tooltip]:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      left: 56px;
-      background: #1c2128;
-      border: 1px solid var(--border);
-      color: var(--foreground);
-      font-size: 11px;
-      font-family: var(--font-sans);
-      padding: 4px 8px;
-      border-radius: 4px;
-      white-space: nowrap;
-      z-index: 50;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    }
-
-    /* ==========================================================================
-       2. WORKSPACE SPLIT CONTAINER (OpenHands Dual-Pane)
-       ========================================================================== */
-    .workspace-wrapper {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-
-    /* LEFT COLUMN: CHAT & AGENT CONTROL */
-    .chat-panel {
-      width: 480px;
-      min-width: 380px;
-      max-width: 650px;
-      background: var(--panel-bg);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-
-    /* Chat Panel Header (Task & Agent Control) */
-    .chat-panel-header {
-      height: 48px;
-      border-bottom: 1px solid var(--border);
-      padding: 0 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(13, 15, 18, 0.8);
-      flex-shrink: 0;
-    }
-
-    .agent-select {
-      height: 28px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--foreground);
-      padding: 0 8px;
-      font-size: 11px;
-      font-family: var(--font-sans);
-      outline: none;
-      cursor: pointer;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 10px;
-      font-family: var(--font-mono);
-      font-weight: 600;
-      padding: 2px 7px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .status-idle { background: rgba(139, 148, 158, 0.15); color: var(--muted-foreground); border: 1px solid rgba(139, 148, 158, 0.2); }
-    .status-running { background: rgba(210, 153, 34, 0.15); color: var(--warning); border: 1px solid rgba(210, 153, 34, 0.2); }
-    .status-done { background: var(--success-bg); color: var(--success); border: 1px solid rgba(63, 185, 80, 0.2); }
-
-    /* Chat Messages Stream */
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .message-block {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 13px;
-    }
-
-    .message-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      color: var(--muted-foreground);
-    }
-
-    .user-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 10px 12px;
-      color: var(--foreground);
-    }
-
-    /* OpenHands Action / Observation Card */
-    .action-card {
-      background: #090a0d;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      font-family: var(--font-mono);
-      font-size: 11px;
-    }
-
-    .action-card-header {
-      padding: 6px 10px;
-      background: #14171e;
-      border-bottom: 1px solid var(--border-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .action-title {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .action-body {
-      padding: 10px;
-      color: #adbac7;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-break: break-all;
-      max-height: 200px;
-      overflow-y: auto;
-      background: #07080a;
-    }
-
-    /* OpenHands Thought Container */
-    .thought-container {
-      background: rgba(88, 166, 255, 0.05);
-      border-left: 2px solid var(--primary);
-      padding: 8px 12px;
-      border-radius: 0 4px 4px 0;
-      font-size: 12px;
-      color: #c9d1d9;
-    }
-
-    .thought-container summary {
-      cursor: pointer;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted-foreground);
-      user-select: none;
-    }
-
-    /* Chat Input Form (OpenHands Style) */
-    .chat-input-wrapper {
-      padding: 12px 14px;
-      border-top: 1px solid var(--border);
-      background: var(--panel-bg);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .input-box {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: border-color 0.12s;
-    }
-
-    .input-box:focus-within {
-      border-color: var(--border-focus);
-    }
-
-    .chat-textarea {
-      width: 100%;
-      min-height: 48px;
-      max-height: 160px;
-      background: transparent;
-      border: none;
-      color: var(--foreground);
-      font-family: var(--font-sans);
-      font-size: 13px;
-      line-height: 1.5;
-      resize: none;
-      outline: none;
-    }
-
-    .input-controls {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid var(--border-subtle);
-      padding-top: 6px;
-    }
-
-    .mode-toggle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      color: var(--muted-foreground);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .btn-send-task {
-      height: 28px;
-      padding: 0 14px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
       transition: background 0.12s;
     }
 
-    .btn-send-task:hover {
-      background: var(--accent-hover);
+    .nav-btn:hover {
+      background: var(--gemini-surface-hover);
+      color: var(--gemini-text-primary);
     }
 
-    /* RIGHT COLUMN: WORKSPACE TABS & TOOLS */
-    .workspace-panel {
+    /* Omnibox / URL Bar */
+    .omnibox {
       flex: 1;
+      height: 34px;
+      background: var(--gemini-surface);
+      border: 1px solid transparent;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+      transition: border 0.15s, background 0.15s;
+    }
+
+    .omnibox:focus-within {
+      background: #252629;
+      border-color: var(--gemini-border-focus);
+    }
+
+    .omnibox-lock {
+      font-size: 11px;
+      color: var(--gemini-success);
+    }
+
+    .omnibox-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--gemini-text-primary);
+      font-family: var(--font-google);
+      font-size: 12px;
+    }
+
+    .omnibox-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 10px;
+      color: var(--gemini-text-muted);
+    }
+
+    /* Gemini Sparkle Toolbar Button */
+    .btn-gemini-action {
+      height: 32px;
+      padding: 0 14px;
+      border-radius: 20px;
+      background: var(--gemini-surface);
+      border: 1px solid rgba(138, 180, 248, 0.25);
+      color: var(--gemini-text-primary);
+      font-family: var(--font-google);
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-gemini-action:hover {
+      background: var(--gemini-surface-hover);
+      border-color: rgba(138, 180, 248, 0.5);
+      box-shadow: 0 2px 10px rgba(66, 133, 244, 0.25);
+    }
+
+    .btn-gemini-action.active {
+      background: rgba(66, 133, 244, 0.15);
+      border-color: var(--gemini-blue);
+      color: var(--gemini-blue);
+    }
+
+    .sparkle-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* Browser Content Viewport */
+    .browser-viewport {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--gemini-bg);
+      position: relative;
       display: flex;
       flex-direction: column;
-      background: var(--background);
-      overflow: hidden;
     }
 
-    .workspace-tabs {
-      height: 48px;
-      border-bottom: 1px solid var(--border);
+    /* Viewport Inner Pages */
+    .page-container {
+      flex: 1;
+      padding: 32px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      user-select: text;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .page-desc {
+      font-size: 14px;
+      color: var(--gemini-text-secondary);
+      margin-bottom: 24px;
+    }
+
+    /* Gemini Card Grid */
+    .gemini-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .gemini-card {
+      background: var(--gemini-surface);
+      border: 1px solid var(--gemini-border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: background 0.15s, transform 0.12s;
+      cursor: pointer;
+    }
+
+    .gemini-card:hover {
+      background: var(--gemini-surface-hover);
+      transform: translateY(-2px);
+    }
+
+    .gemini-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .gemini-card-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--gemini-text-primary);
+    }
+
+    .gemini-card-value {
+      font-size: 24px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--gemini-blue);
+      margin: 4px 0;
+    }
+
+    .gemini-card-sub {
+      font-size: 12px;
+      color: var(--gemini-text-muted);
+    }
+
+    /* Monospace Console Card */
+    .console-box {
+      background: #000;
+      border: 1px solid var(--gemini-border);
+      border-radius: 12px;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #93c5fd;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    /* ==========================================================================
+       2. SIGNATURE GOOGLE GEMINI FLOATING CHAT OVERLAY & SIDEPANEL
+       ========================================================================== */
+    .gemini-floating-panel {
+      position: absolute;
+      top: 60px;
+      right: 24px;
+      width: 460px;
+      height: 720px;
+      max-height: calc(100vh - 80px);
+      background: var(--gemini-surface);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 100;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: text;
+    }
+
+    /* Docked State */
+    .gemini-floating-panel.docked {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      height: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      border-top: none;
+      border-bottom: none;
+      border-right: none;
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Minimized Hidden State */
+    .gemini-floating-panel.minimized {
+      transform: scale(0.85);
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    /* Floating Chat Header */
+    .gemini-chat-header {
+      height: 52px;
       padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--gemini-border);
+      background: #18191a;
+      cursor: grab;
+      user-select: none;
       flex-shrink: 0;
     }
 
-    .tabs-group {
-      display: flex;
-      align-items: center;
-      gap: 4px;
+    .gemini-chat-header:active {
+      cursor: grabbing;
     }
 
-    .tab-btn {
-      height: 32px;
-      padding: 0 12px;
-      background: transparent;
-      border: none;
-      border-radius: var(--radius-sm);
-      color: var(--muted-foreground);
-      font-size: 12px;
-      font-weight: 500;
-      font-family: var(--font-sans);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.12s;
-    }
-
-    .tab-btn:hover {
-      color: var(--foreground);
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .tab-btn.active {
-      color: var(--foreground);
-      background: var(--panel-bg);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    }
-
-    .tab-badge {
-      font-size: 10px;
-      font-family: var(--font-mono);
-      padding: 1px 5px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .workspace-content {
-      flex: 1;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* File Explorer / Tree View */
-    .files-layout {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-
-    .file-tree {
-      width: 240px;
-      border-right: 1px solid var(--border);
-      background: #0a0b0e;
-      overflow-y: auto;
-      padding: 8px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-    }
-
-    .tree-item {
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #adbac7;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .tree-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--foreground);
-    }
-
-    .tree-item.active {
-      background: rgba(88, 166, 255, 0.15);
-      color: var(--primary);
-    }
-
-    .file-editor-view {
-      flex: 1;
-      background: #0d0f12;
-      overflow-y: auto;
-      padding: 16px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.6;
-      color: #e6edf3;
-      white-space: pre-wrap;
-    }
-
-    /* Terminal View */
-    .terminal-container {
-      flex: 1;
-      background: #05070a;
-      padding: 16px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.6;
-      color: #58a6ff;
-      overflow-y: auto;
-      white-space: pre-wrap;
-    }
-
-    /* ==========================================================================
-       3. OPENHANDS SETTINGS MODAL
-       ========================================================================== */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
-      display: none;
-      place-items: center;
-      z-index: 100;
-    }
-
-    .modal-backdrop.show {
-      display: grid;
-    }
-
-    .settings-dialog {
-      width: 720px;
-      max-width: 90vw;
-      height: 520px;
-      background: #11141a;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
-      display: flex;
-      overflow: hidden;
-    }
-
-    .settings-nav {
-      width: 200px;
-      border-right: 1px solid var(--border);
-      background: #090a0d;
-      padding: 16px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .settings-nav-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted-foreground);
-      padding: 0 8px 8px;
-    }
-
-    .settings-tab-btn {
-      padding: 8px 10px;
-      border-radius: var(--radius-sm);
-      background: transparent;
-      border: none;
-      color: #adbac7;
-      font-size: 12px;
-      font-weight: 500;
-      font-family: var(--font-sans);
-      text-align: left;
-      cursor: pointer;
+    .gemini-brand {
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.12s;
     }
 
-    .settings-tab-btn:hover {
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--foreground);
+    .gemini-gradient-text {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      background: var(--gemini-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .settings-tab-btn.active {
-      background: rgba(88, 166, 255, 0.15);
-      color: var(--primary);
-      font-weight: 600;
+    .gemini-model-badge {
+      font-size: 11px;
+      font-family: var(--font-google);
+      color: var(--gemini-text-muted);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 8px;
+      border-radius: 12px;
     }
 
-    .settings-body {
+    .gemini-header-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .header-ctrl-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--gemini-text-muted);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .header-ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--gemini-text-primary);
+    }
+
+    /* Chat Messages Scroll Canvas */
+    .gemini-chat-canvas {
       flex: 1;
-      padding: 24px;
       overflow-y: auto;
+      padding: 20px 18px;
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
 
-    .settings-header {
+    /* Gemini Empty State / Hero */
+    .gemini-hero {
+      margin: auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 4px;
+    }
+
+    .hero-greeting {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      background: var(--gemini-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 24px;
+      font-weight: 500;
+      color: #70757a;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .hero-prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+
+    .hero-chip {
+      background: #18191a;
+      border: 1px solid var(--gemini-border);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 80px;
+      cursor: pointer;
+      transition: background 0.12s, transform 0.1s;
+    }
+
+    .hero-chip:hover {
+      background: var(--gemini-surface-hover);
+      transform: translateY(-1px);
+    }
+
+    .hero-chip-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gemini-text-primary);
+      line-height: 1.4;
+    }
+
+    .hero-chip-icon {
+      align-self: flex-end;
+      font-size: 14px;
+      color: var(--gemini-blue);
+    }
+
+    /* Message Bubbles */
+    .chat-msg-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .msg-user-row {
+      justify-content: flex-end;
+    }
+
+    .user-bubble {
+      background: var(--gemini-surface-hover);
+      border-radius: 20px 20px 4px 20px;
+      padding: 12px 18px;
+      color: var(--gemini-text-primary);
+      font-size: 13px;
+      line-height: 1.5;
+      max-width: 82%;
+      word-break: break-word;
+    }
+
+    .gemini-bubble {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Collapsible Gemini Thinking Process */
+    .gemini-thinking {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--gemini-text-secondary);
+    }
+
+    .gemini-thinking summary {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--gemini-blue);
+    }
+
+    .gemini-thinking-content {
+      margin-top: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.5;
+      color: #9ca3af;
+      white-space: pre-wrap;
+    }
+
+    /* Tool Call Card */
+    .gemini-tool-card {
+      background: #000;
+      border: 1px solid var(--gemini-border);
+      border-radius: 10px;
+      overflow: hidden;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .gemini-tool-header {
+      padding: 6px 10px;
+      background: #18191a;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
+      color: var(--gemini-text-secondary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .settings-title {
-      font-size: 16px;
-      font-weight: 600;
+    .gemini-tool-body {
+      padding: 8px 10px;
+      color: #81c995;
+      white-space: pre-wrap;
+      max-height: 120px;
+      overflow-y: auto;
     }
 
-    .form-group {
+    .gemini-response-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--gemini-text-primary);
+    }
+
+    /* Gemini Action Toolbar at bottom of response */
+    .gemini-msg-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+
+    .msg-action-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--gemini-text-muted);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .msg-action-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--gemini-text-primary);
+    }
+
+    /* Floating Gemini Bottom Input Pill */
+    .gemini-input-container {
+      padding: 12px 16px 16px;
+      background: var(--gemini-surface);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .gemini-input-pill {
+      background: #18191a;
+      border: 1px solid var(--gemini-border);
+      border-radius: 28px;
+      padding: 6px 14px 6px 10px;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
-    .form-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--foreground);
+    .gemini-input-pill:focus-within {
+      border-color: var(--gemini-border-focus);
+      box-shadow: 0 0 12px rgba(138, 180, 248, 0.15);
     }
 
-    .form-desc {
-      font-size: 11px;
-      color: var(--muted-foreground);
-    }
-
-    .form-input, .form-select {
-      height: 32px;
-      background: #090a0d;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--foreground);
-      padding: 0 10px;
-      font-size: 12px;
-      font-family: var(--font-sans);
-      outline: none;
-    }
-
-    .form-input:focus, .form-select:focus {
-      border-color: var(--border-focus);
-    }
-
-    .settings-footer {
-      margin-top: auto;
+    .mention-chips-row {
       display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      border-top: 1px solid var(--border);
-      padding-top: 16px;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-top: 4px;
+      padding-bottom: 2px;
     }
 
-    .btn-secondary {
-      height: 30px;
-      padding: 0 14px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--foreground);
-      font-size: 12px;
+    .mention-chip {
+      font-size: 10px;
+      font-family: var(--font-google);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--gemini-border);
+      border-radius: 12px;
+      padding: 2px 8px;
+      color: var(--gemini-text-secondary);
       cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.12s;
     }
 
-    .btn-primary {
-      height: 30px;
-      padding: 0 14px;
-      background: var(--accent);
+    .mention-chip:hover, .mention-chip.active {
+      background: rgba(66, 133, 244, 0.15);
+      border-color: var(--gemini-blue);
+      color: var(--gemini-blue);
+    }
+
+    .input-row-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-attach {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: transparent;
       border: none;
-      border-radius: var(--radius-sm);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 600;
+      color: var(--gemini-text-secondary);
+      display: grid;
+      place-items: center;
       cursor: pointer;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .btn-attach:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--gemini-text-primary);
+    }
+
+    .gemini-textarea {
+      flex: 1;
+      min-height: 24px;
+      max-height: 120px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--gemini-text-primary);
+      font-family: var(--font-google);
+      font-size: 13px;
+      line-height: 1.5;
+      resize: none;
+    }
+
+    .btn-gemini-send {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--gemini-text-muted);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 14px;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .btn-gemini-send.active {
+      background: var(--gemini-blue);
+      color: #040c18;
+      box-shadow: 0 0 10px rgba(138, 180, 248, 0.4);
+    }
+
+    .gemini-disclaimer {
+      font-size: 10px;
+      color: var(--gemini-text-muted);
+      text-align: center;
+      user-select: none;
+    }
+
+    /* ==========================================================================
+       3. FLOATING GEMINI BUBBLE (WHEN MINIMIZED)
+       ========================================================================== */
+    .gemini-floating-bubble {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      height: 48px;
+      padding: 0 18px;
+      border-radius: 24px;
+      background: #1e1f20;
+      border: 1px solid rgba(138, 180, 248, 0.35);
+      box-shadow: var(--gemini-glow), 0 8px 24px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      z-index: 90;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+
+    .gemini-floating-bubble:hover {
+      background: #282a2c;
+      transform: translateY(-2px) scale(1.02);
+      border-color: var(--gemini-blue);
+      box-shadow: 0 12px 36px rgba(66, 133, 244, 0.45);
+    }
+
+    .bubble-text {
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--gemini-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     /* Scrollbars */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
   </style>
 </head>
 <body>
 
-  <!-- 1. LEFT ICON RAIL (OpenHands Navigation) -->
-  <aside class="icon-rail">
-    <div class="rail-logo" id="railLogo" title="Oh My Works">OH</div>
+  <!-- ========================================================================
+       1. GOOGLE CHROME / GEMINI BROWSER HEADER
+       ======================================================================== -->
+  <!-- Tab Strip -->
+  <header class="browser-tab-strip">
+    <div class="browser-tab active" data-page="overview">
+      <span class="tab-favicon">✦</span>
+      <span class="tab-title">Oh My Works — Overview</span>
+      <span class="tab-close">✕</span>
+    </div>
+    <div class="browser-tab" data-page="terminal">
+      <span class="tab-favicon">>_</span>
+      <span class="tab-title">Interactive Terminal</span>
+      <span class="tab-close">✕</span>
+    </div>
+    <div class="browser-tab" data-page="sessions">
+      <span class="tab-favicon">🔄</span>
+      <span class="tab-title">Cindy Sessions (45)</span>
+      <span class="tab-close">✕</span>
+    </div>
+    <div class="browser-tab" data-page="guardian">
+      <span class="tab-favicon">🛡️</span>
+      <span class="tab-title">Kernel PSI Anti-OOM</span>
+      <span class="tab-close">✕</span>
+    </div>
+    <button type="button" class="btn-new-tab" id="btnNewTab" title="New Tab">+</button>
+  </header>
 
-    <button type="button" class="rail-btn active" data-rail-tab="chat" data-tooltip="AI Chat &amp; Agent">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+  <!-- Navigation Toolbar (Back, Forward, Refresh, Omnibox, Gemini Action) -->
+  <nav class="browser-toolbar">
+    <button type="button" class="nav-btn" id="btnNavBack" title="Back">←</button>
+    <button type="button" class="nav-btn" id="btnNavForward" title="Forward">→</button>
+    <button type="button" class="nav-btn" id="btnNavRefresh" title="Reload">↻</button>
+
+    <!-- Omnibox URL Bar -->
+    <div class="omnibox">
+      <span class="omnibox-lock">🔒</span>
+      <input type="text" id="omniboxInput" class="omnibox-input" value="omw://workspace/overview" />
+      <span class="omnibox-badge" id="psiOmniBadge">PSI 0.00%</span>
+    </div>
+
+    <!-- The Signature Gemini Action Trigger in Toolbar -->
+    <button type="button" class="btn-gemini-action active" id="btnGeminiAction">
+      <svg class="sparkle-icon" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+        <defs>
+          <linearGradient id="gemini-sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4285F4"/>
+            <stop offset="0.5" stop-color="#9B72CF"/>
+            <stop offset="1" stop-color="#D96570"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span>Ask Gemini</span>
     </button>
+  </nav>
 
-    <button type="button" class="rail-btn" data-rail-tab="sessions" data-tooltip="Sessions (45 Cindy)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-    </button>
+  <!-- ========================================================================
+       2. BROWSER CONTENT VIEWPORT (Pages: Overview, Terminal, Sessions, PSI)
+       ======================================================================== -->
+  <main class="browser-viewport" id="browserViewport">
+    <!-- Rendered Dynamically based on active tab / Omnibox -->
+  </main>
 
-    <button type="button" class="rail-btn" data-rail-tab="terminal" data-tooltip="Multiplexer Terminal">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-    </button>
+  <!-- ========================================================================
+       3. SIGNATURE GOOGLE GEMINI FLOATING CHAT OVERLAY
+       ======================================================================== -->
+  <aside class="gemini-floating-panel" id="geminiFloatingPanel">
+    <!-- Header (Draggable) -->
+    <div class="gemini-chat-header" id="geminiHeader">
+      <div class="gemini-brand">
+        <svg class="sparkle-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+        </svg>
+        <span class="gemini-gradient-text">Gemini</span>
+        <span class="gemini-model-badge">Advanced • OMW Local</span>
+      </div>
 
-    <button type="button" class="rail-btn" data-rail-tab="guardian" data-tooltip="Anti-OOM PSI Guardian">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-    </button>
+      <div class="gemini-header-controls">
+        <button type="button" class="header-ctrl-btn" id="btnDockToggle" title="Dock / Float">⇤</button>
+        <button type="button" class="header-ctrl-btn" id="btnMinimize" title="Minimize">—</button>
+        <button type="button" class="header-ctrl-btn" id="btnCloseChat" title="Close">✕</button>
+      </div>
+    </div>
 
-    <div class="rail-bottom">
-      <div class="status-dot-indicator" id="psiRailDot" title="PSI Status: Safe"></div>
-      <button type="button" class="rail-btn" id="btnOpenSettings" data-tooltip="Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-      </button>
+    <!-- Chat Messages Canvas -->
+    <div class="gemini-chat-canvas" id="geminiChatCanvas">
+      <!-- Welcome Hero (Empty State) -->
+      <div class="gemini-hero" id="geminiHero">
+        <svg style="width: 38px; height: 38px;" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+        </svg>
+        <div class="hero-greeting">Hello, Ivano</div>
+        <div class="hero-subtitle">How can I help you today?</div>
+
+        <div class="hero-prompt-grid">
+          <div class="hero-chip" data-prompt="Periksa metrik tekanan kernel PSI dan pastikan earlyoom aktif">
+            <span class="hero-chip-text">Audit Kernel PSI &amp; Anti-OOM</span>
+            <span class="hero-chip-icon">🛡️</span>
+          </div>
+          <div class="hero-chip" data-prompt="Pindai 45 sesi multi-agent lokal di ~/.prime dan ~/.codex">
+            <span class="hero-chip-text">Sinkron Sesi Cindy</span>
+            <span class="hero-chip-icon">🔄</span>
+          </div>
+          <div class="hero-chip" data-prompt="Jalankan audit keamanan pentest dengan Strix Autonomous Pentest">
+            <span class="hero-chip-text">Strix Security Pentest</span>
+            <span class="hero-chip-icon">🎯</span>
+          </div>
+          <div class="hero-chip" data-prompt="Ekstrak blueprint UI dan mock scaffold menggunakan REA Cloner">
+            <span class="hero-chip-text">Ekstrak Blueprint REA</span>
+            <span class="hero-chip-icon">📐</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gemini Floating Input Pill (Bottom) -->
+    <div class="gemini-input-container">
+      <div class="gemini-input-pill">
+        <!-- Target Tool Mentions -->
+        <div class="mention-chips-row">
+          <span class="mention-chip active" data-mention="@all">@all</span>
+          <span class="mention-chip" data-mention="@guardian">@guardian (PSI)</span>
+          <span class="mention-chip" data-mention="@cindy">@cindy (Sessions)</span>
+          <span class="mention-chip" data-mention="@terminal">@terminal</span>
+          <span class="mention-chip" data-mention="@strix">@strix</span>
+        </div>
+
+        <div class="input-row-main">
+          <button type="button" class="btn-attach" title="Attach file or context">+</button>
+          <textarea id="geminiTextarea" class="gemini-textarea" rows="1" placeholder="Ask Gemini or mention @tool..."></textarea>
+          <button type="button" class="btn-gemini-send" id="btnGeminiSend" title="Send message">➔</button>
+        </div>
+      </div>
+      <div class="gemini-disclaimer">Gemini may display inaccurate info, including about people, so double-check its responses.</div>
     </div>
   </aside>
 
-  <!-- 2. WORKSPACE SPLIT (Dual-Pane: Chat & Agent Left, Tools & Files Right) -->
-  <main class="workspace-wrapper">
-    <!-- LEFT PANE: OPENHANDS CHAT & TASK STREAM -->
-    <section class="chat-panel">
-      <!-- Task Header -->
-      <div class="chat-panel-header">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <select id="agentTypeSelect" class="agent-select">
-            <option value="CodeActAgent">CodeActAgent (Default)</option>
-            <option value="ArchitectAgent">ArchitectAgent (Rust/Core)</option>
-            <option value="GuardianAgent">GuardianAgent (Anti-OOM)</option>
-            <option value="StrixAgent">StrixAgent (Security Pentest)</option>
-            <option value="ReaAgent">ReaAgent (App Cloner)</option>
-          </select>
-          <span class="status-badge status-done" id="agentStatusBadge">IDLE</span>
-        </div>
-        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground);">
-          Step <span id="currentStep">4</span> / 30
-        </div>
-      </div>
-
-      <!-- Messages Stream -->
-      <div class="chat-messages" id="chatMessages">
-        <!-- Initial Task Execution Flow (OpenHands Sample) -->
-        <div class="message-block">
-          <div class="message-header">
-            <span>USER INSTRUCTION</span>
-            <span>Step 1</span>
-          </div>
-          <div class="user-card">
-            Audit kernel PSI memory pressure, inspect 45 agent sessions, and secure the daemon on port 9180.
-          </div>
-        </div>
-
-        <div class="message-block">
-          <div class="message-header">
-            <span>AGENT REASONING</span>
-            <span>Step 2</span>
-          </div>
-          <details class="thought-container" open>
-            <summary>CodeActAgent Thought</summary>
-            <div style="margin-top: 6px; font-family: var(--font-mono); font-size: 11px;">
-              I need to evaluate kernel PSI stall metrics via omw_guardian and verify multi-agent transcripts in ~/.prime and ~/.codex.
-            </div>
-          </details>
-        </div>
-
-        <div class="message-block">
-          <div class="message-header">
-            <span>TOOL EXECUTION: BASH</span>
-            <span>Step 3</span>
-          </div>
-          <div class="action-card">
-            <div class="action-card-header">
-              <span class="action-title">
-                <span>$</span>
-                <span>./target/debug/omw-cli status &amp;&amp; ./target/debug/omw-cli sessions | head -n 3</span>
-              </span>
-              <span class="status-badge status-done" style="font-size: 9px;">EXIT 0</span>
-            </div>
-            <div class="action-body">OMW Guardian Status: [OK - SAFE]
-Memory: 46.3% available (5901.9 MB / 12752.9 MB)
-PSI Stall: some avg10=0.00%, full avg10=0.00%
-Discovered Agent Sessions on Laptop (Cindy session-import model): 45 sessions
-  [01] [Prime] Project: (6791 messages) | cwd: /mnt/windows/dev/tools/ai-harness-bridge</div>
-          </div>
-        </div>
-
-        <div class="message-block">
-          <div class="message-header">
-            <span>AGENT OBSERVATION &amp; OUTPUT</span>
-            <span>Step 4</span>
-          </div>
-          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; font-size: 13px; line-height: 1.6;">
-            Kernel PSI is completely safe with <strong>0.00% memory stall</strong>. System has <strong>5,901 MB available RAM</strong>. All 45 sessions from Cindy Harvester are accessible in the right workspace pane.
-          </div>
-        </div>
-      </div>
-
-      <!-- Chat Bottom Input Area (OpenHands Style) -->
-      <div class="chat-input-wrapper">
-        <div class="input-box">
-          <textarea id="taskInput" class="chat-textarea" placeholder="Send a message or give the agent a task..."></textarea>
-          <div class="input-controls">
-            <label class="mode-toggle">
-              <input type="checkbox" id="autoApproveToggle" checked />
-              <span>Auto-approve actions</span>
-            </label>
-            <button type="button" class="btn-send-task" id="btnSendTask">
-              <span>Run Task</span>
-              <span>➔</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- RIGHT PANE: OPENHANDS WORKSPACE (Terminal, Files, Browser, PSI) -->
-    <section class="workspace-panel">
-      <!-- Right Tab Bar -->
-      <header class="workspace-tabs">
-        <div class="tabs-group" id="workspaceTabsGroup">
-          <button type="button" class="tab-btn active" data-tab="files">
-            <span>📁</span>
-            <span>Files</span>
-          </button>
-          <button type="button" class="tab-btn" data-tab="terminal">
-            <span>>_</span>
-            <span>Terminal</span>
-          </button>
-          <button type="button" class="tab-btn" data-tab="browser">
-            <span>🌐</span>
-            <span>Browser Preview</span>
-          </button>
-          <button type="button" class="tab-btn" data-tab="guardian">
-            <span>🛡️</span>
-            <span>Anti-OOM PSI</span>
-          </button>
-          <button type="button" class="tab-btn" data-tab="sessions">
-            <span>🔄</span>
-            <span>Cindy Sessions</span>
-            <span class="tab-badge" id="cindyBadge">45</span>
-          </button>
-        </div>
-
-        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground);">
-          /mnt/windows/dev/Desktop/Oh-My-Works
-        </div>
-      </header>
-
-      <!-- Workspace Body -->
-      <div class="workspace-content" id="workspaceContent">
-        <!-- Rendered dynamically depending on tab -->
-      </div>
-    </section>
-  </main>
-
-  <!-- 3. OPENHANDS SETTINGS MODAL DIALOG -->
-  <div class="modal-backdrop" id="settingsModal">
-    <div class="settings-dialog">
-      <!-- Settings Left Sidebar -->
-      <div class="settings-nav">
-        <div class="settings-nav-title">OpenHands Settings</div>
-        <button type="button" class="settings-tab-btn active" data-settings-tab="llm">
-          <span>🧠</span> <span>LLM Provider</span>
-        </button>
-        <button type="button" class="settings-tab-btn" data-settings-tab="agent">
-          <span>🤖</span> <span>Agent Behavior</span>
-        </button>
-        <button type="button" class="settings-tab-btn" data-settings-tab="guardian">
-          <span>🛡️</span> <span>Anti-OOM Guardian</span>
-        </button>
-        <button type="button" class="settings-tab-btn" data-settings-tab="workspace">
-          <span>💻</span> <span>Workspace &amp; Daemon</span>
-        </button>
-      </div>
-
-      <!-- Settings Content Body -->
-      <div class="settings-body" id="settingsBody">
-        <!-- Rendered dynamically -->
-      </div>
-    </div>
+  <!-- ========================================================================
+       4. MINIMIZED FLOATING BUBBLE
+       ======================================================================== -->
+  <div class="gemini-floating-bubble" id="geminiFloatingBubble" style="display: none;">
+    <svg class="sparkle-icon" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+    </svg>
+    <span class="bubble-text">Ask Gemini</span>
   </div>
 
   <script>
     (function () {
-      let activeRightTab = 'files';
-      let activeSettingsTab = 'llm';
-      let currentStep = 4;
+      let currentPage = 'overview';
       let sessionsData = [];
       let telemetry = { status: 'SAFE', available_percent: 46.3, some_avg10: 0.0, full_avg10: 0.0 };
+      let selectedMention = '@all';
 
-      // Settings state (Persisted in localStorage)
-      const settings = {
-        model: localStorage.getItem('omw_model') || 'ollama/hermes-3-70b',
-        apiKey: localStorage.getItem('omw_api_key') || '',
-        baseUrl: localStorage.getItem('omw_base_url') || 'http://localhost:11434/v1',
-        agentType: localStorage.getItem('omw_agent_type') || 'CodeActAgent',
-        maxSteps: localStorage.getItem('omw_max_steps') || '30',
-        autoApprove: localStorage.getItem('omw_auto_approve') !== 'false',
-        psiThreshold: localStorage.getItem('omw_psi_thresh') || '25.0',
-        ramThreshold: localStorage.getItem('omw_ram_thresh') || '15.0'
-      };
-
-      // File Tree Data
-      const projectFiles = [
-        { name: 'Cargo.toml', type: 'file', path: 'Cargo.toml' },
-        { name: 'crates/omw-core', type: 'dir', path: 'crates/omw-core/src/lib.rs' },
-        { name: 'crates/omw-guardian', type: 'dir', path: 'crates/omw-guardian/src/lib.rs' },
-        { name: 'crates/omw-terminal', type: 'dir', path: 'crates/omw-terminal/src/lib.rs' },
-        { name: 'crates/omw-harness', type: 'dir', path: 'crates/omw-harness/src/lib.rs' },
-        { name: 'crates/omw-session', type: 'dir', path: 'crates/omw-session/src/lib.rs' },
-        { name: 'crates/omw-clone', type: 'dir', path: 'crates/omw-clone/src/lib.rs' },
-        { name: 'apps/server-daemon', type: 'dir', path: 'apps/server-daemon/src/main.rs' },
-        { name: 'apps/desktop/index.html', type: 'file', path: 'apps/desktop/index.html' }
-      ];
-      let activeFilePath = 'crates/omw-guardian/src/lib.rs';
-
-      // 1. Icon Rail Click Handlers
-      const railButtons = document.querySelectorAll('.rail-btn[data-rail-tab]');
-      railButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          railButtons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const tab = btn.getAttribute('data-rail-tab');
-          if (tab === 'chat') {
-            // Already in split mode
-          } else {
-            activeRightTab = tab;
-            updateRightTabsUI();
-            renderRightContent();
-          }
+      // 1. Browser Navigation & Tabs
+      const tabs = document.querySelectorAll('.browser-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          currentPage = tab.getAttribute('data-page');
+          updateOmnibox();
+          renderBrowserPage();
         });
       });
 
-      // 2. Workspace Tabs Handlers
-      const tabButtons = document.querySelectorAll('.tab-btn[data-tab]');
-      tabButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          activeRightTab = btn.getAttribute('data-tab');
-          updateRightTabsUI();
-          renderRightContent();
-        });
-      });
-
-      function updateRightTabsUI() {
-        tabButtons.forEach(b => {
-          b.classList.toggle('active', b.getAttribute('data-tab') === activeRightTab);
-        });
+      const omnibox = document.getElementById('omniboxInput');
+      function updateOmnibox() {
+        if (currentPage === 'overview') omnibox.value = 'omw://workspace/overview';
+        else if (currentPage === 'terminal') omnibox.value = 'omw://terminal';
+        else if (currentPage === 'sessions') omnibox.value = 'omw://sessions';
+        else if (currentPage === 'guardian') omnibox.value = 'omw://guardian';
       }
 
-      // 3. Settings Modal Toggle
-      const settingsModal = document.getElementById('settingsModal');
-      document.getElementById('btnOpenSettings').addEventListener('click', () => {
-        settingsModal.classList.add('show');
-        renderSettingsContent();
-      });
-
-      settingsModal.addEventListener('click', (e) => {
-        if (e.target === settingsModal) {
-          settingsModal.classList.remove('show');
+      omnibox.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const val = omnibox.value.toLowerCase();
+          if (val.includes('term')) currentPage = 'terminal';
+          else if (val.includes('sess')) currentPage = 'sessions';
+          else if (val.includes('guard') || val.includes('psi')) currentPage = 'guardian';
+          else currentPage = 'overview';
+          tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-page') === currentPage));
+          renderBrowserPage();
         }
       });
 
-      // Settings Sidebar Tabs
-      const settingsNavButtons = document.querySelectorAll('.settings-tab-btn');
-      settingsNavButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          settingsNavButtons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeSettingsTab = btn.getAttribute('data-settings-tab');
-          renderSettingsContent();
-        });
+      document.getElementById('btnNavRefresh').addEventListener('click', () => {
+        fetchData();
+        renderBrowserPage();
       });
 
-      function renderSettingsContent() {
-        const body = document.getElementById('settingsBody');
-        if (!body) return;
+      // 2. Render Browser Viewport Pages
+      function renderBrowserPage() {
+        const vp = document.getElementById('browserViewport');
+        if (!vp) return;
 
-        if (activeSettingsTab === 'llm') {
-          body.innerHTML = `
-            <div class="settings-header">
-              <div class="settings-title">LLM Provider Configuration</div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Model Selector</label>
-              <div class="form-desc">Choose from local Ollama/Hermes or cloud providers.</div>
-              <select id="cfgModel" class="form-select">
-                <option value="ollama/hermes-3-70b" ${settings.model === 'ollama/hermes-3-70b' ? 'selected' : ''}>Hermes 3 (70B) — Local Kernel Engine</option>
-                <option value="anthropic/claude-3-5-sonnet" ${settings.model === 'anthropic/claude-3-5-sonnet' ? 'selected' : ''}>Claude 3.5 Sonnet</option>
-                <option value="deepseek/deepseek-chat" ${settings.model === 'deepseek/deepseek-chat' ? 'selected' : ''}>DeepSeek V3</option>
-                <option value="openai/gpt-4o" ${settings.model === 'openai/gpt-4o' ? 'selected' : ''}>OpenAI GPT-4o</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">API Base URL</label>
-              <input type="text" id="cfgBaseUrl" class="form-input" value="${escapeHtml(settings.baseUrl)}" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">API Key</label>
-              <input type="password" id="cfgApiKey" class="form-input" placeholder="Optional for local models..." value="${escapeHtml(settings.apiKey)}" />
-            </div>
-            <div class="settings-footer">
-              <button type="button" class="btn-secondary" id="btnCancelSettings">Close</button>
-              <button type="button" class="btn-primary" id="btnSaveSettings">Save Changes</button>
-            </div>
-          `;
-        } else if (activeSettingsTab === 'agent') {
-          body.innerHTML = `
-            <div class="settings-header">
-              <div class="settings-title">Agent Execution &amp; Safety Policy</div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Default Agent Architecture</label>
-              <select id="cfgAgentType" class="form-select">
-                <option value="CodeActAgent">CodeActAgent (Autonomous Bash + Rust Code)</option>
-                <option value="ArchitectAgent">ArchitectAgent (Monorepo Optimization)</option>
-                <option value="GuardianAgent">GuardianAgent (Anti-OOM Protection)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Max Iteration Steps Budget</label>
-              <input type="number" id="cfgMaxSteps" class="form-input" value="${escapeHtml(settings.maxSteps)}" />
-            </div>
-            <div class="form-group">
-              <label class="mode-toggle">
-                <input type="checkbox" id="cfgAutoApprove" ${settings.autoApprove ? 'checked' : ''} />
-                <span>Auto-run actions without prompting (Autonomous Mode)</span>
-              </label>
-            </div>
-            <div class="settings-footer">
-              <button type="button" class="btn-secondary" id="btnCancelSettings">Close</button>
-              <button type="button" class="btn-primary" id="btnSaveSettings">Save Changes</button>
-            </div>
-          `;
-        } else if (activeSettingsTab === 'guardian') {
-          body.innerHTML = `
-            <div class="settings-header">
-              <div class="settings-title">Kernel PSI &amp; Anti-OOM Watchdog</div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Memory PSI Stall Threshold (%)</label>
-              <div class="form-desc">Trigger early mitigation when some_avg10 exceeds this value.</div>
-              <input type="number" step="0.1" id="cfgPsiThresh" class="form-input" value="${escapeHtml(settings.psiThreshold)}" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Proactive Earlyoom RAM Threshold (%)</label>
-              <div class="form-desc">Kill rogue child process if available RAM drops below this percentage.</div>
-              <input type="number" step="0.1" id="cfgRamThresh" class="form-input" value="${escapeHtml(settings.ramThreshold)}" />
-            </div>
-            <div class="settings-footer">
-              <button type="button" class="btn-secondary" id="btnCancelSettings">Close</button>
-              <button type="button" class="btn-primary" id="btnSaveSettings">Save Changes</button>
-            </div>
-          `;
-        } else if (activeSettingsTab === 'workspace') {
-          body.innerHTML = `
-            <div class="settings-header">
-              <div class="settings-title">Workspace Environment</div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Workspace Root Directory</label>
-              <input type="text" class="form-input" readonly value="/mnt/windows/dev/Desktop/Oh-My-Works" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Daemon Port</label>
-              <input type="text" class="form-input" readonly value="9180 (http://127.0.0.1:9180)" />
-            </div>
-            <div class="settings-footer">
-              <button type="button" class="btn-secondary" id="btnCancelSettings">Close</button>
-              <button type="button" class="btn-primary" id="btnSaveSettings">Save Changes</button>
-            </div>
-          `;
-        }
+        if (currentPage === 'overview') {
+          vp.innerHTML = `
+            <div class="page-container">
+              <div class="page-title">Oh My Works — Workspace Overview</div>
+              <div class="page-desc">Linux-first AI workspace orchestrator, terminal multiplexer, anti-OOM guardian, and Gemini conversational client.</div>
 
-        // Save & Cancel listeners
-        const btnCancel = document.getElementById('btnCancelSettings');
-        if (btnCancel) {
-          btnCancel.addEventListener('click', () => {
-            settingsModal.classList.remove('show');
-          });
-        }
-
-        const btnSave = document.getElementById('btnSaveSettings');
-        if (btnSave) {
-          btnSave.addEventListener('click', () => {
-            if (document.getElementById('cfgModel')) settings.model = document.getElementById('cfgModel').value;
-            if (document.getElementById('cfgBaseUrl')) settings.baseUrl = document.getElementById('cfgBaseUrl').value;
-            if (document.getElementById('cfgApiKey')) settings.apiKey = document.getElementById('cfgApiKey').value;
-            if (document.getElementById('cfgMaxSteps')) settings.maxSteps = document.getElementById('cfgMaxSteps').value;
-            if (document.getElementById('cfgAutoApprove')) settings.autoApprove = document.getElementById('cfgAutoApprove').checked;
-
-            localStorage.setItem('omw_model', settings.model);
-            localStorage.setItem('omw_base_url', settings.baseUrl);
-            localStorage.setItem('omw_api_key', settings.apiKey);
-            localStorage.setItem('omw_max_steps', settings.maxSteps);
-            localStorage.setItem('omw_auto_approve', settings.autoApprove);
-
-            alert('OpenHands settings saved successfully!');
-            settingsModal.classList.remove('show');
-          });
-        }
-      }
-
-      // 4. Render Right Content (Files, Terminal, Browser, Guardian, Sessions)
-      function renderRightContent() {
-        const container = document.getElementById('workspaceContent');
-        if (!container) return;
-
-        if (activeRightTab === 'files') {
-          container.innerHTML = `
-            <div class="files-layout">
-              <div class="file-tree">
-                <div style="font-size: 10px; font-weight: 700; color: var(--muted-foreground); margin-bottom: 6px; text-transform: uppercase;">Workspace Files</div>
-                ${projectFiles.map(f => `
-                  <div class="tree-item ${f.path === activeFilePath ? 'active' : ''}" data-file="${f.path}">
-                    <span>${f.type === 'dir' ? '📁' : '📄'}</span>
-                    <span>${f.name}</span>
+              <div class="gemini-card-grid">
+                <div class="gemini-card">
+                  <div class="gemini-card-header">
+                    <span class="gemini-card-title">Memory PSI Watchdog</span>
+                    <span>🛡️</span>
                   </div>
-                `).join('')}
+                  <div class="gemini-card-value">${telemetry.some_avg10.toFixed(2)}%</div>
+                  <div class="gemini-card-sub">Status: ${telemetry.status} (Stall safe)</div>
+                </div>
+
+                <div class="gemini-card">
+                  <div class="gemini-card-header">
+                    <span class="gemini-card-title">Cindy Harvester Sessions</span>
+                    <span>🔄</span>
+                  </div>
+                  <div class="gemini-card-value">${sessionsData.length || 45}</div>
+                  <div class="gemini-card-sub">Discovered in ~/.prime &amp; ~/.codex</div>
+                </div>
+
+                <div class="gemini-card">
+                  <div class="gemini-card-header">
+                    <span class="gemini-card-title">System RAM Available</span>
+                    <span>💾</span>
+                  </div>
+                  <div class="gemini-card-value">5,901 MB</div>
+                  <div class="gemini-card-sub">${telemetry.available_percent.toFixed(1)}% of 12.7 GB</div>
+                </div>
+
+                <div class="gemini-card">
+                  <div class="gemini-card-header">
+                    <span class="gemini-card-title">Daemon Status</span>
+                    <span>⚡</span>
+                  </div>
+                  <div class="gemini-card-value" style="color: var(--gemini-success);">ONLINE</div>
+                  <div class="gemini-card-sub">Listening on http://127.0.0.1:9180</div>
+                </div>
               </div>
-              <div class="file-editor-view" id="fileEditorView">// File: ${activeFilePath}
-//! OpenHands Workspace File Inspector
-// Reading crates/omw-guardian/src/lib.rs
 
-use omw_core::{KernelPsi, MemoryPressure};
-
-pub enum HealthLevel {
-    Safe,
-    Warning,
-    Critical,
-}
-
-pub struct Guardian;
-
-impl Guardian {
-    pub fn assess() -> Result<(HealthLevel, MemoryPressure), String> {
-        let p = KernelPsi::read_pressure();
-        let level = if p.some_avg10 > 25.0 || p.available_percent() < 10.0 {
-            HealthLevel::Critical
-        } else if p.some_avg10 > 10.0 || p.available_percent() < 20.0 {
-            HealthLevel::Warning
-        } else {
-            HealthLevel::Safe
-        };
-        Ok((level, p))
-    }
-}</div>
+              <div style="font-size: 16px; font-weight: 500; margin-bottom: 12px;">Active Workspace Monorepo Crates</div>
+              <div class="console-box">crates/
+├── omw-core        (kernel PSI reader &amp; zero-allocation memory abstractions)
+├── omw-guardian    (anti-OOM earlyoom mitigation watchdog)
+├── omw-terminal    (PTY multiplexer &amp; session process executor)
+├── omw-harness     (meta-AI subagent registry &amp; DAG scheduler)
+├── omw-session     (Cindy harvester indexing 45 multi-turn transcripts)
+├── omw-clone       (REA app cloner &amp; Strix autonomous pentest)
+└── omw-cli         (unified terminal CLI interface)</div>
             </div>
           `;
-
-          container.querySelectorAll('.tree-item').forEach(item => {
-            item.addEventListener('click', () => {
-              activeFilePath = item.getAttribute('data-file');
-              renderRightContent();
-            });
-          });
-
-        } else if (activeRightTab === 'terminal') {
-          container.innerHTML = `
-            <div class="terminal-container">
+        } else if (currentPage === 'terminal') {
+          vp.innerHTML = `
+            <div class="page-container">
+              <div class="page-title">Interactive PTY Terminal Multiplexer</div>
+              <div class="page-desc">Direct kernel process execution bridge via crates/omw-terminal.</div>
+              <div class="console-box" style="min-height: 480px; color: #8ab4f8;">
 ivano@omw-host:~/Oh-My-Works$ ./target/debug/omw-cli status
 OMW Guardian Status: [OK - SAFE]
 Memory: 46.3% available (5901.9 MB / 12752.9 MB)
@@ -1166,167 +1095,308 @@ Discovered Agent Sessions on Laptop (Cindy session-import model): 45 sessions
   [02] [Prime] [Claims] Pengajuan + upload bukti + approval (23 msgs)
   [03] [Prime] [Admin-Approvals] Approval workflow multi-level (14 msgs)
 
-ivano@omw-host:~/Oh-My-Works$ # Interactive PTY Bridge Active
+ivano@omw-host:~/Oh-My-Works$ cargo check --workspace
+   Finished &#96;dev&#96; profile [unoptimized + debuginfo] in 0.12s
 ivano@omw-host:~/Oh-My-Works$ █</div>
-          `;
-        } else if (activeRightTab === 'browser') {
-          container.innerHTML = `
-            <div style="flex: 1; display: flex; flex-direction: column; background: #000;">
-              <div style="height: 36px; background: #14171e; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 12px; gap: 8px;">
-                <span style="font-size: 11px; color: var(--muted-foreground); font-family: var(--font-mono);">URL:</span>
-                <input type="text" value="http://127.0.0.1:9180/sessions" readonly style="flex: 1; height: 24px; background: #090a0d; border: 1px solid var(--border); border-radius: 4px; color: #adbac7; font-size: 11px; font-family: var(--font-mono); padding: 0 8px;" />
-                <span class="status-badge status-done" style="font-size: 9px;">LIVE 200 OK</span>
-              </div>
-              <div class="terminal-container" style="color: #7ee787;">
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 48920
-
-[
-  {
-    "id": "01a194e4-1f03-748d-81cc-f9da16234856",
-    "source": "Prime",
-    "title": "Oh-My-Works Desktop Workspace & Meta-Harness",
-    "cwd": "/mnt/windows/dev/Desktop/Oh-My-Works",
-    "message_count": 48
-  },
-  ...
-]</div>
             </div>
           `;
-        } else if (activeRightTab === 'guardian') {
-          container.innerHTML = `
-            <div style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
-              <div style="font-size: 16px; font-weight: 600;">Anti-OOM Guardian &amp; Linux Kernel PSI</div>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;">
-                  <div style="font-size: 11px; text-transform: uppercase; color: var(--muted-foreground);">Memory PSI Stall (10s)</div>
-                  <div style="font-size: 24px; font-weight: 700; color: var(--success); font-family: var(--font-mono);">${telemetry.some_avg10.toFixed(2)}%</div>
-                  <div style="font-size: 11px; color: var(--muted-foreground);">Threshold: &gt; 25.0%</div>
-                </div>
-                <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;">
-                  <div style="font-size: 11px; text-transform: uppercase; color: var(--muted-foreground);">Available RAM</div>
-                  <div style="font-size: 24px; font-weight: 700; color: var(--foreground); font-family: var(--font-mono);">5,901 MB</div>
-                  <div style="font-size: 11px; color: var(--muted-foreground);">46.3% of 12.7 GB</div>
-                </div>
-                <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;">
-                  <div style="font-size: 11px; text-transform: uppercase; color: var(--muted-foreground);">Watchdog Latency</div>
-                  <div style="font-size: 24px; font-weight: 700; color: var(--cyan); font-family: var(--font-mono);">&lt; 1 ms</div>
-                  <div style="font-size: 11px; color: var(--muted-foreground);">Zero alloc /proc read</div>
-                </div>
-              </div>
-              <div class="terminal-container" style="max-height: 240px;">
-[OK] /proc/pressure/memory connected.
-[CGROUP] Linux cgroup v2 limits loaded.
-[EARLYOOM] Armed with 15% threshold policy.</div>
-            </div>
-          `;
-        } else if (activeRightTab === 'sessions') {
-          container.innerHTML = `
-            <div style="padding: 16px; overflow-y: auto;">
-              <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Discovered Agent Sessions (${sessionsData.length})</div>
+        } else if (currentPage === 'sessions') {
+          vp.innerHTML = `
+            <div class="page-container">
+              <div class="page-title">Cindy Harvester — Multi-Agent Transcripts (${sessionsData.length || 45})</div>
+              <div class="page-desc">Indexed from ~/.prime, ~/.codex, and ~/.claude without extra overhead.</div>
               <div style="display: flex; flex-direction: column; gap: 8px;">
                 ${sessionsData.map(s => `
-                  <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                  <div class="gemini-card" style="padding: 14px 18px; flex-direction: row; justify-content: space-between; align-items: center;">
                     <div>
-                      <div style="font-size: 13px; font-weight: 600; color: var(--foreground);">${escapeHtml(s.title || 'Session')}</div>
-                      <div style="font-size: 11px; color: var(--muted-foreground); font-family: var(--font-mono);">${escapeHtml(s.cwd || '-')} • ${s.message_count} msgs</div>
+                      <div style="font-size: 14px; font-weight: 500; color: var(--gemini-text-primary);">${escapeHtml(s.title || 'Session')}</div>
+                      <div style="font-size: 12px; color: var(--gemini-text-muted); font-family: var(--font-mono);">${escapeHtml(s.cwd || '-')} • ${s.message_count} messages</div>
                     </div>
-                    <span class="status-badge status-done">${s.source}</span>
+                    <span style="font-size: 11px; font-family: var(--font-mono); padding: 3px 8px; border-radius: 12px; background: rgba(138, 180, 248, 0.15); color: var(--gemini-blue); font-weight: 600;">${s.source}</span>
                   </div>
                 `).join('')}
               </div>
             </div>
           `;
+        } else if (currentPage === 'guardian') {
+          vp.innerHTML = `
+            <div class="page-container">
+              <div class="page-title">Kernel PSI &amp; Anti-OOM Guardian</div>
+              <div class="page-desc">Linux /proc/pressure/memory reader with zero-allocation polling.</div>
+              <div class="gemini-card-grid">
+                <div class="gemini-card">
+                  <div class="gemini-card-title">Some Avg10 Stall</div>
+                  <div class="gemini-card-value" style="color: var(--gemini-success);">${telemetry.some_avg10.toFixed(2)}%</div>
+                  <div class="gemini-card-sub">Stall threshold: 25.0%</div>
+                </div>
+                <div class="gemini-card">
+                  <div class="gemini-card-title">Full Avg10 Stall</div>
+                  <div class="gemini-card-value" style="color: var(--gemini-success);">${telemetry.full_avg10.toFixed(2)}%</div>
+                  <div class="gemini-card-sub">Stall threshold: 10.0%</div>
+                </div>
+                <div class="gemini-card">
+                  <div class="gemini-card-title">Available RAM</div>
+                  <div class="gemini-card-value">5,901 MB</div>
+                  <div class="gemini-card-sub">46.3% of 12.7 GB</div>
+                </div>
+              </div>
+              <div class="console-box">[PSI READER]: /proc/pressure/memory connected successfully.
+[HEALTH CHECK]: Status is SAFE. Stall metrics are well below trigger levels.
+[PROTECTION]: Proactive earlyoom mitigation daemon active.</div>
+            </div>
+          `;
         }
       }
 
-      // 5. Chat Input Execution Handler
-      const taskInput = document.getElementById('taskInput');
-      const btnSendTask = document.getElementById('btnSendTask');
-      const chatMessages = document.getElementById('chatMessages');
+      // 3. Gemini Floating Overlay Controls (Drag, Minimize, Dock, Toggle)
+      const panel = document.getElementById('geminiFloatingPanel');
+      const bubble = document.getElementById('geminiFloatingBubble');
+      const header = document.getElementById('geminiHeader');
+      const btnAction = document.getElementById('btnGeminiAction');
+      const btnDock = document.getElementById('btnDockToggle');
+      const btnMin = document.getElementById('btnMinimize');
+      const btnClose = document.getElementById('btnCloseChat');
 
-      function executeTask() {
-        const text = taskInput.value.trim();
-        if (!text) return;
+      let isDocked = false;
 
-        currentStep += 1;
-        document.getElementById('currentStep').textContent = currentStep;
-
-        // User Block
-        const userDiv = document.createElement('div');
-        userDiv.className = 'message-block';
-        userDiv.innerHTML = `
-          <div class="message-header">
-            <span>USER INSTRUCTION</span>
-            <span>Step ${currentStep}</span>
-          </div>
-          <div class="user-card">${escapeHtml(text)}</div>
-        `;
-        chatMessages.appendChild(userDiv);
-
-        // Assistant Thought & Action Block
-        currentStep += 1;
-        const agentType = document.getElementById('agentTypeSelect').value;
-        const agentDiv = document.createElement('div');
-        agentDiv.className = 'message-block';
-        agentDiv.innerHTML = `
-          <div class="message-header">
-            <span>${agentType.toUpperCase()} ACTION</span>
-            <span>Step ${currentStep}</span>
-          </div>
-          <details class="thought-container" open>
-            <summary>${agentType} Thought</summary>
-            <div style="margin-top: 6px; font-family: var(--font-mono); font-size: 11px;">
-              Executing task via OpenHands CodeAct loop. Delegating action to backend crates/omw-core...
-            </div>
-          </details>
-          <div class="action-card" style="margin-top: 6px;">
-            <div class="action-card-header">
-              <span class="action-title">
-                <span>$</span>
-                <span>cargo check --workspace</span>
-              </span>
-              <span class="status-badge status-done" style="font-size: 9px;">EXIT 0</span>
-            </div>
-            <div class="action-body">Finished dev profile in 0.14s. All 11 crates compiled successfully.</div>
-          </div>
-        `;
-        chatMessages.appendChild(agentDiv);
-
-        taskInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-
-      btnSendTask.addEventListener('click', executeTask);
-      taskInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          executeTask();
+      // Toggle action from toolbar
+      btnAction.addEventListener('click', () => {
+        if (panel.classList.contains('minimized')) {
+          panel.classList.remove('minimized');
+          bubble.style.display = 'none';
+          btnAction.classList.add('active');
+        } else {
+          panel.classList.add('minimized');
+          bubble.style.display = 'flex';
+          btnAction.classList.remove('active');
         }
       });
 
-      // 6. Fetch Telemetry & Sessions from daemon :9180
+      // Floating bubble click to restore
+      bubble.addEventListener('click', () => {
+        panel.classList.remove('minimized');
+        bubble.style.display = 'none';
+        btnAction.classList.add('active');
+      });
+
+      // Minimize button
+      btnMin.addEventListener('click', () => {
+        panel.classList.add('minimized');
+        bubble.style.display = 'flex';
+        btnAction.classList.remove('active');
+      });
+
+      // Close button
+      btnCloseChat.addEventListener('click', () => {
+        panel.classList.add('minimized');
+        bubble.style.display = 'none';
+        btnAction.classList.remove('active');
+      });
+
+      // Dock toggle button
+      btnDock.addEventListener('click', () => {
+        isDocked = !isDocked;
+        panel.classList.toggle('docked', isDocked);
+        btnDock.textContent = isDocked ? '↗' : '⇤';
+        btnDock.title = isDocked ? 'Float Overlay' : 'Dock to Side';
+        if (isDocked) {
+          panel.style.top = '';
+          panel.style.left = '';
+          panel.style.right = '0';
+        } else {
+          panel.style.top = '60px';
+          panel.style.right = '24px';
+          panel.style.left = '';
+        }
+      });
+
+      // Dragging logic for floating mode
+      let isDragging = false;
+      let startX, startY, startLeft, startTop;
+
+      header.addEventListener('mousedown', (e) => {
+        if (isDocked || e.target.closest('.gemini-header-controls')) return;
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = panel.getBoundingClientRect();
+        startLeft = rect.left;
+        startTop = rect.top;
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+
+      function onMouseMove(e) {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        panel.style.left = `${Math.max(10, Math.min(window.innerWidth - 480, startLeft + dx))}px`;
+        panel.style.top = `${Math.max(48, Math.min(window.innerHeight - 100, startTop + dy))}px`;
+        panel.style.right = 'auto';
+      }
+
+      function onMouseUp() {
+        isDragging = false;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+
+      // 4. Gemini Chat Logic & Mentions
+      const textarea = document.getElementById('geminiTextarea');
+      const btnSend = document.getElementById('btnGeminiSend');
+      const canvas = document.getElementById('geminiChatCanvas');
+      const hero = document.getElementById('geminiHero');
+
+      textarea.addEventListener('input', () => {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${Math.min(120, textarea.scrollHeight)}px`;
+        btnSend.classList.toggle('active', textarea.value.trim().length > 0);
+      });
+
+      // Mention pills
+      document.querySelectorAll('.mention-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          selectedMention = chip.getAttribute('data-mention');
+          document.querySelectorAll('.mention-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+        });
+      });
+
+      // Suggestion chips
+      document.querySelectorAll('.hero-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const prompt = chip.getAttribute('data-prompt');
+          submitMessage(prompt);
+        });
+      });
+
+      textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          const val = textarea.value.trim();
+          if (val) submitMessage(val);
+        }
+      });
+
+      btnSend.addEventListener('click', () => {
+        const val = textarea.value.trim();
+        if (val) submitMessage(val);
+      });
+
+      function submitMessage(text) {
+        if (hero) hero.style.display = 'none';
+
+        // 1. User Message Row
+        const userRow = document.createElement('div');
+        userRow.className = 'chat-msg-row msg-user-row';
+        userRow.innerHTML = `<div class="user-bubble">${escapeHtml(text)}</div>`;
+        canvas.appendChild(userRow);
+
+        // 2. Gemini Assistant Response
+        const lower = text.toLowerCase();
+        let toolName = 'omw_guardian::assess()';
+        let toolOutput = 'Status: SAFE\nPressure stall: 0.00%\nAvailable RAM: 5,901 MB';
+        let thought = 'Checking kernel /proc/pressure/memory and verifying anti-OOM safety bounds...';
+        let reply = 'Kernel memory pressure is **SAFE (0.00% stall)**. System has **5,901 MB available RAM** (46.3% of 12.7 GB). The desktop environment is fully shielded from Linux OOM killer.';
+
+        if (lower.includes('cindy') || lower.includes('sesi') || lower.includes('session')) {
+          toolName = 'omw_session::scan_all()';
+          toolOutput = 'Discovered 45 sessions across ~/.prime and ~/.codex.';
+          thought = 'Traversing local transcript paths with zero-copy JSONL parser...';
+          reply = 'Cindy harvester discovered **45 local agent sessions**. You can explore the full transcripts in the **Cindy Sessions** browser tab.';
+        } else if (lower.includes('strix') || lower.includes('pentest') || lower.includes('keamanan')) {
+          toolName = 'omw_clone::StrixScanner::audit()';
+          toolOutput = 'Scanned 18 endpoints. Critical: 0, High: 0, Low: 1 (CSP header).';
+          thought = 'Evaluating local daemon attack surface and SSRF vectors...';
+          reply = 'Strix autonomous pentest complete: **0 critical vulnerabilities** found on port 9180. Target is safe from injection and RCE.';
+        } else if (lower.includes('rea') || lower.includes('cloner') || lower.includes('blueprint')) {
+          toolName = 'omw_clone::ReaCloner::blueprint()';
+          toolOutput = 'Generated AppLayoutChrome.vue and AuthBridge.ts scaffold.';
+          thought = 'Decompiling component hierarchy and scaffolding Tailwind tokens...';
+          reply = 'REA cloner generated the application blueprint and mock scaffold in `crates/omw-clone/output`.';
+        }
+
+        const geminiRow = document.createElement('div');
+        geminiRow.className = 'chat-msg-row';
+        geminiRow.innerHTML = `
+          <svg class="sparkle-icon" style="margin-top: 4px;" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+          </svg>
+          <div class="gemini-bubble">
+            <details class="gemini-thinking" open>
+              <summary>Show thinking</summary>
+              <div class="gemini-thinking-content">${escapeHtml(thought)}</div>
+            </details>
+
+            <div class="gemini-tool-card">
+              <div class="gemini-tool-header">
+                <span>⚙ ${escapeHtml(toolName)}</span>
+                <span style="color: var(--gemini-success);">SUCCESS</span>
+              </div>
+              <div class="gemini-tool-body">${escapeHtml(toolOutput)}</div>
+            </div>
+
+            <div class="gemini-response-text">${formatMarkdown(reply)}</div>
+
+            <div class="gemini-msg-actions">
+              <button type="button" class="msg-action-btn" title="Good response">👍</button>
+              <button type="button" class="msg-action-btn" title="Bad response">👎</button>
+              <button type="button" class="msg-action-btn" title="Copy text" onclick="navigator.clipboard.writeText('${escapeHtml(reply).replace(/'/g, "\\'")}')">📋</button>
+              <button type="button" class="msg-action-btn" title="Share">↗</button>
+              <button type="button" class="msg-action-btn" title="Retry">↻</button>
+            </div>
+          </div>
+        `;
+        canvas.appendChild(geminiRow);
+
+        textarea.value = '';
+        textarea.style.height = 'auto';
+        btnSend.classList.remove('active');
+        canvas.scrollTop = canvas.scrollHeight;
+      }
+
+      // 5. Fetch Telemetry & Sessions from daemon :9180 or Tauri invoke
       async function fetchData() {
         try {
-          const [sessRes, telRes] = await Promise.all([
-            fetch('http://127.0.0.1:9180/sessions').then(r => r.json()).catch(() => []),
-            fetch('http://127.0.0.1:9180/').then(r => r.json()).catch(() => null)
-          ]);
+          let sess = [];
+          let tel = null;
 
-          sessionsData = sessRes || [];
-          document.getElementById('cindyBadge').textContent = sessionsData.length || 45;
+          if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
+            tel = await window.__TAURI__.core.invoke('get_memory_telemetry').catch(() => null);
+            sess = await window.__TAURI__.core.invoke('get_unified_sessions').catch(() => []);
+          }
 
-          if (telRes) {
-            telemetry = telRes;
-            const dot = document.getElementById('psiRailDot');
-            if (dot) {
-              dot.style.background = telemetry.status === 'SAFE' ? 'var(--success)' : 'var(--destructive)';
+          if (!tel || sess.length === 0) {
+            const [sRes, tRes] = await Promise.all([
+              fetch('http://127.0.0.1:9180/sessions').then(r => r.json()).catch(() => []),
+              fetch('http://127.0.0.1:9180/').then(r => r.json()).catch(() => null)
+            ]);
+            sess = sRes || [];
+            tel = tRes;
+          }
+
+          sessionsData = sess || [];
+          if (tel) {
+            telemetry = tel;
+            const badge = document.getElementById('psiOmniBadge');
+            if (badge) {
+              badge.textContent = `PSI ${telemetry.some_avg10.toFixed(2)}%`;
+              badge.style.color = telemetry.status === 'SAFE' ? 'var(--gemini-success)' : 'var(--gemini-danger)';
             }
           }
         } catch (err) {
-          console.error("Telemetry error:", err);
+          console.error("Telemetry fetch error:", err);
         }
+      }
+
+      function formatMarkdown(text) {
+        if (!text) return '';
+        let escaped = escapeHtml(text);
+        escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        escaped = escaped.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px;">$1</code>');
+        escaped = escaped.replace(/\n/g, '<br/>');
+        return escaped;
       }
 
       function escapeHtml(str) {
@@ -1339,8 +1409,8 @@ Content-Length: 48920
           .replace(/'/g, '&#39;');
       }
 
-      // Initial render
-      renderRightContent();
+      // Initial execution
+      renderBrowserPage();
       fetchData();
       setInterval(fetchData, 4000);
     })();

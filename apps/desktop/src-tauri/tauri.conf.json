@@ -11,11 +11,13 @@
   "app": {
     "windows": [
       {
-        "title": "Oh My Works",
-        "width": 800,
-        "height": 600,
+        "title": "Gemini Browser \u2014 Oh My Works",
+        "width": 1280,
+        "height": 820,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "minWidth": 960,
+        "minHeight": 640
       }
     ],
     "security": {
