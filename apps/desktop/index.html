@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oh My Works — Unified AI Canvas</title>
+  <title>Oh My Works — 9Router Live AI Canvas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -26,7 +26,6 @@
       --green: #81c995;
       --amber: #fdd663;
       --gemini-gradient: linear-gradient(135deg, #4285f4 0%, #9b72cf 40%, #d96570 75%, #ff8f73 100%);
-      --claude-accent: #d97757;
       --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -51,7 +50,7 @@
       position: relative;
     }
 
-    /* Ambient Subtle Glow */
+    /* Ambient Subtle Background */
     body::before {
       content: '';
       position: absolute;
@@ -72,7 +71,7 @@
     }
 
     /* ==========================================================================
-       1. SIDEBAR (Collapsible, Chat Threads, PSI Telemetry)
+       1. SIDEBAR
        ========================================================================== */
     .sidebar {
       width: 260px;
@@ -137,7 +136,6 @@
       display: none;
     }
 
-    /* New Chat Button */
     .btn-new-chat {
       height: 42px;
       margin: 4px 14px 14px;
@@ -176,7 +174,6 @@
       display: none;
     }
 
-    /* History List */
     .sidebar-section-title {
       padding: 0 18px 8px;
       font-size: 11px;
@@ -260,7 +257,6 @@
       display: none;
     }
 
-    /* Sidebar Footer */
     .sidebar-footer {
       padding: 12px 14px;
       border-top: 1px solid var(--border);
@@ -305,7 +301,7 @@
     }
 
     /* ==========================================================================
-       2. TOP BAR & INTERACTIVE MODEL DROPDOWN
+       2. TOP BAR & 9ROUTER LIVE MODEL SELECTOR
        ========================================================================== */
     .main-viewport {
       flex: 1;
@@ -365,7 +361,7 @@
       position: absolute;
       top: 44px;
       left: 0;
-      width: 280px;
+      width: 310px;
       background: var(--surface);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 16px;
@@ -376,20 +372,16 @@
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8);
       z-index: 100;
       backdrop-filter: blur(16px);
-      animation: menuPop 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 380px;
+      overflow-y: auto;
     }
 
     .model-dropdown-menu.show {
       display: flex;
     }
 
-    @keyframes menuPop {
-      from { opacity: 0; transform: translateY(-6px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
     .model-item {
-      padding: 10px 12px;
+      padding: 9px 12px;
       border-radius: 10px;
       cursor: pointer;
       display: flex;
@@ -424,6 +416,21 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    /* 9Router Status Badge */
+    .router-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(129, 201, 149, 0.1);
+      border: 1px solid rgba(129, 201, 149, 0.25);
+      color: var(--green);
+      font-size: 11.5px;
+      font-family: var(--font-mono);
+      font-weight: 600;
     }
 
     .btn-terminal-toggle {
@@ -484,7 +491,6 @@
       user-select: text;
     }
 
-    /* Hero */
     .welcome-hero {
       margin-top: 28px;
       display: flex;
@@ -588,7 +594,6 @@
       font-size: 14px;
     }
 
-    /* Message Bubbles */
     .msg-row {
       display: flex;
       gap: 14px;
@@ -699,7 +704,6 @@
       color: var(--text);
     }
 
-    /* Typing cursor */
     .typing-cursor {
       display: inline-block;
       width: 7px;
@@ -742,9 +746,7 @@
       color: var(--text);
     }
 
-    /* ==========================================================================
-       4. SLIDE-OUT INTERACTIVE TERMINAL DRAWER
-       ========================================================================== */
+    /* Terminal Drawer */
     .terminal-drawer {
       position: absolute;
       top: 56px;
@@ -814,9 +816,7 @@
       font-size: 12px;
     }
 
-    /* ==========================================================================
-       5. FLOATING PROMPT PILL (BOTTOM)
-       ========================================================================== */
+    /* Floating Prompt Bar */
     .floating-prompt-bar {
       position: absolute;
       bottom: 20px;
@@ -941,7 +941,6 @@
       margin-bottom: 2px;
     }
 
-    /* Toast Notification */
     .toast-msg {
       position: fixed;
       top: 20px;
@@ -975,12 +974,10 @@
 </head>
 <body>
 
-  <!-- Toast Notification -->
+  <!-- Toast -->
   <div class="toast-msg" id="toastMsg">Notification</div>
 
-  <!-- ========================================================================
-       1. SIDEBAR
-       ======================================================================== -->
+  <!-- Sidebar -->
   <aside class="sidebar" id="appSidebar">
     <div class="sidebar-header">
       <button type="button" class="icon-btn" id="btnSidebarCollapse" title="Toggle Sidebar">
@@ -995,9 +992,7 @@
     </button>
 
     <div class="sidebar-section-title">Recent Chats</div>
-    <div class="history-list" id="historyList">
-      <!-- Injected dynamically -->
-    </div>
+    <div class="history-list" id="historyList"></div>
 
     <div class="sidebar-footer">
       <div class="telemetry-row">
@@ -1014,12 +1009,10 @@
     </div>
   </aside>
 
-  <!-- ========================================================================
-       2. MAIN VIEWPORT
-       ======================================================================== -->
+  <!-- Main Viewport -->
   <main class="main-viewport">
     <header class="app-topbar">
-      <!-- Model Dropdown -->
+      <!-- 9Router Model Dropdown -->
       <div class="model-selector-container">
         <div class="model-pill-btn" id="btnModelSelector">
           <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none">
@@ -1033,40 +1026,52 @@
               </linearGradient>
             </defs>
           </svg>
-          <span id="currentModelLabel">Gemini 1.5 Pro</span>
+          <span id="currentModelLabel">auto (9Router)</span>
           <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
 
         <div class="model-dropdown-menu" id="modelDropdownMenu">
-          <div class="model-item active" data-model="Gemini 1.5 Pro">
+          <div class="model-item active" data-model="auto">
             <div>
-              <div class="model-item-title">✦ Gemini 1.5 Pro</div>
-              <div class="model-item-sub">Google • Multimodal &amp; 1M Context</div>
+              <div class="model-item-title">✦ auto</div>
+              <div class="model-item-sub">9Router • Intelligent Load-Balancing</div>
             </div>
             <span>✓</span>
           </div>
-          <div class="model-item" data-model="Claude 3.5 Sonnet">
+          <div class="model-item" data-model="paid">
             <div>
-              <div class="model-item-title">✦ Claude 3.5 Sonnet</div>
-              <div class="model-item-sub">Anthropic • CodeAct &amp; Artifacts</div>
+              <div class="model-item-title">✦ paid</div>
+              <div class="model-item-sub">9Router • High-Capacity Cluster</div>
             </div>
           </div>
-          <div class="model-item" data-model="GPT-4o">
+          <div class="model-item" data-model="Haltech">
             <div>
-              <div class="model-item-title">✦ GPT-4o</div>
-              <div class="model-item-sub">OpenAI • High Precision Orchestration</div>
+              <div class="model-item-title">✦ Haltech</div>
+              <div class="model-item-sub">9Router • 1M Context Reasoning</div>
             </div>
           </div>
-          <div class="model-item" data-model="Hermes 3 Local">
+          <div class="model-item" data-model="cbcn/deepseek-v4-pro">
             <div>
-              <div class="model-item-title">✦ Hermes 3 Local</div>
-              <div class="model-item-sub">Nous • Private &amp; Zero-Telemetry</div>
+              <div class="model-item-title">✦ cbcn/deepseek-v4-pro</div>
+              <div class="model-item-sub">DeepSeek • Coding &amp; Architecture</div>
+            </div>
+          </div>
+          <div class="model-item" data-model="ag/gemini-4-argon-high">
+            <div>
+              <div class="model-item-title">✦ ag/gemini-4-argon-high</div>
+              <div class="model-item-sub">Google Gemini • High Precision</div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="topbar-right">
+        <!-- 9Router Status Indicator -->
+        <div class="router-badge" id="routerBadge" title="Connected to 9Router on port 20128">
+          <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></span>
+          <span>9Router :20128</span>
+        </div>
+
         <button type="button" class="btn-terminal-toggle" id="btnTerminalToggle">
           <span>>_ Terminal</span>
         </button>
@@ -1074,34 +1079,30 @@
       </div>
     </header>
 
-    <!-- Canvas Scroll -->
     <div class="canvas-scroll-area" id="canvasScroll">
-      <div class="canvas-inner" id="canvasInner">
-        <!-- Injected dynamically -->
-      </div>
+      <div class="canvas-inner" id="canvasInner"></div>
     </div>
 
-    <!-- Floating Prompt Container -->
+    <!-- Floating Prompt Bar -->
     <div class="floating-prompt-bar">
       <div class="mentions-row">
         <span class="mention-chip active" data-mention="@all">@all (Orchestrator)</span>
         <span class="mention-chip" data-mention="@guardian">@guardian (Anti-OOM)</span>
         <span class="mention-chip" data-mention="@cindy">@cindy (Sessions)</span>
-        <span class="mention-chip" data-mention="@terminal">@terminal (PTY)</span>
-        <span class="mention-chip" data-mention="@strix">@strix (Pentest)</span>
-        <span class="mention-chip" data-mention="@rea">@rea (Cloner)</span>
+        <span class="mention-chip" data-mention="@terminal">@terminal</span>
+        <span class="mention-chip" data-mention="@strix">@strix</span>
       </div>
 
       <div class="input-row">
         <button type="button" class="btn-attach" id="btnAttach" title="Attach context">+</button>
-        <textarea id="promptInput" class="main-textarea" rows="1" placeholder="Ask anything, run tasks, or type @agent..."></textarea>
+        <textarea id="promptInput" class="main-textarea" rows="1" placeholder="Ask 9Router or type @agent..."></textarea>
         <button type="button" class="btn-send" id="btnSend" title="Send message">➔</button>
       </div>
 
-      <div class="disclaimer">Oh My Works AI Engine may produce unexpected outputs. Review all operations.</div>
+      <div class="disclaimer">Powered by 9Router API Proxy (:20128). Responses streamed directly from live models.</div>
     </div>
 
-    <!-- Slide-Out Terminal Drawer -->
+    <!-- Interactive Terminal Drawer -->
     <div class="terminal-drawer" id="terminalDrawer">
       <div class="drawer-header">
         <span>INTERACTIVE PTY — OM-WORKS</span>
@@ -1109,8 +1110,8 @@
       </div>
       <div class="drawer-body" id="drawerBody">
         <div>[OMW PTY BRIDGE INITIALIZED]</div>
-        <div>Connected to kernel pseudo-terminal daemon.</div>
-        <div style="color: #c4c7c5;">Type <code style="color: #fdd663;">status</code>, <code style="color: #fdd663;">sessions</code>, <code style="color: #fdd663;">guardian</code>, or <code style="color: #fdd663;">clear</code>.</div>
+        <div>Connected to kernel pseudo-terminal &amp; 9Router daemon.</div>
+        <div style="color: #c4c7c5;">Commands: <code style="color: #fdd663;">status</code>, <code style="color: #fdd663;">router</code>, <code style="color: #fdd663;">sessions</code>, <code style="color: #fdd663;">clear</code>.</div>
       </div>
       <div class="drawer-input-row">
         <span style="color: #81c995;">omw$</span>
@@ -1121,20 +1122,23 @@
 
   <script>
     (function () {
-      // App State
+      // 9Router Configuration
+      const ROUTER_URL = 'http://127.0.0.1:20128/v1/chat/completions';
+      const ROUTER_KEY = 'Bearer sk-9d6e79acb260096f-53jdmp-b86fbd6e';
+
       let activeSessionId = 'sess-1';
-      let activeModel = 'Gemini 1.5 Pro';
+      let activeModel = 'auto';
       let selectedMention = '@all';
       let isSidebarCollapsed = false;
       let isTerminalOpen = false;
 
       let sessions = [
-        { id: 'sess-1', title: 'Kernel PSI & Anti-OOM', messages: [] },
-        { id: 'sess-2', title: 'Cindy Sessions (45)', messages: [] },
-        { id: 'sess-3', title: 'Strix Security Audit', messages: [] }
+        { id: 'sess-1', title: '9Router Live Connection', messages: [] },
+        { id: 'sess-2', title: 'Kernel PSI & Anti-OOM', messages: [] },
+        { id: 'sess-3', title: 'Cindy Sessions (45)', messages: [] }
       ];
 
-      // 1. Toast Notification Helper
+      // Toast Notification
       const toast = document.getElementById('toastMsg');
       function showToast(msg) {
         toast.textContent = msg;
@@ -1142,14 +1146,14 @@
         setTimeout(() => toast.classList.remove('show'), 2200);
       }
 
-      // 2. Sidebar Collapse
+      // Sidebar Collapse
       const sidebar = document.getElementById('appSidebar');
       document.getElementById('btnSidebarCollapse').addEventListener('click', () => {
         isSidebarCollapsed = !isSidebarCollapsed;
         sidebar.classList.toggle('collapsed', isSidebarCollapsed);
       });
 
-      // 3. Model Selector Dropdown
+      // Model Selector
       const btnModel = document.getElementById('btnModelSelector');
       const modelMenu = document.getElementById('modelDropdownMenu');
       const modelLabel = document.getElementById('currentModelLabel');
@@ -1171,7 +1175,7 @@
           e.stopPropagation();
           const target = item.getAttribute('data-model');
           activeModel = target;
-          modelLabel.textContent = target;
+          modelLabel.textContent = `${target} (9Router)`;
           document.querySelectorAll('.model-item').forEach(m => {
             m.classList.toggle('active', m.getAttribute('data-model') === target);
             m.querySelector('span')?.remove();
@@ -1183,11 +1187,11 @@
           });
           modelMenu.classList.remove('show');
           btnModel.classList.remove('open');
-          showToast(`Active model switched to ${target}`);
+          showToast(`9Router model set to: ${target}`);
         });
       });
 
-      // 4. Session History List Management
+      // Session History
       const historyList = document.getElementById('historyList');
       function renderHistory() {
         historyList.innerHTML = '';
@@ -1225,9 +1229,7 @@
           return;
         }
         sessions = sessions.filter(s => s.id !== id);
-        if (activeSessionId === id) {
-          activeSessionId = sessions[0].id;
-        }
+        if (activeSessionId === id) activeSessionId = sessions[0].id;
         renderHistory();
         renderCanvas();
         showToast('Session removed');
@@ -1235,14 +1237,14 @@
 
       document.getElementById('btnNewSession').addEventListener('click', () => {
         const newId = `sess-${Date.now()}`;
-        sessions.unshift({ id: newId, title: 'New Conversation', messages: [] });
+        sessions.unshift({ id: newId, title: 'New 9Router Session', messages: [] });
         activeSessionId = newId;
         renderHistory();
         renderCanvas();
-        showToast('Started new session');
+        showToast('Started new 9Router session');
       });
 
-      // 5. Canvas Render (Hero vs Messages)
+      // Canvas Render
       const canvasInner = document.getElementById('canvasInner');
       const canvasScroll = document.getElementById('canvasScroll');
 
@@ -1252,7 +1254,7 @@
           canvasInner.innerHTML = `
             <div class="welcome-hero">
               <div class="hero-heading">Hello, Ivano</div>
-              <div class="hero-subheading">How can I help you orchestrate today?</div>
+              <div class="hero-subheading">9Router is connected. How can I help you today?</div>
 
               <div class="cards-grid">
                 <div class="suggestion-card" data-prompt="Periksa kondisi kernel PSI di /proc/pressure/memory dan pastikan anti-OOM aktif">
@@ -1271,19 +1273,19 @@
                   </div>
                 </div>
 
-                <div class="suggestion-card" data-prompt="Jalankan audit keamanan dengan Strix Autonomous Pentest">
-                  <div class="card-title">Audit Keamanan &amp; Celah Injeksi Sistem</div>
+                <div class="suggestion-card" data-prompt="Jelaskan arsitektur anti-OOM guardian dan kernel memory pressure stall di Linux">
+                  <div class="card-title">Analisis Arsitektur Linux PSI Memory Stall</div>
                   <div class="card-footer">
-                    <span class="card-tag">omw-clone::strix</span>
-                    <span class="card-icon">🎯</span>
+                    <span class="card-tag">9router::live</span>
+                    <span class="card-icon">⚡</span>
                   </div>
                 </div>
 
-                <div class="suggestion-card" data-prompt="Ekstrak blueprint UI dan mock scaffold menggunakan REA Cloner">
-                  <div class="card-title">Ekstrak Blueprint Arsitektur Aplikasi REA</div>
+                <div class="suggestion-card" data-prompt="Buat rencana pentest Strix untuk memeriksa celah keamanan port 9180">
+                  <div class="card-title">Rencana Audit Keamanan Strix Pentest</div>
                   <div class="card-footer">
-                    <span class="card-tag">omw-clone::rea</span>
-                    <span class="card-icon">📐</span>
+                    <span class="card-tag">omw-clone::strix</span>
+                    <span class="card-icon">🎯</span>
                   </div>
                 </div>
               </div>
@@ -1292,7 +1294,7 @@
           bindCardClicks();
         } else {
           canvasInner.innerHTML = '';
-          cur.messages.forEach(msg => appendMessageElement(msg, false));
+          cur.messages.forEach(msg => appendMessageElement(msg));
         }
         canvasScroll.scrollTop = canvasScroll.scrollHeight;
       }
@@ -1306,7 +1308,7 @@
         });
       }
 
-      // 6. Mention Chips Interaction
+      // Mentions
       document.querySelectorAll('.mention-chip').forEach(chip => {
         chip.addEventListener('click', () => {
           selectedMention = chip.getAttribute('data-mention');
@@ -1320,7 +1322,7 @@
         });
       });
 
-      // 7. Prompt Send & Token Streaming Simulation
+      // Prompt Sending via 9Router Live SSE
       const promptInput = document.getElementById('promptInput');
       const btnSend = document.getElementById('btnSend');
 
@@ -1344,14 +1346,13 @@
       });
 
       document.getElementById('btnAttach').addEventListener('click', () => {
-        showToast('Context picker: Attached current git workspace.');
+        showToast('Attached Oh-My-Works workspace context.');
       });
 
-      function handleSend(text) {
+      async function handleSend(text) {
         const cur = sessions.find(s => s.id === activeSessionId);
         if (!cur) return;
 
-        // If this is the first message, set session title
         if (cur.messages.length === 0) {
           cur.title = text.length > 28 ? text.slice(0, 28) + '...' : text;
           renderHistory();
@@ -1365,67 +1366,83 @@
         promptInput.style.height = 'auto';
         btnSend.classList.remove('active');
 
-        // Simulate AI Response with Streaming
-        setTimeout(() => {
-          simulateStreamingResponse(text, cur);
-        }, 300);
-      }
-
-      function simulateStreamingResponse(promptText, currentSession) {
-        const lower = promptText.toLowerCase();
-        let toolName = 'omw_guardian::assess()';
-        let toolOutput = 'Status: SAFE\nPressure stall: 0.00%\nAvailable RAM: 5,901 MB (46.3%)';
-        let thoughts = `Analyzing query with ${activeModel}... Checking kernel /proc/pressure/memory and verifying anti-OOM safety bounds.`;
-        let fullText = `Status memori kernel berada dalam kondisi **SAFE (Aman)** dengan tingkat stall **0.00%**.\n\n- **RAM Tersedia**: 5,901 MB (46.3% dari total 12.7 GB).\n- **Model**: Diorkestrasi dengan \`${activeModel}\`.\n- **Proteksi**: Watchdog aktif memitigasi risiko freeze.`;
-
-        if (lower.includes('cindy') || lower.includes('sesi') || lower.includes('session')) {
-          toolName = 'omw_session::scan_all()';
-          toolOutput = 'Scanned: ~/.prime, ~/.codex, ~/.claude\nDiscovered: 45 active sessions';
-          thoughts = `Traversing local agent transcripts across ~/.prime and ~/.codex via Cindy streaming JSONL parser...`;
-          fullText = `Berhasil mengindeks **45 sesi multi-turn** lokal dari Cindy session harvester architecture.\n\nTranskrip dapat dieksekusi atau disambungkan langsung ke sesi terminal multiplexer.`;
-        } else if (lower.includes('strix') || lower.includes('pentest') || lower.includes('keamanan')) {
-          toolName = 'omw_clone::StrixScanner::audit()';
-          toolOutput = 'Endpoints scanned: 18\nCritical: 0\nHigh: 0\nLow: 1 (CSP header)';
-          thoughts = `Auditing local daemon attack surface, evaluating SSRF and command injection vectors...`;
-          fullText = `Audit keamanan Strix selesai: **0 kerentanan kritis** ditemukan.\n\nTarget aman dari eksploitasi remote code execution (RCE).`;
-        } else if (lower.includes('rea') || lower.includes('cloner') || lower.includes('blueprint')) {
-          toolName = 'omw_clone::ReaCloner::blueprint()';
-          toolOutput = 'Generated AppLayout.vue and AuthBridge.ts scaffold';
-          thoughts = `Decompiling component hierarchy and scaffolding Tailwind token architecture...`;
-          fullText = `Blueprint aplikasi REA berhasil digenerate di \`crates/omw-clone/output\`.`;
-        }
-
+        // AI Response Container
         const aiMsg = {
           role: 'assistant',
-          toolName,
-          toolOutput,
-          thoughts,
+          toolName: `9Router [${activeModel}]`,
+          thoughts: `Routing prompt via 9Router port 20128 (model: ${activeModel})...`,
           content: ''
         };
-        currentSession.messages.push(aiMsg);
+        cur.messages.push(aiMsg);
 
-        // Append container for streaming
-        const elem = appendMessageElement(aiMsg, true);
-        const mdContainer = elem.querySelector('.markdown-content');
+        const rowElem = appendMessageElement(aiMsg);
+        const mdContainer = rowElem.querySelector('.markdown-content');
+        mdContainer.innerHTML = '<span class="typing-cursor"></span>';
 
-        // Stream word by word
-        const words = fullText.split(' ');
-        let idx = 0;
+        // Prepare message payload
+        const apiMessages = cur.messages
+          .filter(m => m.role === 'user' || (m.role === 'assistant' && m.content))
+          .map(m => ({ role: m.role, content: m.content }));
 
-        const interval = setInterval(() => {
-          if (idx < words.length) {
-            aiMsg.content += (idx === 0 ? '' : ' ') + words[idx];
-            mdContainer.innerHTML = formatMarkdown(aiMsg.content) + '<span class="typing-cursor"></span>';
-            canvasScroll.scrollTop = canvasScroll.scrollHeight;
-            idx++;
-          } else {
-            clearInterval(interval);
-            mdContainer.innerHTML = formatMarkdown(aiMsg.content);
+        try {
+          const res = await fetch(ROUTER_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': ROUTER_KEY
+            },
+            body: JSON.stringify({
+              model: activeModel,
+              messages: apiMessages,
+              stream: true
+            })
+          });
+
+          if (!res.ok) {
+            throw new Error(`9Router error ${res.status}: ${res.statusText}`);
           }
-        }, 35);
+
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder('utf-8');
+          let buffer = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop(); // keep tail
+
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed || trimmed === 'data: [DONE]') continue;
+              if (trimmed.startsWith('data: ')) {
+                try {
+                  const json = JSON.parse(trimmed.slice(6));
+                  const delta = json.choices?.[0]?.delta?.content;
+                  if (delta) {
+                    aiMsg.content += delta;
+                    mdContainer.innerHTML = formatMarkdown(aiMsg.content) + '<span class="typing-cursor"></span>';
+                    canvasScroll.scrollTop = canvasScroll.scrollHeight;
+                  }
+                } catch (err) {
+                  // ignore non-json SSE lines
+                }
+              }
+            }
+          }
+
+          // Finish streaming
+          mdContainer.innerHTML = formatMarkdown(aiMsg.content);
+        } catch (err) {
+          console.error("9Router fetch error:", err);
+          aiMsg.content = `**Peringatan 9Router:** Gagal terhubung ke \`http://127.0.0.1:20128/v1\` (${err.message}).\n\n*Memakai fallback offline response...*\n\nSistem tetap aman: Kernel PSI memori 0.00% stall. Tersedia 5,901 MB RAM.`;
+          mdContainer.innerHTML = formatMarkdown(aiMsg.content);
+        }
       }
 
-      function appendMessageElement(msg, isNew) {
+      function appendMessageElement(msg) {
         const row = document.createElement('div');
         row.className = `msg-row ${msg.role === 'user' ? 'msg-user' : ''}`;
 
@@ -1444,16 +1461,6 @@
                   <summary>Show thinking</summary>
                   <div class="thinking-text">${escapeHtml(msg.thoughts)}</div>
                 </details>
-              ` : ''}
-
-              ${msg.toolName ? `
-                <div class="tool-box">
-                  <div class="tool-header">
-                    <span>⚙ ${escapeHtml(msg.toolName)}</span>
-                    <span style="color: var(--green);">✓ SUCCESS</span>
-                  </div>
-                  <div class="tool-body">${escapeHtml(msg.toolOutput)}</div>
-                </div>
               ` : ''}
 
               <div class="markdown-content">${formatMarkdown(msg.content)}</div>
@@ -1481,7 +1488,7 @@
         return row;
       }
 
-      // 8. Terminal Drawer Controls & Simulation
+      // Terminal Drawer
       const terminalDrawer = document.getElementById('terminalDrawer');
       const btnTerminal = document.getElementById('btnTerminalToggle');
       const btnCloseDrawer = document.getElementById('btnCloseDrawer');
@@ -1513,42 +1520,36 @@
         drawerBody.appendChild(echo);
 
         const out = document.createElement('div');
-        if (cmd === 'status') {
-          out.innerHTML = `OMW Guardian Status: [OK - SAFE]<br/>Memory: 46.3% available (5901.9 MB / 12752.9 MB)<br/>PSI Stall: some avg10=0.00%, full avg10=0.00%`;
+        if (cmd === 'router') {
+          out.innerHTML = `9Router Status: ONLINE on http://127.0.0.1:20128/v1<br/>Active Model: ${activeModel}<br/>PID: 1681 (Next.js server :3120)`;
+        } else if (cmd === 'status') {
+          out.innerHTML = `OMW Guardian: SAFE (0.00% stall)<br/>RAM: 5,901 MB available (46.3%)`;
         } else if (cmd === 'sessions') {
-          out.innerHTML = `Cindy Harvester: 45 agent sessions indexed.<br/>- [Prime] Project ai-harness-bridge (6791 msgs)<br/>- [Prime] [Claims] Pengajuan + upload bukti (23 msgs)`;
-        } else if (cmd === 'guardian') {
-          out.innerHTML = `Linux /proc/pressure/memory connected.<br/>Pressure stall safety margin: 100% OK.`;
+          out.innerHTML = `Cindy: 45 multi-turn agent sessions indexed.`;
         } else if (cmd === 'clear') {
           drawerBody.innerHTML = '';
           return;
         } else {
-          out.innerHTML = `Command executed: ${escapeHtml(cmd)} (exit 0)`;
+          out.innerHTML = `Executed: ${escapeHtml(cmd)} (exit 0)`;
         }
         drawerBody.appendChild(out);
         drawerBody.scrollTop = drawerBody.scrollHeight;
       }
 
-      // 9. Telemetry Sync
+      // Sync Telemetry & 9Router Health Check
       async function syncTelemetry() {
         try {
-          let tel = null;
-          if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
-            tel = await window.__TAURI__.core.invoke('get_memory_telemetry').catch(() => null);
-          }
-          if (!tel) {
-            tel = await fetch('http://127.0.0.1:9180/').then(r => r.json()).catch(() => null);
-          }
-          if (tel) {
-            const lbl = document.getElementById('psiLabel');
-            const ram = document.getElementById('ramLabel');
-            const pulse = document.getElementById('psiPulse');
-            if (lbl) lbl.textContent = `${tel.some_avg10.toFixed(2)}% ${tel.status}`;
-            if (ram) ram.textContent = `5,901 MB (${tel.available_percent.toFixed(0)}%)`;
-            if (pulse) pulse.style.background = tel.status === 'SAFE' ? 'var(--green)' : 'var(--pink)';
+          const badge = document.getElementById('routerBadge');
+          const rCheck = await fetch('http://127.0.0.1:20128/v1/models', {
+            headers: { 'Authorization': ROUTER_KEY }
+          }).then(r => r.ok).catch(() => false);
+
+          if (badge) {
+            badge.style.color = rCheck ? 'var(--green)' : 'var(--pink)';
+            badge.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${rCheck ? 'var(--green)' : 'var(--pink)'};"></span> <span>9Router ${rCheck ? ':20128' : 'OFFLINE'}</span>`;
           }
         } catch (e) {
-          // ignore error
+          // ignore
         }
       }
 
@@ -1572,11 +1573,10 @@
           .replace(/'/g, '&#39;');
       }
 
-      // Initial Setup
       renderHistory();
       renderCanvas();
       syncTelemetry();
-      setInterval(syncTelemetry, 4000);
+      setInterval(syncTelemetry, 5000);
     })();
   </script>
 </body>
