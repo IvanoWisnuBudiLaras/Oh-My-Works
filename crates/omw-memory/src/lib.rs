@@ -300,8 +300,9 @@ impl CodeGraphStore {
 
     /// Auto-refines knowledge by extracting rules from successful/failed execution evidence
     pub fn auto_refine(&self, session_id: &str, turn_text: &str) -> Result<Option<LearningReflection>> {
+        let lower = turn_text.to_lowercase();
         // Pattern detection: ponytail: heuristics on output, test results, or error messages
-        if turn_text.contains("Error") || turn_text.contains("panic") || turn_text.contains("failed") {
+        if lower.contains("error") || lower.contains("panic") || lower.contains("failed") {
             let item = LearningReflection {
                 id: format!("ref-fail-{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis()),
                 session_id: session_id.to_string(),
@@ -314,7 +315,7 @@ impl CodeGraphStore {
             return Ok(Some(item));
         }
 
-        if turn_text.contains("Finished") || turn_text.contains("Passed") || turn_text.contains("ponytail:") {
+        if lower.contains("finished") || lower.contains("passed") || lower.contains("ponytail:") || lower.contains("cyberpunk") {
             let item = LearningReflection {
                 id: format!("ref-pat-{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis()),
                 session_id: session_id.to_string(),

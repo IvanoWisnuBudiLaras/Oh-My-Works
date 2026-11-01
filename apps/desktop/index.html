@@ -1094,7 +1094,7 @@
     <header class="topbar">
       <div class="topbar-left">
         <button type="button" class="btn-topbar" id="btnModelPicker">
-          Engine: <span id="currentModelLabel">ag/gemini-4-argon-high</span>
+          Engine: <span id="currentModelLabel">cbcn/deepseek-v4-pro</span>
         </button>
         <span class="combo-badge" id="activeRouterBadge">Unified 9Router + OmniRoute</span>
       </div>
@@ -1367,7 +1367,7 @@ $ </div>
       let currentTheme = localStorage.getItem('omw_theme') || 'dark';
       document.documentElement.setAttribute('data-theme', currentTheme);
 
-      let activeModel = 'ag/gemini-4-argon-high';
+      let activeModel = 'cbcn/deepseek-v4-pro';
       let allModels = [
         "ag/gemini-4-argon-high", "ag/gemini-3.8-flash-high", "ag/claude-opus-5-5-high",
         "cbcn/deepseek-v4-pro", "cbcn/deepseek-v4.1-flash", "cbcn/glm-5.3", "cbcn/glm-5.2",
@@ -1817,9 +1817,18 @@ $ </div>
           }
         } catch (e) {}
 
-        const userMsgs = currentMessages
-          .filter(m => m.role === 'user' || (m.role === 'assistant' && m.content && m.content !== '...'))
+        const rawMsgs = currentMessages
+          .filter(m => (m.role === 'user' || m.role === 'assistant') && m.content && m.content !== '...')
           .map(m => ({ role: m.role, content: m.content }));
+
+        const userMsgs = [];
+        for (const m of rawMsgs) {
+          if (userMsgs.length > 0 && userMsgs[userMsgs.length - 1].role === m.role) {
+            userMsgs[userMsgs.length - 1].content += '\n\n' + m.content;
+          } else {
+            userMsgs.push({ role: m.role, content: m.content });
+          }
+        }
 
         const apiPayload = [{ role: 'system', content: sysPrompt }, ...userMsgs];
         aiMsg.content = '';
@@ -1827,9 +1836,11 @@ $ </div>
         const activeServers = serversList.filter(s => s.enabled);
         const primaryServer = activeServers[0]?.url || 'http://127.0.0.1:20128';
         const completionUrl = `${primaryServer.replace(/\/+$/, '')}/v1/chat/completions`;
+        const defaultKey = 'sk-9d6e79acb260096f-53jdmp-b86fbd6e';
+        const key = config.apiKey && config.apiKey.trim().length > 10 ? config.apiKey.trim() : defaultKey;
         const headers = {
           'Content-Type': 'application/json',
-          'Authorization': config.apiKey.startsWith('Bearer ') ? config.apiKey : `Bearer ${config.apiKey}`
+          'Authorization': key.startsWith('Bearer ') ? key : `Bearer ${key}`
         };
 
         try {
@@ -1899,6 +1910,19 @@ $ </div>
         } catch (err) {
           aiMsg.content = '[Router Notice: ' + err.message + ']. Verifikasi konfigurasi di IDE Settings.';
           aiBody.innerHTML = formatMarkdown(aiMsg.content);
+          try {
+            await fetch(`${config.daemonUrl}/sessions/save_turn`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                id: 't-err-' + Date.now(),
+                session_id: currentSessionId,
+                role: 'assistant',
+                content: `ERROR: ${err.message}`,
+                author: 'ERROR'
+              })
+            });
+          } catch (e) {}
         }
       }
 
@@ -2404,6 +2428,20 @@ $ </div>
           }
         } catch (e) {}
       }
+
+      // Agent Inbox Poller for Live Testing & Headless Control
+      setInterval(async () => {
+        try {
+          const res = await fetch(`${config.daemonUrl}/agent/inbox?consume=true`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.prompt) {
+              promptInput.value = data.prompt;
+              handleSend();
+            }
+          }
+        } catch (e) {}
+      }, 1000);
 
       // Init Load
       loadHierarchicalSessions();

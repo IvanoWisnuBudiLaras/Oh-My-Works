@@ -111,18 +111,59 @@ fn check_harness_observer() -> serde_json::Value {
 }
 
 fn handle_client(mut stream: TcpStream) {
-    let mut buffer = [0; 65536];
-    let n = match stream.read(&mut buffer) {
-        Ok(n) if n > 0 => n,
-        _ => return,
-    };
+    let mut data = Vec::new();
+    let mut buffer = [0; 8192];
+    let mut content_length = 0;
+    let mut header_end = None;
 
-    let req_str = String::from_utf8_lossy(&buffer[..n]);
-    let mut lines = req_str.lines();
+    loop {
+        let n = match stream.read(&mut buffer) {
+            Ok(n) if n > 0 => n,
+            _ => break,
+        };
+        data.extend_from_slice(&buffer[..n]);
+
+        if header_end.is_none() {
+            if let Some(pos) = data.windows(4).position(|w| w == b"\r\n\r\n") {
+                header_end = Some(pos + 4);
+                let header_str = String::from_utf8_lossy(&data[..pos]);
+                for line in header_str.lines() {
+                    if line.to_ascii_lowercase().starts_with("content-length:") {
+                        if let Some(val) = line.split(':').nth(1) {
+                            content_length = val.trim().parse::<usize>().unwrap_or(0);
+                        }
+                    }
+                }
+            }
+        }
+
+        if let Some(pos) = header_end {
+            if data.len() >= pos + content_length {
+                break;
+            }
+        }
+    }
+
+    if data.is_empty() {
+        return;
+    }
+
+    let h_end = header_end.unwrap_or(data.len());
+    let req_header_str = String::from_utf8_lossy(&data[..h_end]);
+    let mut lines = req_header_str.lines();
     let req_line = lines.next().unwrap_or("");
     let parts: Vec<&str> = req_line.split_whitespace().collect();
     let method = parts.first().copied().unwrap_or("GET");
     let uri = parts.get(1).copied().unwrap_or("/");
+
+    let payload_bytes = if h_end <= data.len() {
+        let end = (h_end + content_length).min(data.len());
+        &data[h_end..end]
+    } else {
+        &[]
+    };
+    let payload = String::from_utf8_lossy(payload_bytes).to_string();
+    let payload = payload.as_str();
 
     let omw = omw_dir();
     let _ = fs::create_dir_all(&omw);
@@ -134,12 +175,6 @@ fn handle_client(mut stream: TcpStream) {
         let _ = stream.write_all(resp.as_bytes());
         return;
     }
-
-    let payload = if let Some(pos) = req_str.find("\r\n\r\n") {
-        &req_str[pos + 4..]
-    } else {
-        ""
-    };
 
     let (status, content_type, body) = if uri.starts_with("/soul") {
         let soul_path = omw.join("SOUL.md");
@@ -265,6 +300,7 @@ fn handle_client(mut stream: TcpStream) {
         };
         ("200 OK", "application/json", serde_json::json!({ "turns": turns }).to_string())
     } else if uri.starts_with("/sessions/save_turn") && method == "POST" {
+        println!("[SAVE_TURN_PAYLOAD] {}", payload);
         if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
             let turn = ChatTurn {
                 id: val["id"].as_str().unwrap_or("turn-new").to_string(),
@@ -275,8 +311,14 @@ fn handle_client(mut stream: TcpStream) {
                 created_at: chrono_like_now(),
             };
             if let Ok(db) = get_db() {
-                let _ = db.save_turn(&turn);
+                if let Err(e) = db.save_turn(&turn) {
+                    println!("[SAVE_TURN_ERROR] {:?}", e);
+                } else {
+                    println!("[SAVE_TURN_OK] {}", turn.id);
+                }
                 let _ = db.auto_refine(&turn.session_id, &turn.content);
+            } else {
+                println!("[SAVE_TURN_DB_ERROR] Failed to open DB");
             }
         }
         ("200 OK", "application/json", r#"{"status":"turn_saved"}"#.to_string())
@@ -385,6 +427,32 @@ fn handle_client(mut stream: TcpStream) {
             }
         }
         ("200 OK", "application/json", serde_json::json!({ "output": cmd_output, "exit_code": exit_code }).to_string())
+    } else if uri.starts_with("/agent/inbox") {
+        let inbox_file = omw.join("agent_inbox.json");
+        if method == "POST" {
+            let mut prompt_val = String::new();
+            if let Ok(v) = serde_json::from_str::<serde_json::Value>(payload) {
+                if let Some(p) = v["prompt"].as_str() {
+                    prompt_val = p.to_string();
+                }
+            }
+            if prompt_val.is_empty() && !payload.is_empty() {
+                prompt_val = payload.to_string();
+            }
+            let _ = fs::write(&inbox_file, serde_json::json!({ "prompt": prompt_val }).to_string());
+            ("200 OK", "application/json", serde_json::json!({ "status": "queued", "prompt": prompt_val }).to_string())
+        } else {
+            let consume = query_map.get("consume").map(|s| s.as_str()) == Some("true");
+            let res = if let Ok(content) = fs::read_to_string(&inbox_file) {
+                if consume {
+                    let _ = fs::remove_file(&inbox_file);
+                }
+                content
+            } else {
+                r#"{"prompt":null}"#.to_string()
+            };
+            ("200 OK", "application/json", res)
+        }
     } else if uri.starts_with("/harness/observer") {
         let observer_data = check_harness_observer();
         ("200 OK", "application/json", observer_data.to_string())
