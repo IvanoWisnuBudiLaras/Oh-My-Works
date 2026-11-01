@@ -1,0 +1,15 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+target/
+dist/
+build/
+bin/
+node_modules/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example

@@ -1,0 +1,35 @@
+Oh My Works - App Desktop
+
+Setup
+- menggunakan bahasa yang sangat ringan dan cepat meskipun banyak fitur 
+- backup file menggunakan GitHub
+
+latar belakang
+- masalah saya tidak memiliki ruang kerja sendiri yang benar benar sesuai yang ku inginkan
+- saya merasa terlalu banyak action yang membuang waktu saya dalam mengerjakan project menggunakan AI
+- Kecepatan, fleksibelitas, serba guna adalah kunci dalam membuat aplikasi ini
+- bisa di install di banyak OS tapi fokus kan Linux saja
+- terhubung dengan server secara kuat
+- detail informasi pada umum nya yang harus melalui banyak cara
+
+tujuan
+- selesaikan masalah saya terlebih dahulu
+- menggabungkan tools repo yang kuat di GitHub menjadi satu
+- auto update tool dan install tools yang dibuat dan dipajang di GitHub repo
+- menghubungkan ke server sangat kuat
+- sangat kuat dalam mengendalikan terminal
+
+hasil yang saya inginkan
+- AI harness dengan kemampuan tinggi yang bisa mengendalikan AI Harness lain
+- Panel Server(via web atau aplikasi yang penting ringan) yang luas dengan fitur secukupnya untuk deploy
+- Hubungan antara AI Harness di buat dan Panel Server yang ada di server 
+
+Feature
+- Kemampuan AI Harness pada umum nya tapi di tambahin gimana repo yang membuat AI Harness itu memiliki fungsi yang sangat kuat dan terus ambil terus di ubah menggunakan bahasa yang ringan dan bikin AI bisa cepat menyelesaikan masalah
+- Kemampuan dari Repo Strix, Rea, dll yang tujuannya memiliki kemampuan untuk mengetes aplikasi yang dibuat dan tambahan bisa meniru aplikasi besar
+- Kemampuan dalam memelihara dan menghubungkan tab terminal agar saat dia summon AI Harness itu bisa saling terhubung
+- kemampuan kuat dalam memelihara server dari menemukan bahwa ada masalah OOM dan mengantisipasi bahwa server tidak kuat sekaligus menyelesaikan masalah tersebut
+- Kemampuan dalam mengelola Memory Aplikasi yang lebih baik 
+
+Refrence Repo
+- 
