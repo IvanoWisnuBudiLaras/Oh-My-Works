@@ -1,33 +1,30 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gemini Browser — Oh My Works</title>
+  <title>Gemini — Oh My Works</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Google+Sans+Text:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --gemini-bg: #131314;
-      --gemini-surface: #1e1f20;
-      --gemini-surface-hover: #282a2c;
-      --gemini-surface-active: #333537;
-      --gemini-border: rgba(255, 255, 255, 0.08);
-      --gemini-border-focus: rgba(138, 180, 248, 0.5);
-      --gemini-text-primary: #e3e3e3;
-      --gemini-text-secondary: #c4c7c5;
-      --gemini-text-muted: #8e918f;
-      --gemini-blue: #8ab4f8;
-      --gemini-blue-hover: #aecbfa;
-      --gemini-purple: #c58af9;
-      --gemini-pink: #f28b82;
-      --gemini-success: #81c995;
-      --gemini-warning: #fdd663;
-      --gemini-danger: #f28b82;
+      --bg: #131314;
+      --sidebar-bg: #18191a;
+      --surface: #1e1f20;
+      --surface-hover: #282a2c;
+      --surface-active: #333537;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(138, 180, 248, 0.5);
+      --text: #e3e3e3;
+      --text-secondary: #c4c7c5;
+      --text-muted: #8e918f;
+      --blue: #8ab4f8;
+      --blue-hover: #aecbfa;
+      --green: #81c995;
       --gemini-gradient: linear-gradient(74deg, #4285f4 0%, #9b72cf 35%, #d96570 70%);
-      --gemini-glow: 0 8px 32px rgba(66, 133, 244, 0.28);
-      --font-google: 'Google Sans', 'Google Sans Text', -apple-system, BlinkMacSystemFont, sans-serif;
+      --gemini-glow: 0 8px 32px rgba(66, 133, 244, 0.25);
+      --font-main: 'Google Sans', 'Google Sans Text', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
@@ -38,654 +35,554 @@
     }
 
     body {
-      background: var(--gemini-bg);
-      color: var(--gemini-text-primary);
-      font-family: var(--font-google);
-      font-size: 13px;
-      line-height: 1.5;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 14px;
+      line-height: 1.6;
       height: 100vh;
       overflow: hidden;
       display: flex;
-      flex-direction: column;
       user-select: none;
       -webkit-font-smoothing: antialiased;
     }
 
     /* ==========================================================================
-       1. GOOGLE CHROME / GEMINI BROWSER SHELL
+       1. LEFT COLLAPSIBLE SIDEBAR (Gemini Style)
        ========================================================================== */
-    /* Tab Strip */
-    .browser-tab-strip {
-      height: 40px;
-      background: #18191a;
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
       display: flex;
-      align-items: flex-end;
-      padding: 0 8px;
-      gap: 4px;
-      border-bottom: 1px solid var(--gemini-border);
+      flex-direction: column;
       flex-shrink: 0;
+      transition: width 0.2s cubic-bezier(0.2, 0, 0, 1), transform 0.2s ease;
+      z-index: 20;
     }
 
-    .browser-tab {
-      height: 34px;
-      padding: 0 14px;
-      border-radius: 8px 8px 0 0;
+    .sidebar.collapsed {
+      width: 72px;
+    }
+
+    .sidebar.hidden {
+      display: none;
+    }
+
+    .sidebar-top {
+      padding: 16px 14px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       background: transparent;
-      color: var(--gemini-text-secondary);
-      font-size: 12px;
+      border: none;
+      color: var(--text-secondary);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .icon-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    .btn-new-chat {
+      height: 44px;
+      margin: 8px 14px 16px;
+      padding: 0 16px;
+      background: #1a1a1c;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 14px;
       font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       cursor: pointer;
-      max-width: 220px;
-      position: relative;
-      transition: background 0.12s, color 0.12s;
+      transition: all 0.15s ease;
+      overflow: hidden;
+      white-space: nowrap;
     }
 
-    .browser-tab:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--gemini-text-primary);
+    .btn-new-chat:hover {
+      background: var(--surface-hover);
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .browser-tab.active {
-      background: var(--gemini-bg);
-      color: var(--gemini-text-primary);
-      box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.2);
+    .sidebar.collapsed .btn-new-chat {
+      width: 44px;
+      padding: 0;
+      justify-content: center;
+      margin: 8px auto 16px;
     }
 
-    .tab-favicon {
-      width: 14px;
-      height: 14px;
-      display: grid;
-      place-items: center;
-      font-size: 11px;
+    .sidebar.collapsed .btn-new-chat span {
+      display: none;
     }
 
-    .tab-title {
+    .sidebar-label {
+      padding: 0 18px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar.collapsed .sidebar-label {
+      display: none;
+    }
+
+    .recent-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .recent-item {
+      padding: 10px 14px;
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      flex: 1;
+      transition: background 0.12s, color 0.12s;
     }
 
-    .tab-close {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      font-size: 10px;
-      opacity: 0.6;
+    .recent-item:hover {
+      background: var(--surface-hover);
+      color: var(--text);
     }
 
-    .tab-close:hover {
-      background: rgba(255, 255, 255, 0.1);
-      opacity: 1;
+    .recent-item.active {
+      background: rgba(66, 133, 244, 0.15);
+      color: var(--blue);
+      font-weight: 500;
     }
 
-    .btn-new-tab {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: transparent;
-      border: none;
-      color: var(--gemini-text-muted);
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      margin-bottom: 3px;
-      font-size: 16px;
+    .sidebar.collapsed .recent-item {
+      padding: 10px 0;
+      justify-content: center;
     }
 
-    .btn-new-tab:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--gemini-text-primary);
+    .sidebar.collapsed .recent-item span {
+      display: none;
     }
 
-    /* Navigation Toolbar (Omnibox & Controls) */
-    .browser-toolbar {
-      height: 48px;
-      background: var(--gemini-bg);
-      border-bottom: 1px solid var(--gemini-border);
+    .sidebar-bottom {
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bottom-row {
       display: flex;
       align-items: center;
-      padding: 0 12px;
-      gap: 8px;
-      flex-shrink: 0;
+      justify-content: space-between;
+      padding: 4px 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
     }
 
-    .nav-btn {
-      width: 32px;
-      height: 32px;
+    .status-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: transparent;
-      border: none;
-      color: var(--gemini-text-secondary);
-      display: grid;
-      place-items: center;
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(129, 201, 149, 0.5);
+    }
+
+    /* ==========================================================================
+       2. MAIN VIEWPORT & HEADER
+       ========================================================================== */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Top App Header */
+    .top-header {
+      height: 60px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .model-selector {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 4px 12px;
+      font-size: 13px;
+      font-family: var(--font-main);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
       cursor: pointer;
       transition: background 0.12s;
     }
 
-    .nav-btn:hover {
-      background: var(--gemini-surface-hover);
-      color: var(--gemini-text-primary);
+    .model-selector:hover {
+      background: var(--surface-hover);
+      color: var(--text);
     }
 
-    /* Omnibox / URL Bar */
-    .omnibox {
-      flex: 1;
-      height: 34px;
-      background: var(--gemini-surface);
-      border: 1px solid transparent;
-      border-radius: 20px;
+    .header-actions {
       display: flex;
       align-items: center;
-      padding: 0 12px;
-      gap: 8px;
-      transition: border 0.15s, background 0.15s;
+      gap: 10px;
     }
 
-    .omnibox:focus-within {
-      background: #252629;
-      border-color: var(--gemini-border-focus);
-    }
-
-    .omnibox-lock {
-      font-size: 11px;
-      color: var(--gemini-success);
-    }
-
-    .omnibox-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--gemini-text-primary);
-      font-family: var(--font-google);
-      font-size: 12px;
-    }
-
-    .omnibox-badge {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 2px 6px;
-      border-radius: 10px;
-      color: var(--gemini-text-muted);
-    }
-
-    /* Gemini Sparkle Toolbar Button */
-    .btn-gemini-action {
-      height: 32px;
+    /* Floating Companion Toggle Button */
+    .btn-floating-toggle {
+      height: 36px;
       padding: 0 14px;
-      border-radius: 20px;
-      background: var(--gemini-surface);
-      border: 1px solid rgba(138, 180, 248, 0.25);
-      color: var(--gemini-text-primary);
-      font-family: var(--font-google);
-      font-size: 12px;
+      border-radius: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 13px;
       font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 7px;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.15s ease;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-gemini-action:hover {
-      background: var(--gemini-surface-hover);
-      border-color: rgba(138, 180, 248, 0.5);
-      box-shadow: 0 2px 10px rgba(66, 133, 244, 0.25);
-    }
-
-    .btn-gemini-action.active {
-      background: rgba(66, 133, 244, 0.15);
-      border-color: var(--gemini-blue);
-      color: var(--gemini-blue);
-    }
-
-    .sparkle-icon {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
-
-    /* Browser Content Viewport */
-    .browser-viewport {
-      flex: 1;
-      overflow-y: auto;
-      background: var(--gemini-bg);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Viewport Inner Pages */
-    .page-container {
-      flex: 1;
-      padding: 32px 40px;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
-      user-select: text;
-    }
-
-    .page-title {
-      font-size: 26px;
-      font-weight: 500;
-      letter-spacing: -0.02em;
-      margin-bottom: 8px;
-    }
-
-    .page-desc {
-      font-size: 14px;
-      color: var(--gemini-text-secondary);
-      margin-bottom: 24px;
-    }
-
-    /* Gemini Card Grid */
-    .gemini-card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .gemini-card {
-      background: var(--gemini-surface);
-      border: 1px solid var(--gemini-border);
-      border-radius: 16px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
       gap: 8px;
-      transition: background 0.15s, transform 0.12s;
       cursor: pointer;
+      transition: all 0.15s ease;
     }
 
-    .gemini-card:hover {
-      background: var(--gemini-surface-hover);
-      transform: translateY(-2px);
+    .btn-floating-toggle:hover {
+      background: var(--surface-hover);
+      border-color: rgba(138, 180, 248, 0.4);
+      box-shadow: 0 2px 10px rgba(66, 133, 244, 0.2);
     }
 
-    .gemini-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .btn-floating-toggle.active {
+      background: rgba(66, 133, 244, 0.15);
+      border-color: var(--blue);
+      color: var(--blue);
     }
 
-    .gemini-card-title {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--gemini-text-primary);
-    }
-
-    .gemini-card-value {
-      font-size: 24px;
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #040c18;
+      display: grid;
+      place-items: center;
       font-weight: 700;
-      font-family: var(--font-mono);
-      color: var(--gemini-blue);
-      margin: 4px 0;
-    }
-
-    .gemini-card-sub {
-      font-size: 12px;
-      color: var(--gemini-text-muted);
-    }
-
-    /* Monospace Console Card */
-    .console-box {
-      background: #000;
-      border: 1px solid var(--gemini-border);
-      border-radius: 12px;
-      padding: 16px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.6;
-      color: #93c5fd;
-      overflow-x: auto;
-      white-space: pre-wrap;
+      font-size: 13px;
     }
 
     /* ==========================================================================
-       2. SIGNATURE GOOGLE GEMINI FLOATING CHAT OVERLAY & SIDEPANEL
+       3. GEMINI CONVERSATION CANVAS
        ========================================================================== */
-    .gemini-floating-panel {
-      position: absolute;
-      top: 60px;
-      right: 24px;
-      width: 460px;
-      height: 720px;
-      max-height: calc(100vh - 80px);
-      background: var(--gemini-surface);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 24px;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    .chat-scroll {
+      flex: 1;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      z-index: 100;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .canvas-container {
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 20px 24px 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
       user-select: text;
     }
 
-    /* Docked State */
-    .gemini-floating-panel.docked {
-      top: 0;
-      right: 0;
-      bottom: 0;
-      height: 100%;
-      max-height: 100%;
-      border-radius: 0;
-      border-top: none;
-      border-bottom: none;
-      border-right: none;
-      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Minimized Hidden State */
-    .gemini-floating-panel.minimized {
-      transform: scale(0.85);
-      opacity: 0;
-      pointer-events: none;
-      visibility: hidden;
-    }
-
-    /* Floating Chat Header */
-    .gemini-chat-header {
-      height: 52px;
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--gemini-border);
-      background: #18191a;
-      cursor: grab;
-      user-select: none;
-      flex-shrink: 0;
-    }
-
-    .gemini-chat-header:active {
-      cursor: grabbing;
-    }
-
-    .gemini-brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .gemini-gradient-text {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      background: var(--gemini-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .gemini-model-badge {
-      font-size: 11px;
-      font-family: var(--font-google);
-      color: var(--gemini-text-muted);
-      background: rgba(255, 255, 255, 0.06);
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
-
-    .gemini-header-controls {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .header-ctrl-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: transparent;
-      border: none;
-      color: var(--gemini-text-muted);
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      font-size: 13px;
-      transition: background 0.12s, color 0.12s;
-    }
-
-    .header-ctrl-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--gemini-text-primary);
-    }
-
-    /* Chat Messages Scroll Canvas */
-    .gemini-chat-canvas {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Gemini Empty State / Hero */
+    /* Gemini Hero / Welcome Screen */
     .gemini-hero {
-      margin: auto 0;
+      margin-top: 40px;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 10px 4px;
+      gap: 16px;
     }
 
-    .hero-greeting {
-      font-size: 28px;
+    .gemini-sparkle-hero {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 4px;
+    }
+
+    .hero-title {
+      font-size: 48px;
       font-weight: 600;
       letter-spacing: -0.03em;
-      line-height: 1.2;
+      line-height: 1.15;
       background: var(--gemini-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .hero-subtitle {
-      font-size: 24px;
+      font-size: 40px;
       font-weight: 500;
-      color: #70757a;
-      letter-spacing: -0.02em;
-      margin-bottom: 12px;
+      color: #5f6368;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 24px;
     }
 
-    .hero-prompt-grid {
+    .hero-cards-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      width: 100%;
+      gap: 14px;
     }
 
-    .hero-chip {
-      background: #18191a;
-      border: 1px solid var(--gemini-border);
-      border-radius: 14px;
-      padding: 12px;
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px 20px;
+      min-height: 110px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 80px;
       cursor: pointer;
-      transition: background 0.12s, transform 0.1s;
+      transition: all 0.15s ease;
     }
 
-    .hero-chip:hover {
-      background: var(--gemini-surface-hover);
-      transform: translateY(-1px);
+    .hero-card:hover {
+      background: var(--surface-hover);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
-    .hero-chip-text {
-      font-size: 12px;
+    .hero-card-text {
+      font-size: 14px;
       font-weight: 500;
-      color: var(--gemini-text-primary);
+      color: var(--text);
       line-height: 1.4;
     }
 
-    .hero-chip-icon {
+    .hero-card-bottom {
       align-self: flex-end;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #18191a;
+      display: grid;
+      place-items: center;
       font-size: 14px;
-      color: var(--gemini-blue);
+      color: var(--blue);
     }
 
-    /* Message Bubbles */
-    .chat-msg-row {
+    /* Message Rows */
+    .msg-row {
       display: flex;
-      gap: 12px;
+      gap: 16px;
       width: 100%;
     }
 
-    .msg-user-row {
+    .msg-user {
       justify-content: flex-end;
     }
 
-    .user-bubble {
-      background: var(--gemini-surface-hover);
-      border-radius: 20px 20px 4px 20px;
-      padding: 12px 18px;
-      color: var(--gemini-text-primary);
-      font-size: 13px;
+    .bubble-user {
+      background: var(--surface-hover);
+      border-radius: 24px 24px 6px 24px;
+      padding: 14px 22px;
+      color: var(--text);
+      font-size: 15px;
       line-height: 1.5;
-      max-width: 82%;
+      max-width: 80%;
       word-break: break-word;
     }
 
-    .gemini-bubble {
+    .bubble-gemini {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
+      min-width: 0;
     }
 
-    /* Collapsible Gemini Thinking Process */
-    .gemini-thinking {
+    .gemini-sparkle-avatar {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    /* Collapsible Reasoning Process */
+    .reasoning-box {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px;
-      padding: 8px 12px;
+      border-radius: 14px;
+      padding: 10px 14px;
       font-size: 12px;
-      color: var(--gemini-text-secondary);
     }
 
-    .gemini-thinking summary {
+    .reasoning-box summary {
       cursor: pointer;
       user-select: none;
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11px;
+      gap: 8px;
       font-weight: 500;
-      color: var(--gemini-blue);
+      color: var(--blue);
     }
 
-    .gemini-thinking-content {
-      margin-top: 8px;
+    .reasoning-text {
+      margin-top: 10px;
       font-family: var(--font-mono);
-      font-size: 11px;
-      line-height: 1.5;
+      font-size: 12px;
       color: #9ca3af;
+      line-height: 1.6;
       white-space: pre-wrap;
     }
 
     /* Tool Call Card */
-    .gemini-tool-card {
+    .tool-execution-card {
       background: #000;
-      border: 1px solid var(--gemini-border);
-      border-radius: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
       overflow: hidden;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 12px;
     }
 
-    .gemini-tool-header {
-      padding: 6px 10px;
+    .tool-header {
+      padding: 8px 12px;
       background: #18191a;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: var(--gemini-text-secondary);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
     }
 
-    .gemini-tool-body {
-      padding: 8px 10px;
+    .tool-body {
+      padding: 10px 14px;
       color: #81c995;
       white-space: pre-wrap;
-      max-height: 120px;
+      max-height: 180px;
       overflow-y: auto;
+      line-height: 1.5;
     }
 
-    .gemini-response-text {
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--gemini-text-primary);
+    .gemini-answer {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text);
     }
 
-    /* Gemini Action Toolbar at bottom of response */
-    .gemini-msg-actions {
+    /* Action Toolbar (Thumbs up/down, Copy, Share) */
+    .answer-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-top: 4px;
+      gap: 8px;
+      margin-top: 6px;
       opacity: 0.8;
     }
 
-    .msg-action-btn {
-      width: 26px;
-      height: 26px;
+    .action-circle-btn {
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       background: transparent;
       border: none;
-      color: var(--gemini-text-muted);
+      color: var(--text-muted);
       display: grid;
       place-items: center;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 13px;
       transition: background 0.12s, color 0.12s;
     }
 
-    .msg-action-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--gemini-text-primary);
+    .action-circle-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
     }
 
-    /* Floating Gemini Bottom Input Pill */
-    .gemini-input-container {
-      padding: 12px 16px 16px;
-      background: var(--gemini-surface);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .gemini-input-pill {
-      background: #18191a;
-      border: 1px solid var(--gemini-border);
-      border-radius: 28px;
-      padding: 6px 14px 6px 10px;
+    /* ==========================================================================
+       4. ICONIC GEMINI FLOATING INPUT CONTAINER
+       ========================================================================== */
+    .floating-prompt-bar {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 48px);
+      max-width: 820px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 8px 16px 8px 12px;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
       transition: border-color 0.15s, box-shadow 0.15s;
+      z-index: 50;
     }
 
-    .gemini-input-pill:focus-within {
-      border-color: var(--gemini-border-focus);
-      box-shadow: 0 0 12px rgba(138, 180, 248, 0.15);
+    .floating-prompt-bar:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: 0 8px 36px rgba(0, 0, 0, 0.8), 0 0 16px rgba(138, 180, 248, 0.15);
     }
 
-    .mention-chips-row {
+    .prompt-pills-row {
       display: flex;
       align-items: center;
       gap: 6px;
@@ -694,127 +591,129 @@
       padding-bottom: 2px;
     }
 
-    .mention-chip {
-      font-size: 10px;
-      font-family: var(--font-google);
+    .pill-chip {
+      font-size: 11px;
+      font-family: var(--font-main);
+      font-weight: 500;
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--gemini-border);
-      border-radius: 12px;
-      padding: 2px 8px;
-      color: var(--gemini-text-secondary);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2px 10px;
+      color: var(--text-secondary);
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.12s;
     }
 
-    .mention-chip:hover, .mention-chip.active {
+    .pill-chip:hover, .pill-chip.active {
       background: rgba(66, 133, 244, 0.15);
-      border-color: var(--gemini-blue);
-      color: var(--gemini-blue);
+      border-color: var(--blue);
+      color: var(--blue);
     }
 
-    .input-row-main {
+    .prompt-input-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .btn-attach {
-      width: 32px;
-      height: 32px;
+    .btn-attach-plus {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: transparent;
       border: none;
-      color: var(--gemini-text-secondary);
+      color: var(--text-secondary);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: background 0.12s;
+    }
+
+    .btn-attach-plus:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .main-textarea {
+      flex: 1;
+      min-height: 28px;
+      max-height: 160px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 15px;
+      line-height: 1.5;
+      resize: none;
+    }
+
+    .btn-submit-sparkle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
       display: grid;
       place-items: center;
       cursor: pointer;
       font-size: 16px;
       flex-shrink: 0;
+      transition: all 0.15s ease;
     }
 
-    .btn-attach:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--gemini-text-primary);
-    }
-
-    .gemini-textarea {
-      flex: 1;
-      min-height: 24px;
-      max-height: 120px;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--gemini-text-primary);
-      font-family: var(--font-google);
-      font-size: 13px;
-      line-height: 1.5;
-      resize: none;
-    }
-
-    .btn-gemini-send {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: transparent;
-      border: none;
-      color: var(--gemini-text-muted);
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      font-size: 14px;
-      flex-shrink: 0;
-      transition: all 0.15s;
-    }
-
-    .btn-gemini-send.active {
-      background: var(--gemini-blue);
+    .btn-submit-sparkle.ready {
+      background: var(--blue);
       color: #040c18;
-      box-shadow: 0 0 10px rgba(138, 180, 248, 0.4);
+      box-shadow: 0 0 12px rgba(138, 180, 248, 0.4);
     }
 
-    .gemini-disclaimer {
-      font-size: 10px;
-      color: var(--gemini-text-muted);
+    .footer-disclaimer {
+      font-size: 11px;
+      color: var(--text-muted);
       text-align: center;
+      margin-top: 2px;
       user-select: none;
     }
 
     /* ==========================================================================
-       3. FLOATING GEMINI BUBBLE (WHEN MINIMIZED)
+       5. FLOATING COMPANION OVERLAY WIDGET (Alt Mode)
        ========================================================================== */
-    .gemini-floating-bubble {
+    .floating-companion-card {
       position: absolute;
-      bottom: 24px;
-      right: 24px;
-      height: 48px;
+      top: 20px;
+      right: 20px;
+      width: 420px;
+      height: 600px;
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 100;
+      user-select: text;
+    }
+
+    .floating-companion-card.visible {
+      display: flex;
+    }
+
+    .companion-header {
+      height: 52px;
       padding: 0 18px;
-      border-radius: 24px;
-      background: #1e1f20;
-      border: 1px solid rgba(138, 180, 248, 0.35);
-      box-shadow: var(--gemini-glow), 0 8px 24px rgba(0, 0, 0, 0.6);
+      background: #18191a;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      z-index: 90;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      justify-content: space-between;
+      cursor: grab;
       user-select: none;
-    }
-
-    .gemini-floating-bubble:hover {
-      background: #282a2c;
-      transform: translateY(-2px) scale(1.02);
-      border-color: var(--gemini-blue);
-      box-shadow: 0 12px 36px rgba(66, 133, 244, 0.45);
-    }
-
-    .bubble-text {
-      font-size: 13px;
-      font-weight: 500;
-      background: var(--gemini-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
     /* Scrollbars */
@@ -827,566 +726,333 @@
 <body>
 
   <!-- ========================================================================
-       1. GOOGLE CHROME / GEMINI BROWSER HEADER
+       1. LEFT COLLAPSIBLE SIDEBAR (Gemini Navigation)
        ======================================================================== -->
-  <!-- Tab Strip -->
-  <header class="browser-tab-strip">
-    <div class="browser-tab active" data-page="overview">
-      <span class="tab-favicon">✦</span>
-      <span class="tab-title">Oh My Works — Overview</span>
-      <span class="tab-close">✕</span>
-    </div>
-    <div class="browser-tab" data-page="terminal">
-      <span class="tab-favicon">>_</span>
-      <span class="tab-title">Interactive Terminal</span>
-      <span class="tab-close">✕</span>
-    </div>
-    <div class="browser-tab" data-page="sessions">
-      <span class="tab-favicon">🔄</span>
-      <span class="tab-title">Cindy Sessions (45)</span>
-      <span class="tab-close">✕</span>
-    </div>
-    <div class="browser-tab" data-page="guardian">
-      <span class="tab-favicon">🛡️</span>
-      <span class="tab-title">Kernel PSI Anti-OOM</span>
-      <span class="tab-close">✕</span>
-    </div>
-    <button type="button" class="btn-new-tab" id="btnNewTab" title="New Tab">+</button>
-  </header>
-
-  <!-- Navigation Toolbar (Back, Forward, Refresh, Omnibox, Gemini Action) -->
-  <nav class="browser-toolbar">
-    <button type="button" class="nav-btn" id="btnNavBack" title="Back">←</button>
-    <button type="button" class="nav-btn" id="btnNavForward" title="Forward">→</button>
-    <button type="button" class="nav-btn" id="btnNavRefresh" title="Reload">↻</button>
-
-    <!-- Omnibox URL Bar -->
-    <div class="omnibox">
-      <span class="omnibox-lock">🔒</span>
-      <input type="text" id="omniboxInput" class="omnibox-input" value="omw://workspace/overview" />
-      <span class="omnibox-badge" id="psiOmniBadge">PSI 0.00%</span>
+  <aside class="sidebar" id="mainSidebar">
+    <!-- Top Action -->
+    <div class="sidebar-top">
+      <button type="button" class="icon-btn" id="btnToggleSidebar" title="Collapse sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
     </div>
 
-    <!-- The Signature Gemini Action Trigger in Toolbar -->
-    <button type="button" class="btn-gemini-action active" id="btnGeminiAction">
-      <svg class="sparkle-icon" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-        <defs>
-          <linearGradient id="gemini-sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#4285F4"/>
-            <stop offset="0.5" stop-color="#9B72CF"/>
-            <stop offset="1" stop-color="#D96570"/>
-          </linearGradient>
-        </defs>
-      </svg>
-      <span>Ask Gemini</span>
+    <!-- New Chat Pill -->
+    <button type="button" class="btn-new-chat" id="btnNewChat">
+      <svg style="width: 18px; height: 18px; stroke-width: 2;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <span>New chat</span>
     </button>
-  </nav>
 
-  <!-- ========================================================================
-       2. BROWSER CONTENT VIEWPORT (Pages: Overview, Terminal, Sessions, PSI)
-       ======================================================================== -->
-  <main class="browser-viewport" id="browserViewport">
-    <!-- Rendered Dynamically based on active tab / Omnibox -->
-  </main>
-
-  <!-- ========================================================================
-       3. SIGNATURE GOOGLE GEMINI FLOATING CHAT OVERLAY
-       ======================================================================== -->
-  <aside class="gemini-floating-panel" id="geminiFloatingPanel">
-    <!-- Header (Draggable) -->
-    <div class="gemini-chat-header" id="geminiHeader">
-      <div class="gemini-brand">
-        <svg class="sparkle-icon" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-        </svg>
-        <span class="gemini-gradient-text">Gemini</span>
-        <span class="gemini-model-badge">Advanced • OMW Local</span>
+    <!-- Recent Section -->
+    <div class="sidebar-label">Recent</div>
+    <div class="recent-list" id="recentList">
+      <div class="recent-item active" data-thread="1">
+        <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Audit Kernel PSI &amp; Anti-OOM</span>
       </div>
-
-      <div class="gemini-header-controls">
-        <button type="button" class="header-ctrl-btn" id="btnDockToggle" title="Dock / Float">⇤</button>
-        <button type="button" class="header-ctrl-btn" id="btnMinimize" title="Minimize">—</button>
-        <button type="button" class="header-ctrl-btn" id="btnCloseChat" title="Close">✕</button>
+      <div class="recent-item" data-thread="2">
+        <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>45 Cindy Sessions Harvester</span>
+      </div>
+      <div class="recent-item" data-thread="3">
+        <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Strix Autonomous Pentest</span>
       </div>
     </div>
 
-    <!-- Chat Messages Canvas -->
-    <div class="gemini-chat-canvas" id="geminiChatCanvas">
-      <!-- Welcome Hero (Empty State) -->
-      <div class="gemini-hero" id="geminiHero">
-        <svg style="width: 38px; height: 38px;" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-        </svg>
-        <div class="hero-greeting">Hello, Ivano</div>
-        <div class="hero-subtitle">How can I help you today?</div>
-
-        <div class="hero-prompt-grid">
-          <div class="hero-chip" data-prompt="Periksa metrik tekanan kernel PSI dan pastikan earlyoom aktif">
-            <span class="hero-chip-text">Audit Kernel PSI &amp; Anti-OOM</span>
-            <span class="hero-chip-icon">🛡️</span>
-          </div>
-          <div class="hero-chip" data-prompt="Pindai 45 sesi multi-agent lokal di ~/.prime dan ~/.codex">
-            <span class="hero-chip-text">Sinkron Sesi Cindy</span>
-            <span class="hero-chip-icon">🔄</span>
-          </div>
-          <div class="hero-chip" data-prompt="Jalankan audit keamanan pentest dengan Strix Autonomous Pentest">
-            <span class="hero-chip-text">Strix Security Pentest</span>
-            <span class="hero-chip-icon">🎯</span>
-          </div>
-          <div class="hero-chip" data-prompt="Ekstrak blueprint UI dan mock scaffold menggunakan REA Cloner">
-            <span class="hero-chip-text">Ekstrak Blueprint REA</span>
-            <span class="hero-chip-icon">📐</span>
-          </div>
+    <!-- Sidebar Bottom Status -->
+    <div class="sidebar-bottom">
+      <div class="bottom-row">
+        <span>Kernel PSI</span>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <div class="status-dot" id="psiDot"></div>
+          <span id="psiStatusText">Safe (0.00%)</span>
         </div>
       </div>
-    </div>
-
-    <!-- Gemini Floating Input Pill (Bottom) -->
-    <div class="gemini-input-container">
-      <div class="gemini-input-pill">
-        <!-- Target Tool Mentions -->
-        <div class="mention-chips-row">
-          <span class="mention-chip active" data-mention="@all">@all</span>
-          <span class="mention-chip" data-mention="@guardian">@guardian (PSI)</span>
-          <span class="mention-chip" data-mention="@cindy">@cindy (Sessions)</span>
-          <span class="mention-chip" data-mention="@terminal">@terminal</span>
-          <span class="mention-chip" data-mention="@strix">@strix</span>
-        </div>
-
-        <div class="input-row-main">
-          <button type="button" class="btn-attach" title="Attach file or context">+</button>
-          <textarea id="geminiTextarea" class="gemini-textarea" rows="1" placeholder="Ask Gemini or mention @tool..."></textarea>
-          <button type="button" class="btn-gemini-send" id="btnGeminiSend" title="Send message">➔</button>
-        </div>
+      <div class="bottom-row">
+        <span>Available RAM</span>
+        <span id="ramText">5,901 MB (46%)</span>
       </div>
-      <div class="gemini-disclaimer">Gemini may display inaccurate info, including about people, so double-check its responses.</div>
     </div>
   </aside>
 
   <!-- ========================================================================
-       4. MINIMIZED FLOATING BUBBLE
+       2. MAIN VIEWPORT & GEMINI CONVERSATION CANVAS
        ======================================================================== -->
-  <div class="gemini-floating-bubble" id="geminiFloatingBubble" style="display: none;">
-    <svg class="sparkle-icon" viewBox="0 0 24 24" fill="none">
-      <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-    </svg>
-    <span class="bubble-text">Ask Gemini</span>
-  </div>
+  <main class="main-wrapper">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="brand-section">
+        <div class="brand-title">
+          <span>Gemini</span>
+          <svg style="width: 14px; height: 14px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="model-selector">
+          <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+            <defs>
+              <linearGradient id="gemini-sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#4285F4"/>
+                <stop offset="0.5" stop-color="#9B72CF"/>
+                <stop offset="1" stop-color="#D96570"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Advanced 1.5 Pro • OMW Engine</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="btn-floating-toggle" id="btnToggleFloatingMode">
+          <svg style="width: 15px; height: 15px; stroke-width: 2;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          <span>Companion Mode</span>
+        </button>
+        <div class="user-avatar" title="Ivano Wisnu">I</div>
+      </div>
+    </header>
+
+    <!-- Scrollable Conversation Area -->
+    <div class="chat-scroll" id="chatScroll">
+      <div class="canvas-container" id="canvasContainer">
+        <!-- Gemini Hero State -->
+        <div class="gemini-hero" id="geminiHero">
+          <svg class="gemini-sparkle-hero" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+          </svg>
+          <div class="hero-title">Hello, Ivano</div>
+          <div class="hero-subtitle">How can I help you today?</div>
+
+          <div class="hero-cards-grid">
+            <div class="hero-card" data-prompt="Periksa kondisi kernel PSI di /proc/pressure/memory dan pastikan anti-OOM aktif">
+              <div class="hero-card-text">Audit tekanan memori kernel PSI dan earlyoom</div>
+              <div class="hero-card-bottom">🛡️</div>
+            </div>
+
+            <div class="hero-card" data-prompt="Pindai 45 sesi multi-turn di ~/.prime dan ~/.codex dengan Cindy Harvester">
+              <div class="hero-card-text">Sinkronkan 45 sesi transkrip agen lokal Cindy</div>
+              <div class="hero-card-bottom">🔄</div>
+            </div>
+
+            <div class="hero-card" data-prompt="Audit keamanan target dengan Strix Autonomous Pentest Scanner">
+              <div class="hero-card-text">Jalankan security pentest dan cek celah injeksi</div>
+              <div class="hero-card-bottom">🎯</div>
+            </div>
+
+            <div class="hero-card" data-prompt="Ekstrak blueprint UI dan mock scaffold menggunakan REA Cloner">
+              <div class="hero-card-text">Ekstrak struktur arsitektur blueprint dengan REA</div>
+              <div class="hero-card-bottom">📐</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- The Iconic Gemini Floating Input Pill (Bottom) -->
+    <div class="floating-prompt-bar">
+      <!-- Mention Chips -->
+      <div class="prompt-pills-row">
+        <span class="pill-chip active" data-mention="@all">@all (Orchestrator)</span>
+        <span class="pill-chip" data-mention="@guardian">@guardian (Anti-OOM)</span>
+        <span class="pill-chip" data-mention="@cindy">@cindy (Sessions)</span>
+        <span class="pill-chip" data-mention="@terminal">@terminal (PTY)</span>
+        <span class="pill-chip" data-mention="@strix">@strix (Pentest)</span>
+        <span class="pill-chip" data-mention="@rea">@rea (Cloner)</span>
+      </div>
+
+      <div class="prompt-input-row">
+        <button type="button" class="btn-attach-plus" title="Add files or tools">+</button>
+        <textarea id="promptInput" class="main-textarea" rows="1" placeholder="Ask Gemini or type a task..."></textarea>
+        <button type="button" class="btn-submit-sparkle" id="btnSubmit" title="Send message">➔</button>
+      </div>
+
+      <div class="footer-disclaimer">Gemini may display inaccurate info, so double-check its responses.</div>
+    </div>
+  </main>
 
   <script>
     (function () {
-      let currentPage = 'overview';
-      let sessionsData = [];
-      let telemetry = { status: 'SAFE', available_percent: 46.3, some_avg10: 0.0, full_avg10: 0.0 };
+      let isSidebarCollapsed = false;
       let selectedMention = '@all';
+      let telemetry = { status: 'SAFE', available_percent: 46.3, some_avg10: 0.0, full_avg10: 0.0 };
 
-      // 1. Browser Navigation & Tabs
-      const tabs = document.querySelectorAll('.browser-tab');
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          currentPage = tab.getAttribute('data-page');
-          updateOmnibox();
-          renderBrowserPage();
-        });
+      // 1. Sidebar Collapse Toggle
+      const sidebar = document.getElementById('mainSidebar');
+      document.getElementById('btnToggleSidebar').addEventListener('click', () => {
+        isSidebarCollapsed = !isSidebarCollapsed;
+        sidebar.classList.toggle('collapsed', isSidebarCollapsed);
       });
 
-      const omnibox = document.getElementById('omniboxInput');
-      function updateOmnibox() {
-        if (currentPage === 'overview') omnibox.value = 'omw://workspace/overview';
-        else if (currentPage === 'terminal') omnibox.value = 'omw://terminal';
-        else if (currentPage === 'sessions') omnibox.value = 'omw://sessions';
-        else if (currentPage === 'guardian') omnibox.value = 'omw://guardian';
-      }
-
-      omnibox.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          const val = omnibox.value.toLowerCase();
-          if (val.includes('term')) currentPage = 'terminal';
-          else if (val.includes('sess')) currentPage = 'sessions';
-          else if (val.includes('guard') || val.includes('psi')) currentPage = 'guardian';
-          else currentPage = 'overview';
-          tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-page') === currentPage));
-          renderBrowserPage();
-        }
-      });
-
-      document.getElementById('btnNavRefresh').addEventListener('click', () => {
-        fetchData();
-        renderBrowserPage();
-      });
-
-      // 2. Render Browser Viewport Pages
-      function renderBrowserPage() {
-        const vp = document.getElementById('browserViewport');
-        if (!vp) return;
-
-        if (currentPage === 'overview') {
-          vp.innerHTML = `
-            <div class="page-container">
-              <div class="page-title">Oh My Works — Workspace Overview</div>
-              <div class="page-desc">Linux-first AI workspace orchestrator, terminal multiplexer, anti-OOM guardian, and Gemini conversational client.</div>
-
-              <div class="gemini-card-grid">
-                <div class="gemini-card">
-                  <div class="gemini-card-header">
-                    <span class="gemini-card-title">Memory PSI Watchdog</span>
-                    <span>🛡️</span>
-                  </div>
-                  <div class="gemini-card-value">${telemetry.some_avg10.toFixed(2)}%</div>
-                  <div class="gemini-card-sub">Status: ${telemetry.status} (Stall safe)</div>
-                </div>
-
-                <div class="gemini-card">
-                  <div class="gemini-card-header">
-                    <span class="gemini-card-title">Cindy Harvester Sessions</span>
-                    <span>🔄</span>
-                  </div>
-                  <div class="gemini-card-value">${sessionsData.length || 45}</div>
-                  <div class="gemini-card-sub">Discovered in ~/.prime &amp; ~/.codex</div>
-                </div>
-
-                <div class="gemini-card">
-                  <div class="gemini-card-header">
-                    <span class="gemini-card-title">System RAM Available</span>
-                    <span>💾</span>
-                  </div>
-                  <div class="gemini-card-value">5,901 MB</div>
-                  <div class="gemini-card-sub">${telemetry.available_percent.toFixed(1)}% of 12.7 GB</div>
-                </div>
-
-                <div class="gemini-card">
-                  <div class="gemini-card-header">
-                    <span class="gemini-card-title">Daemon Status</span>
-                    <span>⚡</span>
-                  </div>
-                  <div class="gemini-card-value" style="color: var(--gemini-success);">ONLINE</div>
-                  <div class="gemini-card-sub">Listening on http://127.0.0.1:9180</div>
-                </div>
+      // 2. New Chat Button
+      document.getElementById('btnNewChat').addEventListener('click', () => {
+        const container = document.getElementById('canvasContainer');
+        container.innerHTML = `
+          <div class="gemini-hero" id="geminiHero">
+            <svg class="gemini-sparkle-hero" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+            </svg>
+            <div class="hero-title">Hello, Ivano</div>
+            <div class="hero-subtitle">How can I help you today?</div>
+            <div class="hero-cards-grid">
+              <div class="hero-card" data-prompt="Periksa kondisi kernel PSI di /proc/pressure/memory dan pastikan anti-OOM aktif">
+                <div class="hero-card-text">Audit tekanan memori kernel PSI dan earlyoom</div>
+                <div class="hero-card-bottom">🛡️</div>
               </div>
-
-              <div style="font-size: 16px; font-weight: 500; margin-bottom: 12px;">Active Workspace Monorepo Crates</div>
-              <div class="console-box">crates/
-├── omw-core        (kernel PSI reader &amp; zero-allocation memory abstractions)
-├── omw-guardian    (anti-OOM earlyoom mitigation watchdog)
-├── omw-terminal    (PTY multiplexer &amp; session process executor)
-├── omw-harness     (meta-AI subagent registry &amp; DAG scheduler)
-├── omw-session     (Cindy harvester indexing 45 multi-turn transcripts)
-├── omw-clone       (REA app cloner &amp; Strix autonomous pentest)
-└── omw-cli         (unified terminal CLI interface)</div>
-            </div>
-          `;
-        } else if (currentPage === 'terminal') {
-          vp.innerHTML = `
-            <div class="page-container">
-              <div class="page-title">Interactive PTY Terminal Multiplexer</div>
-              <div class="page-desc">Direct kernel process execution bridge via crates/omw-terminal.</div>
-              <div class="console-box" style="min-height: 480px; color: #8ab4f8;">
-ivano@omw-host:~/Oh-My-Works$ ./target/debug/omw-cli status
-OMW Guardian Status: [OK - SAFE]
-Memory: 46.3% available (5901.9 MB / 12752.9 MB)
-PSI Stall: some avg10=0.00%, full avg10=0.00%
-
-ivano@omw-host:~/Oh-My-Works$ ./target/debug/omw-cli sessions | head -n 4
-Discovered Agent Sessions on Laptop (Cindy session-import model): 45 sessions
-  [01] [Prime] Project: (6791 messages) | cwd: /mnt/windows/dev/tools/ai-harness-bridge
-  [02] [Prime] [Claims] Pengajuan + upload bukti + approval (23 msgs)
-  [03] [Prime] [Admin-Approvals] Approval workflow multi-level (14 msgs)
-
-ivano@omw-host:~/Oh-My-Works$ cargo check --workspace
-   Finished &#96;dev&#96; profile [unoptimized + debuginfo] in 0.12s
-ivano@omw-host:~/Oh-My-Works$ █</div>
-            </div>
-          `;
-        } else if (currentPage === 'sessions') {
-          vp.innerHTML = `
-            <div class="page-container">
-              <div class="page-title">Cindy Harvester — Multi-Agent Transcripts (${sessionsData.length || 45})</div>
-              <div class="page-desc">Indexed from ~/.prime, ~/.codex, and ~/.claude without extra overhead.</div>
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${sessionsData.map(s => `
-                  <div class="gemini-card" style="padding: 14px 18px; flex-direction: row; justify-content: space-between; align-items: center;">
-                    <div>
-                      <div style="font-size: 14px; font-weight: 500; color: var(--gemini-text-primary);">${escapeHtml(s.title || 'Session')}</div>
-                      <div style="font-size: 12px; color: var(--gemini-text-muted); font-family: var(--font-mono);">${escapeHtml(s.cwd || '-')} • ${s.message_count} messages</div>
-                    </div>
-                    <span style="font-size: 11px; font-family: var(--font-mono); padding: 3px 8px; border-radius: 12px; background: rgba(138, 180, 248, 0.15); color: var(--gemini-blue); font-weight: 600;">${s.source}</span>
-                  </div>
-                `).join('')}
+              <div class="hero-card" data-prompt="Pindai 45 sesi multi-turn di ~/.prime dan ~/.codex dengan Cindy Harvester">
+                <div class="hero-card-text">Sinkronkan 45 sesi transkrip agen lokal Cindy</div>
+                <div class="hero-card-bottom">🔄</div>
+              </div>
+              <div class="hero-card" data-prompt="Audit keamanan target dengan Strix Autonomous Pentest Scanner">
+                <div class="hero-card-text">Jalankan security pentest dan cek celah injeksi</div>
+                <div class="hero-card-bottom">🎯</div>
+              </div>
+              <div class="hero-card" data-prompt="Ekstrak blueprint UI dan mock scaffold menggunakan REA Cloner">
+                <div class="hero-card-text">Ekstrak struktur arsitektur blueprint dengan REA</div>
+                <div class="hero-card-bottom">📐</div>
               </div>
             </div>
-          `;
-        } else if (currentPage === 'guardian') {
-          vp.innerHTML = `
-            <div class="page-container">
-              <div class="page-title">Kernel PSI &amp; Anti-OOM Guardian</div>
-              <div class="page-desc">Linux /proc/pressure/memory reader with zero-allocation polling.</div>
-              <div class="gemini-card-grid">
-                <div class="gemini-card">
-                  <div class="gemini-card-title">Some Avg10 Stall</div>
-                  <div class="gemini-card-value" style="color: var(--gemini-success);">${telemetry.some_avg10.toFixed(2)}%</div>
-                  <div class="gemini-card-sub">Stall threshold: 25.0%</div>
-                </div>
-                <div class="gemini-card">
-                  <div class="gemini-card-title">Full Avg10 Stall</div>
-                  <div class="gemini-card-value" style="color: var(--gemini-success);">${telemetry.full_avg10.toFixed(2)}%</div>
-                  <div class="gemini-card-sub">Stall threshold: 10.0%</div>
-                </div>
-                <div class="gemini-card">
-                  <div class="gemini-card-title">Available RAM</div>
-                  <div class="gemini-card-value">5,901 MB</div>
-                  <div class="gemini-card-sub">46.3% of 12.7 GB</div>
-                </div>
-              </div>
-              <div class="console-box">[PSI READER]: /proc/pressure/memory connected successfully.
-[HEALTH CHECK]: Status is SAFE. Stall metrics are well below trigger levels.
-[PROTECTION]: Proactive earlyoom mitigation daemon active.</div>
-            </div>
-          `;
-        }
-      }
-
-      // 3. Gemini Floating Overlay Controls (Drag, Minimize, Dock, Toggle)
-      const panel = document.getElementById('geminiFloatingPanel');
-      const bubble = document.getElementById('geminiFloatingBubble');
-      const header = document.getElementById('geminiHeader');
-      const btnAction = document.getElementById('btnGeminiAction');
-      const btnDock = document.getElementById('btnDockToggle');
-      const btnMin = document.getElementById('btnMinimize');
-      const btnClose = document.getElementById('btnCloseChat');
-
-      let isDocked = false;
-
-      // Toggle action from toolbar
-      btnAction.addEventListener('click', () => {
-        if (panel.classList.contains('minimized')) {
-          panel.classList.remove('minimized');
-          bubble.style.display = 'none';
-          btnAction.classList.add('active');
-        } else {
-          panel.classList.add('minimized');
-          bubble.style.display = 'flex';
-          btnAction.classList.remove('active');
-        }
+          </div>
+        `;
+        bindCardListeners();
       });
 
-      // Floating bubble click to restore
-      bubble.addEventListener('click', () => {
-        panel.classList.remove('minimized');
-        bubble.style.display = 'none';
-        btnAction.classList.add('active');
-      });
-
-      // Minimize button
-      btnMin.addEventListener('click', () => {
-        panel.classList.add('minimized');
-        bubble.style.display = 'flex';
-        btnAction.classList.remove('active');
-      });
-
-      // Close button
-      btnCloseChat.addEventListener('click', () => {
-        panel.classList.add('minimized');
-        bubble.style.display = 'none';
-        btnAction.classList.remove('active');
-      });
-
-      // Dock toggle button
-      btnDock.addEventListener('click', () => {
-        isDocked = !isDocked;
-        panel.classList.toggle('docked', isDocked);
-        btnDock.textContent = isDocked ? '↗' : '⇤';
-        btnDock.title = isDocked ? 'Float Overlay' : 'Dock to Side';
-        if (isDocked) {
-          panel.style.top = '';
-          panel.style.left = '';
-          panel.style.right = '0';
-        } else {
-          panel.style.top = '60px';
-          panel.style.right = '24px';
-          panel.style.left = '';
-        }
-      });
-
-      // Dragging logic for floating mode
-      let isDragging = false;
-      let startX, startY, startLeft, startTop;
-
-      header.addEventListener('mousedown', (e) => {
-        if (isDocked || e.target.closest('.gemini-header-controls')) return;
-        isDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        const rect = panel.getBoundingClientRect();
-        startLeft = rect.left;
-        startTop = rect.top;
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-      });
-
-      function onMouseMove(e) {
-        if (!isDragging) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        panel.style.left = `${Math.max(10, Math.min(window.innerWidth - 480, startLeft + dx))}px`;
-        panel.style.top = `${Math.max(48, Math.min(window.innerHeight - 100, startTop + dy))}px`;
-        panel.style.right = 'auto';
-      }
-
-      function onMouseUp() {
-        isDragging = false;
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-      }
-
-      // 4. Gemini Chat Logic & Mentions
-      const textarea = document.getElementById('geminiTextarea');
-      const btnSend = document.getElementById('btnGeminiSend');
-      const canvas = document.getElementById('geminiChatCanvas');
-      const hero = document.getElementById('geminiHero');
-
-      textarea.addEventListener('input', () => {
-        textarea.style.height = 'auto';
-        textarea.style.height = `${Math.min(120, textarea.scrollHeight)}px`;
-        btnSend.classList.toggle('active', textarea.value.trim().length > 0);
-      });
-
-      // Mention pills
-      document.querySelectorAll('.mention-chip').forEach(chip => {
+      // 3. Mention Chips
+      document.querySelectorAll('.pill-chip').forEach(chip => {
         chip.addEventListener('click', () => {
           selectedMention = chip.getAttribute('data-mention');
-          document.querySelectorAll('.mention-chip').forEach(c => c.classList.remove('active'));
+          document.querySelectorAll('.pill-chip').forEach(c => c.classList.remove('active'));
           chip.classList.add('active');
         });
       });
 
-      // Suggestion chips
-      document.querySelectorAll('.hero-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-          const prompt = chip.getAttribute('data-prompt');
-          submitMessage(prompt);
-        });
+      // 4. Input auto-expand and submit
+      const input = document.getElementById('promptInput');
+      const btnSubmit = document.getElementById('btnSubmit');
+      const chatScroll = document.getElementById('chatScroll');
+
+      input.addEventListener('input', () => {
+        input.style.height = 'auto';
+        input.style.height = `${Math.min(160, input.scrollHeight)}px`;
+        btnSubmit.classList.toggle('ready', input.value.trim().length > 0);
       });
 
-      textarea.addEventListener('keydown', (e) => {
+      input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
-          const val = textarea.value.trim();
-          if (val) submitMessage(val);
+          const val = input.value.trim();
+          if (val) submitPrompt(val);
         }
       });
 
-      btnSend.addEventListener('click', () => {
-        const val = textarea.value.trim();
-        if (val) submitMessage(val);
+      btnSubmit.addEventListener('click', () => {
+        const val = input.value.trim();
+        if (val) submitPrompt(val);
       });
 
-      function submitMessage(text) {
+      function bindCardListeners() {
+        document.querySelectorAll('.hero-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const prompt = card.getAttribute('data-prompt');
+            submitPrompt(prompt);
+          });
+        });
+      }
+      bindCardListeners();
+
+      function submitPrompt(text) {
+        const hero = document.getElementById('geminiHero');
         if (hero) hero.style.display = 'none';
 
-        // 1. User Message Row
-        const userRow = document.createElement('div');
-        userRow.className = 'chat-msg-row msg-user-row';
-        userRow.innerHTML = `<div class="user-bubble">${escapeHtml(text)}</div>`;
-        canvas.appendChild(userRow);
+        const container = document.getElementById('canvasContainer');
 
-        // 2. Gemini Assistant Response
+        // User Message
+        const userDiv = document.createElement('div');
+        userDiv.className = 'msg-row msg-user';
+        userDiv.innerHTML = `<div class="bubble-user">${escapeHtml(text)}</div>`;
+        container.appendChild(userDiv);
+
+        // Assistant Gemini Message
         const lower = text.toLowerCase();
         let toolName = 'omw_guardian::assess()';
-        let toolOutput = 'Status: SAFE\nPressure stall: 0.00%\nAvailable RAM: 5,901 MB';
-        let thought = 'Checking kernel /proc/pressure/memory and verifying anti-OOM safety bounds...';
-        let reply = 'Kernel memory pressure is **SAFE (0.00% stall)**. System has **5,901 MB available RAM** (46.3% of 12.7 GB). The desktop environment is fully shielded from Linux OOM killer.';
+        let toolOutput = 'Status: SAFE\nPressure stall (some_avg10): 0.00%\nAvailable RAM: 5,901 MB (46.3%)';
+        let thought = 'Menganalisis status memori kernel Linux melalui /proc/pressure/memory...';
+        let answer = 'Status memori kernel berada dalam kondisi **SAFE (Aman)** dengan tingkat stall **0.00%**.\n\n- **RAM Tersedia**: 5,901 MB (46.3% dari total 12.7 GB).\n- **Proteksi Anti-OOM**: Watchdog aktif dan sistem aman dari freeze.';
 
         if (lower.includes('cindy') || lower.includes('sesi') || lower.includes('session')) {
           toolName = 'omw_session::scan_all()';
-          toolOutput = 'Discovered 45 sessions across ~/.prime and ~/.codex.';
-          thought = 'Traversing local transcript paths with zero-copy JSONL parser...';
-          reply = 'Cindy harvester discovered **45 local agent sessions**. You can explore the full transcripts in the **Cindy Sessions** browser tab.';
+          toolOutput = 'Scanned ~/.prime, ~/.codex, ~/.claude\nDiscovered: 45 active sessions';
+          thought = 'Memindai direktori sesi lokal dengan parser JSONL streaming...';
+          answer = 'Berhasil mengindeks **45 sesi multi-turn** lokal dari Cindy session harvester architecture. Transkrip siap diakses kapan saja.';
         } else if (lower.includes('strix') || lower.includes('pentest') || lower.includes('keamanan')) {
           toolName = 'omw_clone::StrixScanner::audit()';
-          toolOutput = 'Scanned 18 endpoints. Critical: 0, High: 0, Low: 1 (CSP header).';
-          thought = 'Evaluating local daemon attack surface and SSRF vectors...';
-          reply = 'Strix autonomous pentest complete: **0 critical vulnerabilities** found on port 9180. Target is safe from injection and RCE.';
+          toolOutput = 'Endpoints scanned: 18\nCritical: 0\nHigh: 0\nLow: 1 (CSP header)';
+          thought = 'Menjalankan audit kerentanan statis dan dinamis pada daemon lokal...';
+          answer = 'Audit keamanan Strix selesai: **0 kerentanan kritis**. Target aman dari SQL Injection dan RCE.';
         } else if (lower.includes('rea') || lower.includes('cloner') || lower.includes('blueprint')) {
           toolName = 'omw_clone::ReaCloner::blueprint()';
-          toolOutput = 'Generated AppLayoutChrome.vue and AuthBridge.ts scaffold.';
-          thought = 'Decompiling component hierarchy and scaffolding Tailwind tokens...';
-          reply = 'REA cloner generated the application blueprint and mock scaffold in `crates/omw-clone/output`.';
+          toolOutput = 'Generated AppLayoutChrome.vue and AuthBridge.ts scaffold';
+          thought = 'Mengekstraksi hierarki komponen dan merekonstruksi arsitektur mock...';
+          answer = 'Blueprint arsitektur aplikasi berhasil digenerate di `crates/omw-clone/output`.';
         }
 
-        const geminiRow = document.createElement('div');
-        geminiRow.className = 'chat-msg-row';
-        geminiRow.innerHTML = `
-          <svg class="sparkle-icon" style="margin-top: 4px;" viewBox="0 0 24 24" fill="none">
+        const geminiDiv = document.createElement('div');
+        geminiDiv.className = 'msg-row';
+        geminiDiv.innerHTML = `
+          <svg class="gemini-sparkle-avatar" viewBox="0 0 24 24" fill="none">
             <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
           </svg>
-          <div class="gemini-bubble">
-            <details class="gemini-thinking" open>
+          <div class="bubble-gemini">
+            <details class="reasoning-box" open>
               <summary>Show thinking</summary>
-              <div class="gemini-thinking-content">${escapeHtml(thought)}</div>
+              <div class="reasoning-text">${escapeHtml(thought)}</div>
             </details>
 
-            <div class="gemini-tool-card">
-              <div class="gemini-tool-header">
+            <div class="tool-execution-card">
+              <div class="tool-header">
                 <span>⚙ ${escapeHtml(toolName)}</span>
-                <span style="color: var(--gemini-success);">SUCCESS</span>
+                <span style="color: var(--green);">COMPLETED</span>
               </div>
-              <div class="gemini-tool-body">${escapeHtml(toolOutput)}</div>
+              <div class="tool-body">${escapeHtml(toolOutput)}</div>
             </div>
 
-            <div class="gemini-response-text">${formatMarkdown(reply)}</div>
+            <div class="gemini-answer">${formatMarkdown(answer)}</div>
 
-            <div class="gemini-msg-actions">
-              <button type="button" class="msg-action-btn" title="Good response">👍</button>
-              <button type="button" class="msg-action-btn" title="Bad response">👎</button>
-              <button type="button" class="msg-action-btn" title="Copy text" onclick="navigator.clipboard.writeText('${escapeHtml(reply).replace(/'/g, "\\'")}')">📋</button>
-              <button type="button" class="msg-action-btn" title="Share">↗</button>
-              <button type="button" class="msg-action-btn" title="Retry">↻</button>
+            <div class="answer-actions">
+              <button type="button" class="action-circle-btn" title="Good response">👍</button>
+              <button type="button" class="action-circle-btn" title="Bad response">👎</button>
+              <button type="button" class="action-circle-btn" title="Copy text" onclick="navigator.clipboard.writeText('${escapeHtml(answer).replace(/'/g, "\\'")}')">📋</button>
+              <button type="button" class="action-circle-btn" title="Share">↗</button>
+              <button type="button" class="action-circle-btn" title="Retry">↻</button>
             </div>
           </div>
         `;
-        canvas.appendChild(geminiRow);
+        container.appendChild(geminiDiv);
 
-        textarea.value = '';
-        textarea.style.height = 'auto';
-        btnSend.classList.remove('active');
-        canvas.scrollTop = canvas.scrollHeight;
+        input.value = '';
+        input.style.height = 'auto';
+        btnSubmit.classList.remove('ready');
+        chatScroll.scrollTop = chatScroll.scrollHeight;
       }
 
-      // 5. Fetch Telemetry & Sessions from daemon :9180 or Tauri invoke
-      async function fetchData() {
+      // 5. Fetch Telemetry
+      async function fetchTelemetry() {
         try {
-          let sess = [];
           let tel = null;
-
           if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
             tel = await window.__TAURI__.core.invoke('get_memory_telemetry').catch(() => null);
-            sess = await window.__TAURI__.core.invoke('get_unified_sessions').catch(() => []);
           }
-
-          if (!tel || sess.length === 0) {
-            const [sRes, tRes] = await Promise.all([
-              fetch('http://127.0.0.1:9180/sessions').then(r => r.json()).catch(() => []),
-              fetch('http://127.0.0.1:9180/').then(r => r.json()).catch(() => null)
-            ]);
-            sess = sRes || [];
-            tel = tRes;
+          if (!tel) {
+            tel = await fetch('http://127.0.0.1:9180/').then(r => r.json()).catch(() => null);
           }
-
-          sessionsData = sess || [];
           if (tel) {
             telemetry = tel;
-            const badge = document.getElementById('psiOmniBadge');
-            if (badge) {
-              badge.textContent = `PSI ${telemetry.some_avg10.toFixed(2)}%`;
-              badge.style.color = telemetry.status === 'SAFE' ? 'var(--gemini-success)' : 'var(--gemini-danger)';
-            }
+            const text = document.getElementById('psiStatusText');
+            const dot = document.getElementById('psiDot');
+            const ram = document.getElementById('ramText');
+            if (text) text.textContent = `Safe (${telemetry.some_avg10.toFixed(2)}%)`;
+            if (dot) dot.style.background = telemetry.status === 'SAFE' ? 'var(--green)' : '#f28b82';
+            if (ram) ram.textContent = `5,901 MB (${telemetry.available_percent.toFixed(0)}%)`;
           }
         } catch (err) {
-          console.error("Telemetry fetch error:", err);
+          console.error("Telemetry error:", err);
         }
       }
 
@@ -1394,7 +1060,7 @@ ivano@omw-host:~/Oh-My-Works$ █</div>
         if (!text) return '';
         let escaped = escapeHtml(text);
         escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        escaped = escaped.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px;">$1</code>');
+        escaped = escaped.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px;">$1</code>');
         escaped = escaped.replace(/\n/g, '<br/>');
         return escaped;
       }
@@ -1409,10 +1075,8 @@ ivano@omw-host:~/Oh-My-Works$ █</div>
           .replace(/'/g, '&#39;');
       }
 
-      // Initial execution
-      renderBrowserPage();
-      fetchData();
-      setInterval(fetchData, 4000);
+      fetchTelemetry();
+      setInterval(fetchTelemetry, 4000);
     })();
   </script>
 </body>
