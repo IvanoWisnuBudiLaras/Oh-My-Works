@@ -1,6 +1,8 @@
 use std::env;
 use omw_guardian::{Guardian, HealthLevel};
 use omw_terminal::TerminalMultiplexer;
+use omw_harness::HarnessOrchestrator;
+use omw_memory::{GraphMemory, MemoryLayer};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -37,11 +39,31 @@ fn main() {
                 println!("  [{}] {} ({}) - {:?}", idx, sess.title, sess.id, sess.status);
             }
         }
+        "harness" => {
+            let mut orch = HarnessOrchestrator::new();
+            orch.register_agent("sub-1", "Code Analyst", "Rust/C++ Code Review");
+            let t = orch.create_task("t1", "Audit Kernel PSI", "Check /proc/pressure");
+            orch.dispatch(t, "sub-1");
+            println!("Meta-AI Harness initialized:");
+            for agent in &orch.agents {
+                println!("  Agent [{}] {} (Role: {}) -> Status: {:?}", agent.id, agent.name, agent.role, agent.status);
+            }
+        }
+        "memory" => {
+            let mut mem = GraphMemory::new();
+            mem.insert_node("core", MemoryLayer::Semantic, "Architecture", "Rust Monorepo");
+            mem.insert_node("guard", MemoryLayer::Procedural, "PSI Monitor", "Zero-alloc kernel watcher");
+            mem.link("core", "guard", "protected_by");
+            println!("Graph Memory nodes: {}, edges: {}", mem.nodes.len(), mem.edges.len());
+            for edge in &mem.edges {
+                println!("  ({}: {}) --[{}]--> ({})", edge.from, mem.nodes[0].title, edge.relation, edge.to);
+            }
+        }
         "version" | "--version" | "-v" => {
             println!("Oh My Works (OMW) CLI v0.1.0");
         }
         other => {
-            eprintln!("Unknown command: '{}'. Available: status, terminal, version", other);
+            eprintln!("Unknown command: '{}'. Available: status, terminal, harness, memory, version", other);
             std::process::exit(1);
         }
     }

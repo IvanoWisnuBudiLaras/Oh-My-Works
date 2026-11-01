@@ -8,6 +8,8 @@ version = "0.1.0"
 dependencies = [
  "omw-core",
  "omw-guardian",
+ "omw-harness",
+ "omw-memory",
  "omw-terminal",
 ]
 
@@ -20,6 +22,25 @@ name = "omw-guardian"
 version = "0.1.0"
 dependencies = [
  "omw-core",
+]
+
+[[package]]
+name = "omw-harness"
+version = "0.1.0"
+dependencies = [
+ "omw-core",
+]
+
+[[package]]
+name = "omw-memory"
+version = "0.1.0"
+
+[[package]]
+name = "omw-server-daemon"
+version = "0.1.0"
+dependencies = [
+ "omw-core",
+ "omw-guardian",
 ]
 
 [[package]]

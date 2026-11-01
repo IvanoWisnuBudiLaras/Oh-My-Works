@@ -4,7 +4,10 @@ members = [
     "crates/omw-core",
     "crates/omw-terminal",
     "crates/omw-guardian",
+    "crates/omw-harness",
+    "crates/omw-memory",
     "crates/omw-cli",
+    "apps/server-daemon",
 ]
 
 [workspace.package]

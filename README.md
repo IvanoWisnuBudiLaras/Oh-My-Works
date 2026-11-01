@@ -14,10 +14,14 @@ Oh-My-Works/
 ├── Cargo.toml            # Workspace root
 ├── crates/
 │   ├── omw-core/         # Cross-platform abstractions (Linux PSI kernel sensors & Win32 memory API fallback)
-│   ├── omw-terminal/     # Lightweight multi-terminal multiplexer state & session management
-│   ├── omw-guardian/     # Proactive Anti-OOM evaluator & system health watchdog
-│   └── omw-cli/          # Fast CLI entrypoint for testing, telemetry, and daemon control
-├── apps/                 # Desktop frontend (Tauri) and server deployment agents
+│   ├── omw-terminal/     # Multi-terminal multiplexer state & session manager
+│   ├── omw-guardian/     # Anti-OOM evaluator & system health watchdog
+│   ├── omw-harness/      # Meta-AI harness orchestrator & agent task dispatcher
+│   ├── omw-memory/       # Hybrid Tri-Layer Graph Memory (episodic, semantic, procedural)
+│   └── omw-cli/          # Fast CLI entrypoint for telemetry and daemon control
+├── apps/
+│   ├── desktop/          # Desktop UI application & interactive workspace
+│   └── server-daemon/    # Zero-dependency, ultra-lightweight telemetry daemon (<1MB, stdlib HTTP)
 └── docs/
     ├── prd_oh_my_works.md                                              # Complete PRD & 8 Pillars Architecture
     ├── oh_my_works_omw_linux_ai_workspace_meta_harness_orchestrator.html  # Interactive UI Prototype
@@ -32,16 +36,27 @@ Oh-My-Works/
 cargo test
 ```
 
-### Run CLI Status (Anti-OOM Sensor & Kernel PSI Telemetry)
+### Run CLI (Status, Multiplexer, Harness, Memory)
 
 ```bash
 cargo run -p omw-cli -- status
+cargo run -p omw-cli -- terminal
+cargo run -p omw-cli -- harness
+cargo run -p omw-cli -- memory
 ```
 
-### Inspect Multiplexer State
+### Run Server Telemetry Daemon
 
 ```bash
-cargo run -p omw-cli -- terminal
+cargo run -p omw-server-daemon
+# curl http://127.0.0.1:9180
+```
+
+### Run Desktop UI (Web Preview)
+
+```bash
+cd apps/desktop && npm start
+# Open http://localhost:3000
 ```
 
 ---

@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oh My Works (OMW) — Linux AI Workspace & Meta-Harness Orchestrator</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .display-title {
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      font-optical-sizing: auto;
+    }
+    .glass-chrome {
+      background: rgba(15, 23, 42, 0.76);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-color: rgba(148, 163, 184, 0.16);
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.62);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms ease, box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+    .btn-fluid {
+      transition: transform 110ms cubic-bezier(0.22, 1, 0.36, 1), background-color 160ms ease, opacity 160ms ease;
+      user-select: none;
+    }
+    .btn-fluid:active {
+      transform: scale(0.96);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .btn-fluid:active {
+        transform: none !important;
+      }
+    }
+    @media (prefers-reduced-transparency: reduce) {
+      .glass-chrome, .glass-card {
+        background: #0f172a !important;
+        backdrop-filter: none !important;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.4);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.45);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(56, 189, 248, 0.6);
+    }
+    .pulse-dot {
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(1.18); }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden">
+
+  <!-- TOP TRANSLUCENT LINUX DESKTOP HEADER (Tauri + rmux + Chezmoi + Mise) -->
+  <header class="glass-chrome sticky top-0 z-40 border-b px-3 sm:px-5 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2.5">
+      <!-- Brand & OS Footprint Badge -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-cyan-500/20 font-mono font-bold text-sm tracking-tighter">
+          OMW
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base display-title text-white">Oh My Works</h1>
+            <span class="px-2 py-0.5 text-[11px] font-mono rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+              Tauri v2 • 64 MB RAM
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">
+            Linux AI Workspace • Rust/Go/Zig Core • Hybrid Graphify+Graphiti Memory • Auto-Skills
+          </p>
+        </div>
+      </div>
+
+      <!-- Scenario Selector & Live System Pills -->
+      <div class="flex flex-wrap items-center gap-2">
+        <label for="scenarioSelect" class="text-xs text-slate-400 font-medium hidden md:inline">Skenario Aktif:</label>
+        <select id="scenarioSelect" class="bg-slate-900/90 text-xs text-slate-200 border border-slate-700/80 rounded-lg px-2.5 py-1.5 font-medium focus:outline-none focus:border-cyan-400">
+          <option value="clone_collab">1. REA Clone App Besar + Browser-Use + Waydroid E2E + Deploy</option>
+          <option value="strix_security">2. Strix Pentest Otomatis + Auto-Fix + Docker Slim 30x</option>
+          <option value="oom_recovery">3. Mitigasi Server OOM Spike + Memory Leak Patch Otomatis</option>
+        </select>
+
+        <button id="btnGitHubSync" type="button" class="btn-fluid px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700/80 border border-slate-700 text-xs font-mono text-slate-200 flex items-center gap-1.5" title="Chezmoi Auto-Backup & Mise Tool Updater">
+          <span class="w-2 h-2 rounded-full bg-cyan-400" id="syncDot"></span>
+          <span id="syncLabel">GitHub Sync: OK</span>
+        </button>
+
+        <button id="btnPRDModal" type="button" class="btn-fluid px-2.5 py-1.5 rounded-lg bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-400/40 text-xs font-medium text-indigo-200">
+          Ringkasan 8 Pilar Repo
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs (6 Core Modules) -->
+    <nav class="max-w-7xl mx-auto mt-2.5 pt-2 border-t border-slate-800/80 flex items-center gap-1.5 overflow-x-auto no-scrollbar" aria-label="Workspace Modules">
+      <button type="button" data-tab="synthesis" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 whitespace-nowrap">
+        <span>✨</span> 1. Executive Synthesis (Hasil Akhir)
+      </button>
+      <button type="button" data-tab="terminals" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
+        <span>⌨️</span> 2. Multi-Terminal &amp; Meta-Harness (5 Tab)
+      </button>
+      <button type="button" data-tab="emulator" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
+        <span>📱</span> 3. Android Emulator (Waydroid / Redroid)
+      </button>
+      <button type="button" data-tab="browser" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
+        <span>🌐</span> 4. Browser Use (Lightpanda Zig) + REA &amp; Strix
+      </button>
+      <button type="button" data-tab="memory" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
+        <span>🧠</span> 5. Hybrid Graph Memory &amp; Auto-Skills
+      </button>
+      <button type="button" data-tab="server" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
+        <span>🛡️</span> 6. Docker Slim &amp; Server Anti-OOM Panel
+      </button>
+    </nav>
+  </header>
+
+  <!-- GLOBAL META-HARNESS COMMAND BAR & AUTO-SKILL INTERCEPTOR -->
+  <section class="bg-slate-900/70 border-b border-slate-800/80 px-3 sm:px-5 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5">
+      <div class="flex-1 flex items-center gap-2 bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-1.5 focus-within:border-cyan-500/60">
+        <span class="text-xs font-mono text-cyan-400 font-semibold shrink-0">meta-harness ❯</span>
+        <input id="globalPromptInput" type="text" value="Tiru fitur sinkronisasi real-time dari app target via REA, uji di Lightpanda & emulator Waydroid, lalu kompres Docker 30x dan deploy bebas OOM" class="w-full bg-transparent text-xs text-slate-100 focus:outline-none font-mono" placeholder="Ketik instruksi ke Meta-AI Harness (otomatis memilih Skill & memanggil Tab Terminal)..." />
+        <button id="btnRunMetaPrompt" type="button" class="btn-fluid px-3 py-1 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs shrink-0">
+          Summon &amp; Eksekusi
+        </button>
+      </div>
+
+      <!-- Auto-Injected Industry Skills Bar (Superpowers + Anthropic Skills) -->
+      <div class="flex items-center gap-1.5 flex-wrap text-[11px]">
+        <span class="text-slate-400 font-mono">Auto-Skills Aktif:</span>
+        <span id="badgeSkill1" class="px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/30 font-mono">superpowers/tdd</span>
+        <span id="badgeSkill2" class="px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30 font-mono">rea/binary-trace</span>
+        <span id="badgeSkill3" class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono">strix/pentest-gate</span>
+        <span id="badgeSkill4" class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono">slim/docker-30x</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN WORKSPACE CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 py-4 space-y-5 pb-28">
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: EXECUTIVE SYNTHESIS BOARD (HASIL KESIMPULAN AKHIR SEMUA TAB)     -->
+    <!-- ========================================================================= -->
+    <section id="view-synthesis" class="workspace-view space-y-4">
+      <!-- Top Banner: Executive Verdict & Token/Memory Efficiency -->
+      <div class="glass-card rounded-2xl p-4 sm:p-5 border-l-4 border-l-emerald-400">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40" id="synthStatusBadge">
+                ✓ 5/5 TAB TERMINAL SELESAI • SIap DEPLOY
+              </span>
+              <span class="text-xs font-mono text-slate-400" id="synthProtocolTag">
+                AG-UI Stream + Open-Canvas Synthesis v2.4
+              </span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-white display-title" id="synthHeadline">
+              Hasil Akhir: Fitur Kolaborasi Real-Time Berhasil Ditiru (REA), Lulus Uji Emulator Waydroid &amp; Strix, Image Docker Dipangkas 28,4x
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed" id="synthSummaryText">
+              Meta-AI Harness telah menggabungkan hasil eksekusi dari 5 tab terminal paralel. Dengan memori <strong>Graphify + Graphiti (cognee-rs)</strong>, pemakaian token turun <strong>71,5x</strong> (hanya 1.840 token per siklus) dan total RAM ruang kerja terjaga di <strong>64 MB</strong>.
+            </p>
+          </div>
+
+          <!-- 4 Key Quantitative Metric Pills -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 shrink-0">
+            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-center">
+              <div class="text-[11px] text-slate-400 font-mono"> Penghematan Token</div>
+              <div class="text-base sm:text-lg font-bold text-cyan-300 font-mono" id="metricTokenSave">71.5x</div>
+              <div class="text-[10px] text-slate-400">Graphify + Graphiti</div>
+            </div>
+            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-center">
+              <div class="text-[11px] text-slate-400 font-mono">RAM Browser Zig</div>
+              <div class="text-base sm:text-lg font-bold text-emerald-300 font-mono" id="metricBrowserRam">18 MB</div>
+              <div class="text-[10px] text-slate-400">Lightpanda (16x Irit)</div>
+            </div>
+            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-center">
+              <div class="text-[11px] text-slate-400 font-mono">Ukuran Docker</div>
+              <div class="text-base sm:text-lg font-bold text-indigo-300 font-mono" id="metricDockerSlim">840→29 MB</div>
+              <div class="text-[10px] text-slate-400">SlimToolkit (28.9x)</div>
+            </div>
+            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-center">
+              <div class="text-[11px] text-slate-400 font-mono">Skor Strix &amp; E2E</div>
+              <div class="text-base sm:text-lg font-bold text-amber-300 font-mono" id="metricTestScore">100% Pass</div>
+              <div class="text-[10px] text-slate-400">Waydroid + Strix PoC</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid: Left = Synthesis Per-Terminal Cards, Right = Unified Architecture Diff & Verification -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <!-- Left 7 Cols: Hasil Sintesis per Tab Terminal -->
+        <div class="lg:col-span-7 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400 font-semibold">
+              Rangkuman Kontribusi 5 Tab Terminal Terhubung (Klik Kartu untuk Inspeksi Tab)
+            </h3>
+            <span class="text-[11px] text-cyan-400 font-mono">Shared Socket: /tmp/omw-rmux.sock</span>
+          </div>
+
+          <div id="synthesisTabCards" class="space-y-2.5">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Right 5 Cols: Artefak Kode, Audit Keamanan Strix, & Status Emulator -->
+        <div class="lg:col-span-5 space-y-3">
+          <div class="glass-card rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <div>
+                <h3 class="text-sm font-bold text-white">Artefak Kesimpulan &amp; Verifikasi Standar Industri</h3>
+                <p class="text-[11px] text-slate-400">Dihasilkan otomatis oleh protokol AG-UI &amp; Superpowers</p>
+              </div>
+              <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                Zero-Hallucination Gate
+              </span>
+            </div>
+
+            <!-- Code Diff Snippet -->
+            <div class="bg-slate-950 rounded-xl p-3 border border-slate-800/90 font-mono text-[11px] space-y-1 overflow-x-auto" id="synthDiffBox">
+              <div class="text-slate-400">// File: src-rust/sync_engine/websocket_crdt.rs (Ditiru via REA &amp; Dioptimalkan ke Rust)</div>
+              <div class="text-rose-400">- // Legacy Node.js worker (210 MB RAM, GC pause 45ms)</div>
+              <div class="text-emerald-400">+ pub async fn broadcast_delta(state: Arc&lt;CrdtGraph&gt;, payload: &[u8]) -&gt; Result&lt;(), OMWError&gt; {</div>
+              <div class="text-emerald-400">+     state.apply_zero_copy_patch(payload).await?; // 4.2 MB RAM, 0.3ms latency</div>
+              <div class="text-emerald-400">+     Ok(())</div>
+              <div class="text-emerald-400">+ }</div>
+            </div>
+
+            <!-- Verification Checklist -->
+            <div class="space-y-2 text-xs" id="synthChecklist">
+              <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/70 border border-slate-800">
+                <span class="text-slate-200">1. Bukti Reverse Engineering (REA Binary &amp; Network Trace)</span>
+                <span class="font-mono text-emerald-400 font-semibold">TERVERIFIKASI</span>
+              </div>
+              <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/70 border border-slate-800">
+                <span class="text-slate-200">2. Uji Browser Use (Lightpanda Zig + Playwright-MCP)</span>
+                <span class="font-mono text-emerald-400 font-semibold">14/14 SKENARIO LULUS</span>
+              </div>
+              <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/70 border border-slate-800">
+                <span class="text-slate-200">3. Uji Emulator Android Linux (Waydroid LXC + Maestro)</span>
+                <span class="font-mono text-emerald-400 font-semibold">60 FPS • 0 CRASH</span>
+              </div>
+              <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/70 border border-slate-800">
+                <span class="text-slate-200">4. Audit Pentest Dinamis Strix (PoC Exploit Check)</span>
+                <span class="font-mono text-emerald-400 font-semibold">0 CELAH KRITIS</span>
+              </div>
+            </div>
+
+            <div class="pt-1 flex flex-wrap gap-2">
+              <button type="button" id="btnJumpEmulatorFromSynth" class="btn-fluid flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-cyan-300 border border-slate-700">
+                Buka Layar Emulator Waydroid ➔
+              </button>
+              <button type="button" id="btnJumpServerFromSynth" class="btn-fluid flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-emerald-300 border border-slate-700">
+                Cek Panel Server Anti-OOM ➔
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: MULTI-TERMINAL & META-AI HARNESS (rmux + claude-squad)            -->
+    <!-- ========================================================================= -->
+    <section id="view-terminals" class="workspace-view hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white">Orkestrasi Multi-Terminal &amp; Meta-AI Harness (rmux SDK + claude-squad)</h2>
+          <p class="text-xs text-slate-300">
+            Setiap tab terminal berjalan di <em>Git Worktree</em> terisolasi namun saling berbagi konteks melalui <strong>Hybrid Graph Memory</strong> dan dikomandoi oleh <strong>Meta-Harness</strong>.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btnBroadcastCommand" class="btn-fluid px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-xs font-mono text-cyan-200">
+            ⚡ Sinkronkan Konteks Semua Tab
+          </button>
+          <button type="button" id="btnSynthesizeNow" class="btn-fluid px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-semibold text-xs">
+            ✨ Kumpulkan ke Synthesis Board
+          </button>
+        </div>
+      </div>
+
+      <!-- Terminal Multiplexer Grid (5 Connected Panes) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="terminalGridContainer">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <!-- Interactive Terminal Input for Selected Tab -->
+      <div class="glass-card rounded-2xl p-3.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+        <span class="text-xs font-mono text-amber-300 font-semibold shrink-0" id="activeTermIndicator">Kirim Perintah ke [Tab 1 - REA &amp; Coding]:</span>
+        <input id="terminalCustomInput" type="text" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400" placeholder="Ketik perintah CLI atau instruksi sub-harness (contoh: cargo test --release atau strix scan)..." />
+        <button type="button" id="btnSendTerminalCmd" class="btn-fluid px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs">
+          Jalankan di Tab Ini
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 3: CONTAINERIZED LINUX ANDROID EMULATOR (Waydroid / Redroid)         -->
+    <!-- ========================================================================= -->
+    <section id="view-emulator" class="workspace-view hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base sm:text-lg font-bold text-white">Containerized Linux Android Emulator (Bukan HP Fisik)</h2>
+            <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Host Kernel Sharing • Hemat RAM 75%
+            </span>
+          </div>
+          <p class="text-xs text-slate-300 mt-0.5">
+            Menggunakan <strong>Waydroid (LXC Namespace Wayland)</strong> untuk pengujian lokal di desktop Linux dan <strong>Redroid / Docker-Android (GPU Container)</strong> untuk pengujian paralel tanpa beban QEMU/AVD berat, dikendalikan langsung oleh AI via <strong>mobile-mcp</strong> &amp; <strong>Maestro YAML</strong>.
+          </p>
+        </div>
+
+        <!-- Emulator Engine Switcher -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="btnEmuWaydroid" class="btn-fluid px-3 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-semibold text-xs font-mono">
+            Mode 1: Waydroid LXC (Android 14 • 380 MB RAM)
+          </button>
+          <button type="button" id="btnEmuRedroid" class="btn-fluid px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono">
+            Mode 2: Redroid Docker GPU (Android 16 Headless)
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        <!-- Left 5 Cols: Interactive Android Emulator Viewport -->
+        <div class="lg:col-span-5 flex flex-col items-center">
+          <div class="w-full max-w-[320px] bg-slate-900 border-4 border-slate-800 rounded-[36px] p-3 shadow-2xl shadow-cyan-950/40 relative">
+            <!-- Top Speaker & Status Bar -->
+            <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 px-3 pb-2 border-b border-slate-800">
+              <span id="emuClock">09:00 WIB</span>
+              <span class="px-2 py-0.5 rounded-full bg-slate-800 text-cyan-300" id="emuEngineBadge">waydroid0 • LXC Direct</span>
+              <span>5G • 100%</span>
+            </div>
+
+            <!-- Simulated Android App Screen -->
+            <div class="bg-slate-950 rounded-2xl p-3.5 my-2 min-h-[370px] flex flex-col justify-between border border-slate-800/80 relative overflow-hidden" id="emuScreenSurface">
+              <!-- AI Accessibility Overlay Box -->
+              <div id="emuAIOverlay" class="border-2 border-dashed border-cyan-400/80 bg-cyan-500/10 rounded-xl p-2.5 transition-all duration-300">
+                <div class="flex items-center justify-between text-[10px] font-mono text-cyan-300 mb-1">
+                  <span>[mobile-mcp] ref="btn_sync_workspace"</span>
+                  <span class="px-1.5 py-0.2 bg-cyan-500/30 rounded">A11y Tree OK</span>
+                </div>
+                <div class="text-xs font-bold text-white" id="emuAppTitle">OMW Mobile Companion v2.4</div>
+                <p class="text-[11px] text-slate-400 mt-0.5" id="emuAppSubtitle">Status: Terhubung ke Local Rust Sync Engine (0.3ms)</p>
+              </div>
+
+              <!-- Interactive App Cards inside Emulator -->
+              <div class="space-y-2 my-3">
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <div class="text-xs font-semibold text-slate-200">Realtime CRDT Document</div>
+                    <div class="text-[10px] text-slate-400 font-mono" id="emuDocState">3 Peers Synced • 0 Conflict</div>
+                  </div>
+                  <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/20 text-emerald-300">LIVE</span>
+                </div>
+
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <div class="text-xs font-semibold text-slate-200">Offline SQLite + Graph Cache</div>
+                    <div class="text-[10px] text-slate-400 font-mono" id="emuCacheState">142 Nodes Cached Locally</div>
+                  </div>
+                  <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-cyan-500/20 text-cyan-300">READY</span>
+                </div>
+              </div>
+
+              <!-- Interactive Buttons Inside Emulated Android App -->
+              <div class="space-y-2">
+                <button type="button" id="btnEmuTapAction" class="btn-fluid w-full py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs shadow-md">
+                  Simulasikan Tap AI (Maestro Assert)
+                </button>
+                <div class="text-[10px] font-mono text-center text-emerald-400" id="emuTapFeedback">
+                  ✓ Siap menerima injeksi event dari mobile-mcp
+                </div>
+              </div>
+            </div>
+
+            <!-- Android Navigation Bar -->
+            <div class="flex items-center justify-around py-1 text-slate-400 text-xs font-mono">
+              <button type="button" id="btnEmuBack" class="btn-fluid hover:text-white px-2">◁ Back</button>
+              <button type="button" id="btnEmuHome" class="btn-fluid hover:text-white px-2">○ Home</button>
+              <button type="button" id="btnEmuFreeze" class="btn-fluid hover:text-cyan-300 px-2" title="Freeze LXC container when idle to save RAM">❄ Freeze LXC</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 7 Cols: Maestro E2E Test Suite & Mobile-MCP Inspector -->
+        <div class="lg:col-span-7 space-y-3.5">
+          <div class="glass-card rounded-2xl p-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+              <div>
+                <h3 class="text-sm font-bold text-white">Maestro E2E Declarative Test Runner &amp; Mobile-MCP</h3>
+                <p class="text-[11px] text-slate-400">Menjalankan skenario pengujian otomatis di dalam emulator tanpa kode Appium yang berat</p>
+              </div>
+              <button type="button" id="btnRunMaestroSuite" class="btn-fluid px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs">
+                ▶ Jalankan Semua Skenario Maestro
+              </button>
+            </div>
+
+            <!-- YAML Flow & Execution Steps -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1 text-slate-300">
+                <div class="text-cyan-400 font-semibold"># maestro_e2e_flow.yaml</div>
+                <div>appId: dev.ohmyworks.companion</div>
+                <div>---</div>
+                <div class="text-emerald-300">- launchApp: { clearState: false }</div>
+                <div class="text-emerald-300">- assertVisible: "OMW Mobile Companion v2.4"</div>
+                <div class="text-emerald-300">- tapOn: { id: "btn_sync_workspace" }</div>
+                <div class="text-emerald-300">- assertVisible: "3 Peers Synced • 0 Conflict"</div>
+                <div class="text-emerald-300">- assertTrue: ${output.latencyMs &lt; 5}</div>
+              </div>
+
+              <div class="space-y-2 text-xs" id="maestroStepsList">
+                <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                  <span>1. Boot Container (`waydroid session start`)</span>
+                  <span class="font-mono text-emerald-400">0.8s (OK)</span>
+                </div>
+                <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                  <span>2. Dump UI Hierarchy (`mobile-mcp snapshot`)</span>
+                  <span class="font-mono text-emerald-400">12ms (OK)</span>
+                </div>
+                <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                  <span>3. Uji Sinkronisasi CRDT Lintas Emulator</span>
+                  <span class="font-mono text-emerald-400" id="maestroStep3Status">PASSED</span>
+                </div>
+                <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                  <span>4. Auto-Freeze LXC Saat Selesai Uji (Hemat RAM)</span>
+                  <span class="font-mono text-cyan-300" id="maestroStep4Status">STANDBY</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 4: DUAL-ENGINE BROWSER USE (Lightpanda Zig) + REA & STRIX            -->
+    <!-- ========================================================================= -->
+    <section id="view-browser" class="workspace-view hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white">Dual-Engine Browser Use (Lightpanda Zig) + REA Cloner &amp; Strix Pentester</h2>
+          <p class="text-xs text-slate-300">
+            Menjelajahi aplikasi target dengan <strong>Lightpanda (Zig — 16x lebih hemat RAM &amp; 9x lebih cepat dari Chromium)</strong> via <strong>Playwright-MCP</strong>, membedah cara kerjanya dengan <strong>REA</strong>, dan menguji celah keamanannya dengan <strong>Strix</strong>.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="btnEngineLightpanda" class="btn-fluid px-3 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-semibold text-xs font-mono">
+            ⚡ Lightpanda Zig Engine (18 MB RAM)
+          </button>
+          <button type="button" id="btnEngineSteel" class="btn-fluid px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono">
+            👁️ Steel + Skyvern Vision Fallback
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Col 1: Browser-Use + Playwright-MCP Live Accessibility Stream -->
+        <div class="glass-card rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-cyan-300">1. Browser-Use + Playwright-MCP</h3>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300" id="browserEngineLabel">CDP: Lightpanda v1.0</span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Mengoperasikan halaman web melalui <em>structured accessibility tree</em> tanpa perlu mengambil <em>screenshot</em> berat.
+          </p>
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1.5 text-slate-300" id="browserTraceBox">
+            <div class="text-cyan-400">&gt; lightpanda mcp --cdp-port 9222</div>
+            <div>[A11y Tree] Mengambil 42 elemen interaktif (8.4 ms)</div>
+            <div>[Browser-Use] Klik elemen ref="nav_realtime_board"</div>
+            <div>[Browser-Use] Merekam handshake WebSocket &amp; skema protobuf...</div>
+            <div class="text-emerald-400">✓ Selesai diekstrak dengan pemakaian RAM 18.2 MB</div>
+          </div>
+          <button type="button" id="btnTriggerBrowserCrawl" class="btn-fluid w-full py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-xs font-semibold text-cyan-200">
+            Jalankan Simulasi Ekstraksi Web Baru
+          </button>
+        </div>
+
+        <!-- Col 2: REA (Reverse Engineer Anything) -->
+        <div class="glass-card rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-indigo-300">2. REA (Reverse Engineer Anything)</h3>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300">MCP Binary/JS Inspector</span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Membedah cara kerja fitur aplikasi besar (bundle JS/Electron, API, hingga *native binary*) beserta buktinya untuk ditulis ulang ke Rust/Go.
+          </p>
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1.5 text-slate-300" id="reaTraceBox">
+            <div class="text-indigo-400">&gt; npx rea-agents@latest inspect --target app_bundle</div>
+            <div>[Bukti #1] State sync memakai Yjs CRDT delta compression</div>
+            <div>[Bukti #2] Heartbeat interval 2500ms via binary frame</div>
+            <div class="text-emerald-400">✓ Blueprint Rust berhasil disusun di src-rust/sync_engine/</div>
+          </div>
+          <button type="button" id="btnTriggerReaClone" class="btn-fluid w-full py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/40 text-xs font-semibold text-indigo-200">
+            Bedah &amp; Konversi Fitur ke Rust
+          </button>
+        </div>
+
+        <!-- Col 3: Strix Autonomous AI Pentesting -->
+        <div class="glass-card rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-amber-300">3. Strix Autonomous Pentester</h3>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300">PoC Exploit Validator</span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Menyerang aplikasi yang baru dibuat layaknya peretas sungguhan, memvalidasi PoC tanpa *false positive*, dan menambal celah otomatis.
+          </p>
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1.5 text-slate-300" id="strixTraceBox">
+            <div class="text-amber-400">&gt; strix scan --target http://localhost:8080 --auto-fix</div>
+            <div>[Recon] Menguji 18 endpoint WebSocket &amp; JWT...</div>
+            <div>[Finding] Potensi replay frame jika nonce kosong</div>
+            <div class="text-emerald-400">✓ Auto-Patch diterapkan &amp; PoC exploit berhasil diblokir!</div>
+          </div>
+          <button type="button" id="btnTriggerStrixScan" class="btn-fluid w-full py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-xs font-semibold text-amber-200">
+            Jalankan Serangan Uji &amp; Auto-Fix Strix
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 5: HYBRID GRAPH MEMORY (Graphify + Graphiti + Cognee-rs) & SKILLS    -->
+    <!-- ========================================================================= -->
+    <section id="view-memory" class="workspace-view hidden space-y-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <!-- Left 7 Cols: Interactive Knowledge Graph Explorer -->
+        <div class="lg:col-span-7 glass-card rounded-2xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-white">Hybrid Tri-Layer Graph Memory (Graphify + Graphiti + Cognee-rs)</h2>
+              <p class="text-xs text-slate-400">Klik node di bawah untuk melihat gabungan struktur AST kode (Graphify) dan memori riwayat waktu (Graphiti)</p>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              71.5x Lebih Hemat Token
+            </span>
+          </div>
+
+          <!-- Interactive Graph Nodes Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1" id="graphNodesGrid">
+            <!-- Populated dynamically by JS -->
+          </div>
+
+          <!-- Selected Graph Node Inspector -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2" id="graphInspectorBox">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-cyan-300" id="graphNodeTitle">Node: sync_engine/websocket_crdt.rs</span>
+              <span class="text-[11px] font-mono text-emerald-400" id="graphNodeEngine">Engine: cognee-rs (Rust In-Memory)</span>
+            </div>
+            <div class="text-xs text-slate-300" id="graphNodeStructural">
+              <strong>Lapis 1 — Graphify Structural AST:</strong> Mengimpor <code>tokio::net::TcpStream</code>, dipanggil oleh <code>Tab 1 (Coding)</code> dan diuji oleh <code>Tab 4 (Strix)</code>.
+            </div>
+            <div class="text-xs text-slate-300" id="graphNodeTemporal">
+              <strong>Lapis 2 — Graphiti Temporal Episodic:</strong> Diperbarui 4 menit lalu setelah REA mengekstrak protokol binary frame dan Strix menambahkan validasi <code>nonce</code>.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 5 Cols: Industry-Standard Auto-Skill Router (Superpowers + Anthropic Skills) -->
+        <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-white">Auto-Skill Router (Superpowers + Anthropic Skills)</h3>
+              <p class="text-[11px] text-slate-400">Harness otomatis menyuntikkan SKILL.md standar industri tanpa perlu disuruh manual</p>
+            </div>
+            <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              AUTO-INJECT ON
+            </span>
+          </div>
+
+          <div class="space-y-2" id="skillsRegistryList">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 6: DOCKER SLIM OPTIMIZER & SERVER ANTI-OOM PANEL (Beszel + earlyoom) -->
+    <!-- ========================================================================= -->
+    <section id="view-server" class="workspace-view hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white">Lightweight Server Panel (Beszel + 1Panel) &amp; Proactive Anti-OOM Guardian</h2>
+          <p class="text-xs text-slate-300">
+            Memangkas image Docker hingga <strong>30x lebih kecil via SlimToolkit &amp; Dive</strong>, serta memantau tekanan memori kernel Linux (PSI) dengan <strong>earlyoom + nohang</strong> untuk mengantisipasi dan menyembuhkan server dari OOM secara otomatis.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="btnSimulateOOM" class="btn-fluid px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 text-xs font-semibold text-rose-200">
+            🔥 Simulasikan Lonjakan OOM di Server
+          </button>
+          <button type="button" id="btnRunDockerSlim" class="btn-fluid px-3 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-semibold text-xs">
+            📦 Jalankan Dive + SlimToolkit (Kompresi 30x)
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <!-- Left 6 Cols: Live Server Telemetry & Anti-OOM Guardian -->
+        <div class="lg:col-span-6 glass-card rounded-2xl p-4 space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white">Telemetri Server Linux &amp; Sensor Kernel PSI (earlyoom + Beszel)</h3>
+            <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" id="serverHealthBadge">
+              HEALTHY • PSI 1.2%
+            </span>
+          </div>
+
+          <!-- Progress Bars for RAM, ZRAM Swap, CPU -->
+          <div class="space-y-3 text-xs">
+            <div>
+              <div class="flex justify-between font-mono mb-1">
+                <span>RAM Server Fisik (2 GB VPS)</span>
+                <span id="serverRamText" class="text-emerald-300">620 MB / 2048 MB (30%)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                <div id="serverRamBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 30%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between font-mono mb-1">
+                <span>Linux Kernel PSI (Memory Pressure Stall)</span>
+                <span id="serverPsiText" class="text-cyan-300">some avg10=1.20% (Aman &lt; 65%)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                <div id="serverPsiBar" class="h-full bg-cyan-400 transition-all duration-300" style="width: 6%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between font-mono mb-1">
+                <span>Dynamic ZRAM Compressed Swap</span>
+                <span id="serverZramText" class="text-indigo-300">Aktif • Rasio Kompresi 3.4x (lz4)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                <div id="serverZramBar" class="h-full bg-indigo-500 transition-all duration-300" style="width: 22%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- OOM Mitigation Log -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1 text-slate-300" id="oomLogBox">
+            <div class="text-cyan-400">[beszel-agent] Terhubung ke Oh My Works Desktop via SSH/gRPC Tunnel</div>
+            <div>[earlyoom] Memantau /proc/pressure/memory setiap 100ms...</div>
+            <div class="text-emerald-400">✓ Tidak ada anomali OOM. Semua kontainer berjalan dalam batas cgroups v2.</div>
+          </div>
+        </div>
+
+        <!-- Right 6 Cols: Docker Layer Optimizer (Dive + SlimToolkit) -->
+        <div class="lg:col-span-6 glass-card rounded-2xl p-4 space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white">Pipeline Optimasi Kontainer (wagoodman/dive + slimtoolkit/slim)</h3>
+            <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" id="dockerSlimBadge">
+              Efisiensi Layer: 99.1%
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-center">
+            <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+              <div class="text-[11px] text-slate-400 font-mono">Image Sebelum Optimasi</div>
+              <div class="text-lg font-bold text-rose-400 font-mono mt-0.5" id="dockerBeforeSize">842.0 MB</div>
+              <div class="text-[10px] text-slate-400">node:22-bullseye (68 Layer)</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900/90 border border-emerald-500/40">
+              <div class="text-[11px] text-slate-400 font-mono">Sesudah SlimToolkit + Rust</div>
+              <div class="text-lg font-bold text-emerald-400 font-mono mt-0.5" id="dockerAfterSize">29.1 MB</div>
+              <div class="text-[10px] text-emerald-300">28.9x Lebih Kecil + Seccomp</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1 text-slate-300" id="dockerLogBox">
+            <div class="text-indigo-400">&gt; dive build -t omw/realtime-app:latest --ci</div>
+            <div>[dive] Efisiensi layer awal: 74% (218 MB file duplikat/cache apt)</div>
+            <div class="text-cyan-400">&gt; slim build --target omw/realtime-app:latest --http-probe=true</div>
+            <div class="text-emerald-400">✓ Image dipangkas dari 842.0 MB menjadi 29.1 MB (Hemat RAM kontainer 78%)!</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================== -->
+  <!-- BOTTOM-ANCHORED TAKEAWAY & ZERO SCROLL-UP ACTION BAR (User Reading Habit)   -->
+  <!-- =========================================================================== -->
+  <footer class="glass-chrome fixed bottom-0 inset-x-0 z-40 border-t px-3 sm:px-5 py-2.5 shadow-2xl">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2.5">
+        <span class="px-2 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono text-xs font-bold shrink-0">
+          KESIMPULAN AKHIR
+        </span>
+        <p class="text-xs text-slate-200 leading-snug" id="bottomTakeawayText">
+          <strong>Status Siap Deploy:</strong> 5 Tab Terminal selesai • Emulator Waydroid &amp; Strix 100% Lulus • Docker dipangkas 28,9x (29 MB) • Server aman dari OOM (RAM 30%).
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-end shrink-0">
+        <span id="toastFeedback" class="text-xs font-mono text-cyan-300 hidden"></span>
+        <button type="button" id="btnFooterSynthesis" class="btn-fluid px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-200">
+          Lihat Synthesis Board
+        </button>
+        <button type="button" id="btnFooterDeploy" class="btn-fluid px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
+          🚀 Deploy Slim Container &amp; Backup GitHub
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: RINGKASAN 8 PILAR REFERENCE REPO -->
+  <div id="modalRepoRef" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-card max-w-3xl w-full rounded-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto border border-cyan-500/40">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white">8 Pilar Reference Repo GitHub di Dalam Oh My Works</h3>
+        <button type="button" id="btnCloseRepoModal" class="btn-fluid px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300 hover:text-white">
+          ✕ Tutup
+        </button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-cyan-300">1. Desktop &amp; Multiplexer Ringan</div>
+          <div class="text-slate-300 mt-1 font-mono">tauri-apps/tauri + waveterm + helvesec/rmux + zellij</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-purple-300">2. Meta-Harness &amp; Auto-Skills</div>
+          <div class="text-slate-300 mt-1 font-mono">claude-squad + mcp-agent + obra/superpowers + anthropics/skills</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-emerald-300">3. Hybrid Tri-Layer Graph Memory</div>
+          <div class="text-slate-300 mt-1 font-mono">Graphify + getzep/graphiti + topoteretes/cognee-rs</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-amber-300">4. Dual-Engine Browser Use</div>
+          <div class="text-slate-300 mt-1 font-mono">lightpanda-io/browser (Zig) + playwright-mcp + browser-use</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-indigo-300">5. App Cloner &amp; Pentester</div>
+          <div class="text-slate-300 mt-1 font-mono">morluto/rea (Reverse Engineer) + usestrix/strix</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-pink-300">6. Linux Android Emulator Testing</div>
+          <div class="text-slate-300 mt-1 font-mono">waydroid/waydroid + redroid + mobile-mcp + Maestro</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-teal-300">7. Docker Slim &amp; Server Anti-OOM</div>
+          <div class="text-slate-300 mt-1 font-mono">slimtoolkit/slim + dive + beszel + 1Panel + earlyoom</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-blue-300">8. Synthesis UI &amp; GitHub Sync</div>
+          <div class="text-slate-300 mt-1 font-mono">ag-ui-protocol/ag-ui + open-canvas + jdx/mise + chezmoi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const state = {
+        activeTab: 'synthesis',
+        selectedTerminalId: 1,
+        emulatorMode: 'waydroid',
+        browserEngine: 'lightpanda',
+        scenarios: {
+          clone_collab: {
+            headline: 'Hasil Akhir: Fitur Kolaborasi Real-Time Berhasil Ditiru (REA), Lulus Uji Emulator Waydroid & Strix, Image Docker Dipangkas 28,9x',
+            summary: 'Meta-AI Harness telah menggabungkan hasil eksekusi dari 5 tab terminal paralel. Dengan memori Graphify + Graphiti (cognee-rs), pemakaian token turun 71,5x (hanya 1.840 token per siklus) dan total RAM ruang kerja terjaga di 64 MB.',
+            tokenSave: '71.5x',
+            browserRam: '18 MB',
+            dockerSlim: '842→29 MB',
+            testScore: '100% Pass',
+            bottomTakeaway: 'Status Siap Deploy: 5 Tab Terminal selesai • Emulator Waydroid & Strix 100% Lulus • Docker dipangkas 28,9x (29 MB) • Server aman dari OOM (RAM 30%).'
+          },
+          strix_security: {
+            headline: 'Hasil Akhir: Strix Menemukan & Menambal 2 Celah Auth JWT, Regresi E2E Waydroid & Lightpanda Lulus 100%',
+            summary: 'Sub-Harness Strix melakukan eksploitasi PoC dinamis pada endpoint API, memicu skill systematic-debugging dari Superpowers, menambal kode Rust secara otomatis, dan memverifikasi ulang di emulator Waydroid.',
+            tokenSave: '68.2x',
+            browserRam: '16 MB',
+            dockerSlim: '610→22 MB',
+            testScore: '0 Vulns',
+            bottomTakeaway: 'Keamanan Terverifikasi: 2 Celah JWT ditambal otomatis oleh Strix + Superpowers • Image Docker 22 MB • Siap didorong ke produksi.'
+          },
+          oom_recovery: {
+            headline: 'Hasil Akhir: Gejala Memory Leak di Worker lama Terdeteksi oleh earlyoom + Beszel, Ditulis Ulang ke Rust (Hemat RAM 82%)',
+            summary: 'Sensor PSI Linux mendeteksi kenaikan tekanan memori sebelum OOM terjadi. Meta-AI Harness memanggil REA untuk membedah worker yang bocor dan menulis ulang modul tersebut ke Rust.',
+            tokenSave: '74.0x',
+            browserRam: '15 MB',
+            dockerSlim: '920→24 MB',
+            testScore: 'OOM Cured',
+            bottomTakeaway: 'Server Pulih Total: Memory leak berhasil dieliminasi • Penggunaan RAM VPS turun dari 89% ke 24% • Auto-Backup GitHub selesai.'
+          }
+        },
+        terminals: [
+          {
+            id: 1,
+            name: 'Tab 1 • REA Cloner & Rust Coder',
+            skill: 'superpowers/tdd + rea/binary-trace',
+            graphNode: 'sync_engine/websocket_crdt.rs',
+            status: 'COMPLETED (1.4s)',
+            summary: 'Membedah protokol sinkronisasi app target via REA dan menulis ulang ke Rust (4.2 MB RAM).',
+            logs: [
+              '$ rea inspect --target https://app.target.example/bundle.js',
+              '[REA] Menemukan protokol delta CRDT pada binary frame WebSocket',
+              '[Superpowers] Memuat SKILL: test-driven-development',
+              '$ cargo test --package omw_sync_engine --release',
+              '✓ 18 passed, 0 failed (selesai dalam 0.42s)'
+            ]
+          },
+          {
+            id: 2,
+            name: 'Tab 2 • Lightpanda Browser-Use',
+            skill: 'playwright-mcp/a11y-snapshot',
+            graphNode: 'web_client/collab_canvas.tsx',
+            status: 'COMPLETED (0.9s)',
+            summary: 'Menjalankan 14 alur uji web di mesin Zig Lightpanda (hanya 18 MB RAM, 9x lebih cepat).',
+            logs: [
+              '$ lightpanda serve --port 9222 --memory-limit 32M',
+              '[Playwright-MCP] Terhubung ke Lightpanda CDP tanpa overhead GPU',
+              '[Browser-Use] Menguji login, buat dokumen, dan broadcast 500 event',
+              '✓ Semua 14 skenario web lulus (RAM Puncak: 18.2 MB)'
+            ]
+          },
+          {
+            id: 3,
+            name: 'Tab 3 • Waydroid / Redroid Emulator',
+            skill: 'mobile-mcp/maestro-e2e',
+            graphNode: 'android/companion_bridge.kt',
+            status: 'COMPLETED (2.1s)',
+            summary: 'Menguji aplikasi Android di kontainer Waydroid LXC via mobile-mcp & Maestro YAML.',
+            logs: [
+              '$ waydroid status -> RUNNING (LXC shared kernel, 380 MB)',
+              '[mobile-mcp] Mengambil pohon aksesibilitas layar Android',
+              '$ maestro test flows/maestro_e2e_flow.yaml',
+              '✓ AssertVisible & CRDT latency < 5ms LULUS • LXC di-freeze kembali'
+            ]
+          },
+          {
+            id: 4,
+            name: 'Tab 4 • Strix Autonomous Pentester',
+            skill: 'strix/pentest-poc-validator',
+            graphNode: 'security/jwt_nonce_guard.rs',
+            status: 'COMPLETED (1.8s)',
+            summary: 'Menguji PoC keamanan dinamis dan memasang validasi nonce anti-replay otomatis.',
+            logs: [
+              '$ strix attack --target ws://127.0.0.1:8080/sync',
+              '[Strix] Menguji fuzzing payload & token replay...',
+              '[Strix] Menambahkan patch nonce guard pada jwt_nonce_guard.rs',
+              '✓ Re-test PoC: 0 celah ditemukan (100% aman)'
+            ]
+          },
+          {
+            id: 5,
+            name: 'Tab 5 • Dive & SlimToolkit + Server',
+            skill: 'slim/docker-30x + earlyoom/psi-guard',
+            graphNode: 'deploy/Dockerfile.slim',
+            status: 'READY TO DEPLOY',
+            summary: 'Memangkas image Docker dari 842 MB ke 29.1 MB (28,9x) & memverifikasi batas RAM server.',
+            logs: [
+              '$ dive build -t omw/sync:latest --ci',
+              '$ slim build --target omw/sync:latest --http-probe=true',
+              '[SlimToolkit] Image berhasil dikompresi: 842 MB -> 29.1 MB (28.9x)',
+              '[Beszel + earlyoom] PSI Server 1.2% • Siap menerima deployment'
+            ]
+          }
+        ],
+        graphNodes: [
+          {
+            id: 'node1',
+            name: 'sync_engine/websocket_crdt.rs',
+            type: 'Rust Core Module',
+            tokensSaved: '14,200 token dihemat',
+            structural: 'Mengimpor tokio::net::TcpStream & crdt_lite; terhubung ke Tab 1 (Coding) dan Tab 4 (Strix Security).',
+            temporal: 'Dibuat 6 menit lalu dari ekstraksi REA; ditambal oleh Strix 3 menit lalu untuk anti-replay nonce.'
+          },
+          {
+            id: 'node2',
+            name: 'android/companion_bridge.kt',
+            type: 'Waydroid / Redroid Target',
+            tokensSaved: '9,800 token dihemat',
+            structural: 'Menghubungkan klien Android di emulator Waydroid/Redroid ke soket CRDT Rust melalui FFI.',
+            temporal: 'Lulus 12 assertion Maestro E2E via mobile-mcp dengan latensi rata-rata 1.8 ms.'
+          },
+          {
+            id: 'node3',
+            name: 'web_client/collab_canvas.tsx',
+            type: 'Frontend Web Module',
+            tokensSaved: '11,400 token dihemat',
+            structural: 'Komponen UI kolaborasi yang diuji secara otomatis oleh Lightpanda Zig + Playwright-MCP.',
+            temporal: 'Terverifikasi bebas kebocoran DOM pada 500 siklus event berturut-turut.'
+          },
+          {
+            id: 'node4',
+            name: 'security/jwt_nonce_guard.rs',
+            type: 'Strix Auto-Patch Node',
+            tokensSaved: '8,100 token dihemat',
+            structural: 'Middleware otorisasi frame biner dengan validasi tanda tangan Ed25519.',
+            temporal: 'Disuntikkan otomatis oleh agen Strix setelah mendeteksi potensi replay pada uji penetrasi.'
+          },
+          {
+            id: 'node5',
+            name: 'deploy/Dockerfile.slim',
+            type: 'Docker Slim & Server Artifact',
+            tokensSaved: '6,500 token dihemat',
+            structural: 'Konfigurasi multi-stage scratch container dengan profil seccomp otomatis dari SlimToolkit.',
+            temporal: 'Ukuran image turun dari 842 MB menjadi 29.1 MB; diverifikasi aman oleh sensor earlyoom.'
+          },
+          {
+            id: 'node6',
+            name: 'server/oom_psi_guardian.go',
+            type: 'Beszel + earlyoom Daemon',
+            tokensSaved: '7,900 token dihemat',
+            structural: 'Membaca /proc/pressure/memory dan mengatur batas cgroups v2 serta kompresi ZRAM.',
+            temporal: 'Menjaga uptime server 100% dan mengirim telemetri real-time ke Oh My Works Desktop.'
+          }
+        ],
+        skills: [
+          { name: 'obra/superpowers: test-driven-development', active: true, desc: 'Wajib menulis tes gagal terlebih dahulu sebelum agen menulis kode implementasi.' },
+          { name: 'obra/superpowers: systematic-debugging', active: true, desc: 'Mencegah agen menebak-nebak perbaikan dengan melacak akar masalah dari graf Graphify.' },
+          { name: 'morluto/rea: reverse-engineer-anything', active: true, desc: 'Mengekstrak bukti arsitektur dari binary, aplikasi Electron/JS, dan jaringan.' },
+          { name: 'usestrix/strix: autonomous-pentest-gate', active: true, desc: 'Memblokir deployment jika ditemukan PoC celah keamanan yang belum ditambal.' },
+          { name: 'slimtoolkit/slim: container-minifier-30x', active: true, desc: 'Memangkas layer Docker secara otomatis agar hemat RAM dan tahan OOM di server.' }
+        ]
+      };
+
+      function showToast(msg) {
+        const toast = document.getElementById('toastFeedback');
+        toast.textContent = msg;
+        toast.classList.remove('hidden');
+        clearTimeout(window.__omwToastTimer);
+        window.__omwToastTimer = setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 3500);
+      }
+
+      function switchTab(tabId) {
+        state.activeTab = tabId;
+        document.querySelectorAll('.workspace-view').forEach(el => {
+          el.classList.add('hidden');
+        });
+        const target = document.getElementById('view-' + tabId);
+        if (target) target.classList.remove('hidden');
+
+        document.querySelectorAll('.nav-tab').forEach(btn => {
+          const isCurrent = btn.getAttribute('data-tab') === tabId;
+          if (isCurrent) {
+            btn.className = 'nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 whitespace-nowrap';
+          } else {
+            btn.className = 'nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap';
+          }
+        });
+      }
+
+      function renderSynthesisCards() {
+        const container = document.getElementById('synthesisTabCards');
+        container.innerHTML = '';
+        state.terminals.forEach(t => {
+          const card = document.createElement('div');
+          card.className = 'glass-card rounded-xl p-3 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2';
+          card.innerHTML = `
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-bold text-white">${t.name}</span>
+                <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-purple-500/15 text-purple-300 border border-purple-500/30">SKILL: ${t.skill}</span>
+                <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-800 text-cyan-300">Graph: ${t.graphNode}</span>
+              </div>
+              <p class="text-xs text-slate-300">${t.summary}</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 font-mono text-[10px] font-semibold border border-emerald-500/30">${t.status}</span>
+            </div>
+          `;
+          card.addEventListener('click', () => {
+            state.selectedTerminalId = t.id;
+            renderTerminals();
+            switchTab('terminals');
+            showToast('Membuka detail ' + t.name);
+          });
+          container.appendChild(card);
+        });
+      }
+
+      function renderTerminals() {
+        const grid = document.getElementById('terminalGridContainer');
+        grid.innerHTML = '';
+        state.terminals.forEach(t => {
+          const isSelected = t.id === state.selectedTerminalId;
+          const pane = document.createElement('div');
+          pane.className = 'glass-card rounded-2xl p-3.5 flex flex-col justify-between cursor-pointer ' + (isSelected ? 'ring-2 ring-cyan-400' : '');
+          const logsHtml = t.logs.map(line => `<div class="truncate">${line}</div>`).join('');
+          pane.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between gap-1 border-b border-slate-800 pb-2 mb-2">
+                <span class="text-xs font-bold text-white truncate">${t.name}</span>
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 shrink-0">${t.status}</span>
+              </div>
+              <div class="flex flex-wrap gap-1 mb-2">
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300">Skill: ${t.skill}</span>
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300">${t.graphNode}</span>
+              </div>
+              <div class="bg-slate-950 rounded-xl p-2.5 font-mono text-[11px] text-slate-300 space-y-1 min-h-[115px] border border-slate-800/90">
+                ${logsHtml}
+              </div>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
+              <span class="text-slate-400 font-mono">IPC: Terhubung ke Meta-Harness</span>
+              <span class="text-cyan-300 font-semibold">${isSelected ? '● Tab Aktif' : 'Pilih Tab'}</span>
+            </div>
+          `;
+          pane.addEventListener('click', () => {
+            state.selectedTerminalId = t.id;
+            document.getElementById('activeTermIndicator').textContent = `Kirim Perintah ke [${t.name}]:`;
+            renderTerminals();
+          });
+          grid.appendChild(pane);
+        });
+      }
+
+      function renderGraphMemory() {
+        const grid = document.getElementById('graphNodesGrid');
+        grid.innerHTML = '';
+        state.graphNodes.forEach(node => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn-fluid text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 space-y-1';
+          btn.innerHTML = `
+            <div class="text-xs font-mono font-bold text-cyan-300 truncate">${node.name}</div>
+            <div class="text-[10px] text-slate-400">${node.type}</div>
+            <div class="text-[10px] font-mono text-emerald-400">${node.tokensSaved}</div>
+          `;
+          btn.addEventListener('click', () => {
+            document.getElementById('graphNodeTitle').textContent = 'Node: ' + node.name;
+            document.getElementById('graphNodeStructural').innerHTML = '<strong>Lapis 1 — Graphify Structural AST:</strong> ' + node.structural;
+            document.getElementById('graphNodeTemporal').innerHTML = '<strong>Lapis 2 — Graphiti Temporal Episodic:</strong> ' + node.temporal;
+            showToast('Memuat subgraph ' + node.name + ' dari cognee-rs');
+          });
+          grid.appendChild(btn);
+        });
+
+        const skillsList = document.getElementById('skillsRegistryList');
+        skillsList.innerHTML = '';
+        state.skills.forEach((sk, idx) => {
+          const row = document.createElement('div');
+          row.className = 'p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-2';
+          row.innerHTML = `
+            <div>
+              <div class="text-xs font-mono font-semibold text-purple-300">${sk.name}</div>
+              <div class="text-[11px] text-slate-400">${sk.desc}</div>
+            </div>
+            <button type="button" class="btn-fluid px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold ${sk.active ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-slate-800 text-slate-400'}">
+              ${sk.active ? 'AUTO-ON' : 'OFF'}
+            </button>
+          `;
+          row.querySelector('button').addEventListener('click', () => {
+            state.skills[idx].active = !state.skills[idx].active;
+            renderGraphMemory();
+            showToast('Status skill ' + sk.name + ' diperbarui');
+          });
+          skillsList.appendChild(row);
+        });
+      }
+
+      // Navigation bindings
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchTab(btn.getAttribute('data-tab'));
+        });
+      });
+
+      // Scenario selector
+      document.getElementById('scenarioSelect').addEventListener('change', (e) => {
+        const sc = state.scenarios[e.target.value];
+        if (!sc) return;
+        document.getElementById('synthHeadline').textContent = sc.headline;
+        document.getElementById('synthSummaryText').textContent = sc.summary;
+        document.getElementById('metricTokenSave').textContent = sc.tokenSave;
+        document.getElementById('metricBrowserRam').textContent = sc.browserRam;
+        document.getElementById('metricDockerSlim').textContent = sc.dockerSlim;
+        document.getElementById('metricTestScore').textContent = sc.testScore;
+        document.getElementById('bottomTakeawayText').textContent = sc.bottomTakeaway;
+        showToast('Skenario diubah & seluruh tab disinkronkan!');
+      });
+
+      // Global Meta-Harness Prompt Runner
+      document.getElementById('btnRunMetaPrompt').addEventListener('click', () => {
+        const val = document.getElementById('globalPromptInput').value.trim();
+        if (!val) return;
+        state.terminals[0].logs.push('$ meta-summon: "' + val.slice(0, 48) + '..."');
+        state.terminals[0].logs.push('✓ Auto-Skill disuntikkan & hasil dikirim ke Synthesis Board');
+        document.getElementById('synthHeadline').textContent = 'Hasil Akhir: ' + val;
+        document.getElementById('bottomTakeawayText').textContent = 'Eksekusi Selesai: "' + val.slice(0, 65) + '..." telah diverifikasi di 5 tab terminal & siap deploy.';
+        renderTerminals();
+        renderSynthesisCards();
+        switchTab('synthesis');
+        showToast('Meta-Harness selesai mengeksekusi tugas di 5 tab!');
+      });
+
+      // Terminal Custom Command
+      document.getElementById('btnSendTerminalCmd').addEventListener('click', () => {
+        const input = document.getElementById('terminalCustomInput');
+        const cmd = input.value.trim() || 'cargo check --workspace';
+        const term = state.terminals.find(t => t.id === state.selectedTerminalId);
+        if (term) {
+          term.logs.push('$ ' + cmd);
+          term.logs.push('✓ Eksekusi lokal selesai (0.18s) • Graphify node diperbarui');
+          if (term.logs.length > 6) term.logs = term.logs.slice(-6);
+          input.value = '';
+          renderTerminals();
+          showToast('Perintah dijalankan di ' + term.name);
+        }
+      });
+
+      document.getElementById('btnBroadcastCommand').addEventListener('click', () => {
+        state.terminals.forEach(t => {
+          t.logs.push('[IPC Sync] Memori Graphify + Graphiti disinkronkan lintas tab (0.4ms)');
+          if (t.logs.length > 6) t.logs = t.logs.slice(-6);
+        });
+        renderTerminals();
+        showToast('Konteks memori semua 5 tab terminal berhasil disinkronkan!');
+      });
+
+      document.getElementById('btnSynthesizeNow').addEventListener('click', () => {
+        switchTab('synthesis');
+        showToast('Seluruh output tab terminal dirangkum ke Synthesis Board!');
+      });
+
+      // Emulator Controls (Waydroid & Redroid)
+      document.getElementById('btnEmuWaydroid').addEventListener('click', () => {
+        document.getElementById('emuEngineBadge').textContent = 'waydroid0 • LXC Direct';
+        document.getElementById('emuAppSubtitle').textContent = 'Waydroid LXC Mode: Berbagi Kernel Host Linux (380 MB RAM)';
+        showToast('Beralih ke Waydroid LXC Container di Desktop Linux');
+      });
+
+      document.getElementById('btnEmuRedroid').addEventListener('click', () => {
+        document.getElementById('emuEngineBadge').textContent = 'redroid:16 • GPU Docker';
+        document.getElementById('emuAppSubtitle').textContent = 'Redroid Docker Mode: Android 16 GPU Container Headless';
+        showToast('Beralih ke Redroid GPU Container untuk pengujian paralel');
+      });
+
+      document.getElementById('btnEmuTapAction').addEventListener('click', () => {
+        document.getElementById('emuDocState').textContent = '4 Peers Synced • Latency 1.1ms';
+        document.getElementById('emuTapFeedback').textContent = '✓ [mobile-mcp] Tap berhasil dieksekusi & diverifikasi Maestro!';
+        showToast('Aksi Tap AI di emulator berhasil diverifikasi!');
+      });
+
+      document.getElementById('btnEmuFreeze').addEventListener('click', () => {
+        document.getElementById('emuTapFeedback').textContent = '❄ Kontainer LXC Waydroid di-freeze (0% CPU, RAM dihemat)';
+        document.getElementById('maestroStep4Status').textContent = 'FROZEN (0% CPU)';
+        showToast('Emulator Waydroid dibekukan sementara untuk menghemat RAM');
+      });
+
+      document.getElementById('btnEmuBack').addEventListener('click', () => {
+        document.getElementById('emuTapFeedback').textContent = '◁ Navigasi Back dikirim via mobile-mcp';
+      });
+
+      document.getElementById('btnEmuHome').addEventListener('click', () => {
+        document.getElementById('emuTapFeedback').textContent = '○ Kembali ke Home Screen App di Emulator';
+      });
+
+      document.getElementById('btnRunMaestroSuite').addEventListener('click', () => {
+        document.getElementById('maestroStep3Status').textContent = 'PASSED (1.1ms)';
+        document.getElementById('maestroStep4Status').textContent = 'AUTO-FROZEN OK';
+        document.getElementById('emuTapFeedback').textContent = '✓ Seluruh skenario E2E Maestro lulus 100% di emulator!';
+        showToast('Semua skenario Maestro E2E di Emulator Android lulus!');
+      });
+
+      // Browser Use + REA + Strix Controls
+      document.getElementById('btnEngineLightpanda').addEventListener('click', () => {
+        document.getElementById('browserEngineLabel').textContent = 'CDP: Lightpanda Zig (18 MB)';
+        showToast('Menggunakan mesin headless Zig Lightpanda (16x lebih hemat RAM)');
+      });
+
+      document.getElementById('btnEngineSteel').addEventListener('click', () => {
+        document.getElementById('browserEngineLabel').textContent = 'CDP: Steel + Skyvern Vision';
+        showToast('Mengaktifkan fallback visual Steel Browser + Skyvern');
+      });
+
+      document.getElementById('btnTriggerBrowserCrawl').addEventListener('click', () => {
+        const box = document.getElementById('browserTraceBox');
+        box.innerHTML += '<div class="text-cyan-300">✓ Crawl selesai: 28 endpoint &amp; struktur DOM dikirim ke REA (17.9 MB RAM)</div>';
+        showToast('Ekstraksi web dengan Lightpanda + Playwright-MCP selesai!');
+      });
+
+      document.getElementById('btnTriggerReaClone').addEventListener('click', () => {
+        const box = document.getElementById('reaTraceBox');
+        box.innerHTML += '<div class="text-indigo-300">✓ Modul target berhasil dikonversi ke Rust murni (0 GC pause)</div>';
+        showToast('REA selesai membedah fitur & menulis ulang ke Rust!');
+      });
+
+      document.getElementById('btnTriggerStrixScan').addEventListener('click', () => {
+        const box = document.getElementById('strixTraceBox');
+        box.innerHTML += '<div class="text-emerald-300">✓ Strix PoC Scan: Semua vektor serangan berhasil ditangkal!</div>';
+        showToast('Audit penetrasi otonom Strix selesai: 0 kerentanan!');
+      });
+
+      // Server Anti-OOM & Docker Slim Controls
+      document.getElementById('btnSimulateOOM').addEventListener('click', () => {
+        const ramBar = document.getElementById('serverRamBar');
+        const ramText = document.getElementById('serverRamText');
+        const psiBar = document.getElementById('serverPsiBar');
+        const psiText = document.getElementById('serverPsiText');
+        const badge = document.getElementById('serverHealthBadge');
+        const logBox = document.getElementById('oomLogBox');
+
+        ramBar.style.width = '88%';
+        ramBar.className = 'h-full bg-rose-500 transition-all duration-300';
+        ramText.textContent = '1810 MB / 2048 MB (88% - SPIKE!)';
+        psiBar.style.width = '78%';
+        psiText.textContent = 'some avg10=78.4% (AMBANG OOM TERDETEKSI)';
+        badge.textContent = 'MITIGATING OOM...';
+        badge.className = 'px-2 py-0.5 text-[11px] font-mono rounded bg-amber-500/20 text-amber-300 border border-amber-500/40';
+
+        logBox.innerHTML = `
+          <div class="text-rose-400">[ALERT] Lonjakan tekanan memori PSI (78.4%) terdeteksi pada worker kontainer!</div>
+          <div class="text-amber-300">[earlyoom + nohang] Mengaktifkan ekspansi ZRAM lz4 &amp; memangkas page cache...</div>
+          <div class="text-cyan-300">[Meta-AI Harness] Menerima stack trace kebocoran &amp; melakukan hot-reload binary Rust...</div>
+        `;
+
+        setTimeout(() => {
+          ramBar.style.width = '26%';
+          ramBar.className = 'h-full bg-emerald-500 transition-all duration-500';
+          ramText.textContent = '532 MB / 2048 MB (26% - PULIH)';
+          psiBar.style.width = '4%';
+          psiText.textContent = 'some avg10=0.80% (Stabil)';
+          badge.textContent = 'AUTO-HEALED • PSI 0.8%';
+          badge.className = 'px-2 py-0.5 text-[11px] font-mono rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+          logBox.innerHTML += `<div class="text-emerald-400">✓ Server berhasil diselamatkan dari OOM dalam 420ms tanpa downtime!</div>`;
+          showToast('Anti-OOM Guardian berhasil memulihkan server secara otomatis!');
+        }, 1100);
+      });
+
+      document.getElementById('btnRunDockerSlim').addEventListener('click', () => {
+        document.getElementById('dockerAfterSize').textContent = '24.8 MB';
+        document.getElementById('dockerSlimBadge').textContent = 'Efisiensi Layer: 99.6% (33.9x Slimmer)';
+        document.getElementById('dockerLogBox').innerHTML += `<div class="text-emerald-300">✓ SlimToolkit selesai mengoptimalkan ulang kontainer menjadi 24.8 MB!</div>`;
+        showToast('Image Docker berhasil dikompresi menjadi 24.8 MB!');
+      });
+
+      // Jump buttons & Footer buttons
+      document.getElementById('btnJumpEmulatorFromSynth').addEventListener('click', () => switchTab('emulator'));
+      document.getElementById('btnJumpServerFromSynth').addEventListener('click', () => switchTab('server'));
+      document.getElementById('btnFooterSynthesis').addEventListener('click', () => switchTab('synthesis'));
+
+      document.getElementById('btnFooterDeploy').addEventListener('click', () => {
+        document.getElementById('syncLabel').textContent = 'Deployed & Synced ✓';
+        document.getElementById('bottomTakeawayText').innerHTML = '<strong>DEPLOYMENT SUKSES:</strong> Kontainer Slim (29 MB) aktif di Server Beszel/1Panel (PSI 0.8%) &amp; seluruh ruang kerja telah di-backup otomatis ke GitHub via Chezmoi.';
+        showToast('Deploy ke Server & Auto-Backup GitHub berhasil dijalankan!');
+      });
+
+      document.getElementById('btnGitHubSync').addEventListener('click', () => {
+        document.getElementById('syncLabel').textContent = 'Chezmoi + Mise: Synced ✓';
+        showToast('Dotfiles, Graph Memory & Tools diperbarui dari GitHub!');
+      });
+
+      // Modal Repo Reference
+      const modal = document.getElementById('modalRepoRef');
+      document.getElementById('btnPRDModal').addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      });
+      document.getElementById('btnCloseRepoModal').addEventListener('click', () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+
+      // Initial render
+      renderSynthesisCards();
+      renderTerminals();
+      renderGraphMemory();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+[package]
+name = "omw-server-daemon"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+omw-core = { path = "../../crates/omw-core" }
+omw-guardian = { path = "../../crates/omw-guardian" }

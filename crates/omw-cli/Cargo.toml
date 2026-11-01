@@ -9,3 +9,5 @@ repository.workspace = true
 omw-core = { path = "../omw-core" }
 omw-guardian = { path = "../omw-guardian" }
 omw-terminal = { path = "../omw-terminal" }
+omw-harness = { path = "../omw-harness" }
+omw-memory = { path = "../omw-memory" }
