@@ -3,28 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gemini — Oh My Works</title>
+  <title>OMW — Unified AI Canvas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Google+Sans+Text:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #131314;
-      --sidebar-bg: #18191a;
-      --surface: #1e1f20;
-      --surface-hover: #282a2c;
-      --surface-active: #333537;
+      --bg: #0e0f10;
+      --sidebar-bg: #141517;
+      --surface: #1a1b1e;
+      --surface-hover: #222428;
+      --surface-active: #2a2c32;
       --border: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(138, 180, 248, 0.5);
-      --text: #e3e3e3;
-      --text-secondary: #c4c7c5;
-      --text-muted: #8e918f;
+      --border-hover: rgba(255, 255, 255, 0.16);
+      --border-focus: rgba(138, 180, 248, 0.4);
+      --text: #f0f2f5;
+      --text-secondary: #c2c6cf;
+      --text-muted: #848995;
       --blue: #8ab4f8;
-      --blue-hover: #aecbfa;
+      --purple: #c58af9;
+      --pink: #f28b82;
+      --amber: #fdd663;
       --green: #81c995;
-      --gemini-gradient: linear-gradient(74deg, #4285f4 0%, #9b72cf 35%, #d96570 70%);
-      --gemini-glow: 0 8px 32px rgba(66, 133, 244, 0.25);
-      --font-main: 'Google Sans', 'Google Sans Text', -apple-system, BlinkMacSystemFont, sans-serif;
+      --gradient-gemini: linear-gradient(135deg, #4285f4 0%, #9b72cf 40%, #d96570 75%, #ff8f73 100%);
+      --gradient-claude: linear-gradient(135deg, #d97757 0%, #cc5f3b 100%);
+      --gradient-gpt: linear-gradient(135deg, #10a37f 0%, #0d8c6c 100%);
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
@@ -45,41 +49,60 @@
       display: flex;
       user-select: none;
       -webkit-font-smoothing: antialiased;
+      position: relative;
+    }
+
+    /* Ambient Subtle Gradient Background Glow */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: 30%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, rgba(66, 133, 244, 0.06) 0%, rgba(155, 114, 207, 0.04) 35%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(60px);
+      animation: ambientFloat 14s ease-in-out infinite alternate;
+    }
+
+    @keyframes ambientFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-5%, 8%) scale(1.08); }
     }
 
     /* ==========================================================================
-       1. LEFT COLLAPSIBLE SIDEBAR (Gemini Style)
+       1. SIDEBAR (ChatGPT / Claude Hybrid)
        ========================================================================== */
     .sidebar {
-      width: 280px;
+      width: 260px;
       background: var(--sidebar-bg);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      transition: width 0.2s cubic-bezier(0.2, 0, 0, 1), transform 0.2s ease;
+      transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 20;
+      position: relative;
     }
 
     .sidebar.collapsed {
-      width: 72px;
+      width: 68px;
     }
 
-    .sidebar.hidden {
-      display: none;
-    }
-
-    .sidebar-top {
-      padding: 16px 14px 12px;
+    .sidebar-header {
+      padding: 16px 14px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 8px;
     }
 
     .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       background: transparent;
       border: none;
       color: var(--text-secondary);
@@ -87,7 +110,7 @@
       place-items: center;
       cursor: pointer;
       flex-shrink: 0;
-      transition: background 0.15s, color 0.15s;
+      transition: all 0.15s ease;
     }
 
     .icon-btn:hover {
@@ -96,145 +119,175 @@
     }
 
     .icon-btn svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       stroke-width: 2;
     }
 
+    /* New Chat Pill */
     .btn-new-chat {
-      height: 44px;
-      margin: 8px 14px 16px;
-      padding: 0 16px;
-      background: #1a1a1c;
+      height: 42px;
+      margin: 4px 14px 16px;
+      padding: 0 14px;
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 24px;
+      border-radius: 21px;
       color: var(--text);
       font-family: var(--font-main);
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 13px;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
       white-space: nowrap;
+      position: relative;
     }
 
     .btn-new-chat:hover {
       background: var(--surface-hover);
-      border-color: rgba(255, 255, 255, 0.16);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-new-chat svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
     }
 
     .sidebar.collapsed .btn-new-chat {
-      width: 44px;
+      width: 40px;
       padding: 0;
       justify-content: center;
-      margin: 8px auto 16px;
+      margin: 4px auto 16px;
     }
 
     .sidebar.collapsed .btn-new-chat span {
       display: none;
     }
 
-    .sidebar-label {
+    /* Recent Section */
+    .sidebar-section-title {
       padding: 0 18px 8px;
-      font-size: 12px;
-      font-weight: 500;
+      font-size: 11px;
+      font-weight: 600;
       color: var(--text-muted);
-      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
 
-    .sidebar.collapsed .sidebar-label {
+    .sidebar.collapsed .sidebar-section-title {
       display: none;
     }
 
-    .recent-list {
+    .chat-history-list {
       flex: 1;
       overflow-y: auto;
-      padding: 0 10px;
+      padding: 0 8px;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
 
-    .recent-item {
-      padding: 10px 14px;
-      border-radius: 20px;
+    .history-item {
+      padding: 9px 12px;
+      border-radius: 12px;
       color: var(--text-secondary);
       font-size: 13px;
-      font-weight: 400;
+      font-weight: 500;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      transition: background 0.12s, color 0.12s;
+      transition: all 0.15s ease;
     }
 
-    .recent-item:hover {
+    .history-item:hover {
       background: var(--surface-hover);
       color: var(--text);
     }
 
-    .recent-item.active {
-      background: rgba(66, 133, 244, 0.15);
+    .history-item.active {
+      background: rgba(66, 133, 244, 0.12);
       color: var(--blue);
-      font-weight: 500;
+      border: 1px solid rgba(66, 133, 244, 0.25);
     }
 
-    .sidebar.collapsed .recent-item {
-      padding: 10px 0;
+    .sidebar.collapsed .history-item {
+      padding: 9px 0;
       justify-content: center;
     }
 
-    .sidebar.collapsed .recent-item span {
+    .sidebar.collapsed .history-item span {
       display: none;
     }
 
-    .sidebar-bottom {
+    /* Sidebar Footer / Telemetry */
+    .sidebar-footer {
       padding: 12px 14px;
       border-top: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.15);
     }
 
-    .bottom-row {
+    .telemetry-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 6px;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       font-family: var(--font-mono);
     }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
+    .telemetry-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(129, 201, 149, 0.12);
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--green);
-      box-shadow: 0 0 8px rgba(129, 201, 149, 0.5);
+      box-shadow: 0 0 6px rgba(129, 201, 149, 0.8);
+      animation: pulseAnim 2s infinite;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
     }
 
     /* ==========================================================================
        2. MAIN VIEWPORT & HEADER
        ========================================================================== */
-    .main-wrapper {
+    .main-viewport {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       position: relative;
+      z-index: 1;
     }
 
-    /* Top App Header */
-    .top-header {
-      height: 60px;
+    /* Top Floating Header */
+    .app-topbar {
+      height: 56px;
       padding: 0 20px;
       display: flex;
       align-items: center;
@@ -243,59 +296,15 @@
       z-index: 10;
     }
 
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-title {
-      font-size: 18px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .model-selector {
+    /* Model Selector Dropdown (ChatGPT / Claude style) */
+    .model-pill-btn {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 4px 12px;
+      border-radius: 16px;
+      padding: 6px 14px;
       font-size: 13px;
-      font-family: var(--font-main);
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: background 0.12s;
-    }
-
-    .model-selector:hover {
-      background: var(--surface-hover);
+      font-weight: 600;
       color: var(--text);
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* Floating Companion Toggle Button */
-    .btn-floating-toggle {
-      height: 36px;
-      padding: 0 14px;
-      border-radius: 18px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: var(--font-main);
-      font-size: 13px;
-      font-weight: 500;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -303,153 +312,251 @@
       transition: all 0.15s ease;
     }
 
-    .btn-floating-toggle:hover {
+    .model-pill-btn:hover {
       background: var(--surface-hover);
-      border-color: rgba(138, 180, 248, 0.4);
-      box-shadow: 0 2px 10px rgba(66, 133, 244, 0.2);
+      border-color: var(--border-hover);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .btn-floating-toggle.active {
-      background: rgba(66, 133, 244, 0.15);
-      border-color: var(--blue);
-      color: var(--blue);
+    .sparkle-icon-svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
     }
 
-    .user-avatar {
+    .topbar-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn-clean {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-family: var(--font-main);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .action-btn-clean:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+
+    .avatar-circle {
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: var(--blue);
-      color: #040c18;
+      background: var(--gradient-gemini);
+      color: #fff;
       display: grid;
       place-items: center;
-      font-weight: 700;
       font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     /* ==========================================================================
-       3. GEMINI CONVERSATION CANVAS
+       3. CONVERSATION CANVAS & ANIMATIONS
        ========================================================================== */
-    .chat-scroll {
+    .canvas-scroll-area {
       flex: 1;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       position: relative;
+      scroll-behavior: smooth;
     }
 
-    .canvas-container {
+    .canvas-inner {
       width: 100%;
       max-width: 820px;
       margin: 0 auto;
-      padding: 20px 24px 160px;
+      padding: 16px 20px 180px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 24px;
       user-select: text;
     }
 
-    /* Gemini Hero / Welcome Screen */
-    .gemini-hero {
-      margin-top: 40px;
+    /* Welcome Hero (Claude / Gemini Hybrid with Shimmer Gradient) */
+    .welcome-hero {
+      margin-top: 32px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
+      animation: heroFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .gemini-sparkle-hero {
-      width: 44px;
-      height: 44px;
-      margin-bottom: 4px;
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .hero-title {
-      font-size: 48px;
+    .hero-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      font-size: 12px;
       font-weight: 600;
-      letter-spacing: -0.03em;
+      color: var(--text-secondary);
+    }
+
+    .hero-heading {
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: -0.035em;
       line-height: 1.15;
-      background: var(--gemini-gradient);
+      background: var(--gradient-gemini);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      margin-top: 4px;
     }
 
-    .hero-subtitle {
-      font-size: 40px;
+    .hero-subheading {
+      font-size: 26px;
       font-weight: 500;
-      color: #5f6368;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
+      color: #6a6f7d;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
       margin-bottom: 24px;
     }
 
-    .hero-cards-grid {
+    /* 4 Suggestion Cards (Interactive with subtle gradient border on hover) */
+    .cards-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      gap: 12px;
     }
 
-    .hero-card {
+    .suggestion-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 18px 20px;
-      min-height: 110px;
+      border-radius: 18px;
+      padding: 16px 18px;
+      min-height: 96px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       cursor: pointer;
-      transition: all 0.15s ease;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .hero-card:hover {
+    .suggestion-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      padding: 1px;
+      background: var(--gradient-gemini);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .suggestion-card:hover {
       background: var(--surface-hover);
-      border-color: rgba(255, 255, 255, 0.15);
       transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
 
-    .hero-card-text {
+    .suggestion-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-prompt-title {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text);
       line-height: 1.4;
     }
 
-    .hero-card-bottom {
-      align-self: flex-end;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #18191a;
-      display: grid;
-      place-items: center;
-      font-size: 14px;
-      color: var(--blue);
+    .card-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
     }
 
-    /* Message Rows */
-    .msg-row {
+    .card-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .card-icon-bubble {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      color: var(--blue);
+      transition: transform 0.15s ease;
+    }
+
+    .suggestion-card:hover .card-icon-bubble {
+      transform: scale(1.1);
+    }
+
+    /* Message Rows with Slide-up Animation */
+    .chat-bubble-row {
       display: flex;
       gap: 16px;
       width: 100%;
+      animation: messageSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    .msg-user {
+    @keyframes messageSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-msg-row {
       justify-content: flex-end;
     }
 
-    .bubble-user {
+    .user-pill-bubble {
       background: var(--surface-hover);
-      border-radius: 24px 24px 6px 24px;
-      padding: 14px 22px;
+      border: 1px solid var(--border);
+      border-radius: 20px 20px 4px 20px;
+      padding: 12px 18px;
       color: var(--text);
-      font-size: 15px;
-      line-height: 1.5;
-      max-width: 80%;
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 82%;
       word-break: break-word;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
-    .bubble-gemini {
+    .assistant-body {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -457,89 +564,109 @@
       min-width: 0;
     }
 
-    .gemini-sparkle-avatar {
-      width: 24px;
-      height: 24px;
+    .ai-sparkle-avatar {
+      width: 28px;
+      height: 28px;
       flex-shrink: 0;
-      margin-top: 4px;
+      margin-top: 2px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      display: grid;
+      place-items: center;
     }
 
-    /* Collapsible Reasoning Process */
-    .reasoning-box {
+    /* Thinking Process Accordion (Claude / Gemini style) */
+    .thinking-accordion {
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 14px;
-      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 12px;
       font-size: 12px;
+      transition: background 0.15s ease;
     }
 
-    .reasoning-box summary {
+    .thinking-accordion[open] {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .thinking-accordion summary {
       cursor: pointer;
       user-select: none;
       display: flex;
       align-items: center;
       gap: 8px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--blue);
+      outline: none;
     }
 
-    .reasoning-text {
-      margin-top: 10px;
+    .thinking-content-text {
+      margin-top: 8px;
       font-family: var(--font-mono);
-      font-size: 12px;
-      color: #9ca3af;
-      line-height: 1.6;
+      font-size: 11.5px;
+      color: #9aa1b2;
+      line-height: 1.55;
       white-space: pre-wrap;
     }
 
-    /* Tool Call Card */
-    .tool-execution-card {
+    /* Artifact / Tool Execution Card */
+    .artifact-tool-box {
       background: #000;
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
       font-family: var(--font-mono);
       font-size: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 
-    .tool-header {
+    .artifact-header {
       padding: 8px 12px;
-      background: #18191a;
+      background: #141517;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
       align-items: center;
       justify-content: space-between;
       color: var(--text-secondary);
+      font-size: 11.5px;
     }
 
-    .tool-body {
+    .artifact-status-success {
+      color: var(--green);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .artifact-body {
       padding: 10px 14px;
-      color: #81c995;
+      color: #93c5fd;
       white-space: pre-wrap;
-      max-height: 180px;
+      max-height: 160px;
       overflow-y: auto;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
-    .gemini-answer {
-      font-size: 15px;
+    .ai-rendered-markdown {
+      font-size: 14.5px;
       line-height: 1.65;
       color: var(--text);
     }
 
-    /* Action Toolbar (Thumbs up/down, Copy, Share) */
-    .answer-actions {
+    /* Message Actions Bar (Thumbs, Copy with Tooltip) */
+    .message-action-bar {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-top: 6px;
-      opacity: 0.8;
+      gap: 4px;
+      margin-top: 4px;
+      opacity: 0.85;
     }
 
-    .action-circle-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
+    .btn-action-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
       background: transparent;
       border: none;
       color: var(--text-muted);
@@ -547,65 +674,66 @@
       place-items: center;
       cursor: pointer;
       font-size: 13px;
-      transition: background 0.12s, color 0.12s;
+      transition: all 0.12s ease;
     }
 
-    .action-circle-btn:hover {
+    .btn-action-icon:hover {
       background: var(--surface-hover);
       color: var(--text);
     }
 
     /* ==========================================================================
-       4. ICONIC GEMINI FLOATING INPUT CONTAINER
+       4. ICONIC FLOATING PROMPT PILL (Gemini / ChatGPT hybrid)
        ========================================================================== */
-    .floating-prompt-bar {
+    .floating-prompt-wrapper {
       position: absolute;
-      bottom: 24px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      width: calc(100% - 48px);
+      width: calc(100% - 40px);
       max-width: 820px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 32px;
-      padding: 8px 16px 8px 12px;
+      border-radius: 28px;
+      padding: 6px 14px 6px 10px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-      transition: border-color 0.15s, box-shadow 0.15s;
+      gap: 4px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(12px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 50;
     }
 
-    .floating-prompt-bar:focus-within {
+    .floating-prompt-wrapper:focus-within {
       border-color: var(--border-focus);
-      box-shadow: 0 8px 36px rgba(0, 0, 0, 0.8), 0 0 16px rgba(138, 180, 248, 0.15);
+      box-shadow: 0 14px 48px rgba(0, 0, 0, 0.85), 0 0 20px rgba(138, 180, 248, 0.18);
+      transform: translateX(-50%) translateY(-2px);
     }
 
-    .prompt-pills-row {
+    /* Mention / Filter Pills */
+    .mention-chips-strip {
       display: flex;
       align-items: center;
       gap: 6px;
       overflow-x: auto;
-      padding-top: 4px;
-      padding-bottom: 2px;
+      padding: 4px 6px 2px;
     }
 
-    .pill-chip {
+    .mention-pill {
       font-size: 11px;
-      font-family: var(--font-main);
-      font-weight: 500;
+      font-weight: 600;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 2px 10px;
+      border-radius: 12px;
+      padding: 2px 9px;
       color: var(--text-secondary);
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.12s;
+      transition: all 0.15s ease;
     }
 
-    .pill-chip:hover, .pill-chip.active {
+    .mention-pill:hover, .mention-pill.active {
       background: rgba(66, 133, 244, 0.15);
       border-color: var(--blue);
       color: var(--blue);
@@ -614,50 +742,17 @@
     .prompt-input-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      padding: 2px 0;
     }
 
-    .btn-attach-plus {
-      width: 36px;
-      height: 36px;
+    .btn-attach-icon {
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: transparent;
       border: none;
       color: var(--text-secondary);
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      font-size: 18px;
-      flex-shrink: 0;
-      transition: background 0.12s;
-    }
-
-    .btn-attach-plus:hover {
-      background: var(--surface-hover);
-      color: var(--text);
-    }
-
-    .main-textarea {
-      flex: 1;
-      min-height: 28px;
-      max-height: 160px;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-family: var(--font-main);
-      font-size: 15px;
-      line-height: 1.5;
-      resize: none;
-    }
-
-    .btn-submit-sparkle {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
       display: grid;
       place-items: center;
       cursor: pointer;
@@ -666,54 +761,53 @@
       transition: all 0.15s ease;
     }
 
-    .btn-submit-sparkle.ready {
-      background: var(--blue);
-      color: #040c18;
-      box-shadow: 0 0 12px rgba(138, 180, 248, 0.4);
+    .btn-attach-icon:hover {
+      background: var(--surface-hover);
+      color: var(--text);
     }
 
-    .footer-disclaimer {
+    .core-prompt-textarea {
+      flex: 1;
+      min-height: 26px;
+      max-height: 140px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 14.5px;
+      line-height: 1.5;
+      resize: none;
+    }
+
+    .btn-send-pill {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 15px;
+      flex-shrink: 0;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-send-pill.active {
+      background: var(--gradient-gemini);
+      color: #fff;
+      box-shadow: 0 0 16px rgba(155, 114, 207, 0.45);
+      transform: scale(1.05);
+    }
+
+    .disclaimer-caption {
       font-size: 11px;
       color: var(--text-muted);
       text-align: center;
-      margin-top: 2px;
       user-select: none;
-    }
-
-    /* ==========================================================================
-       5. FLOATING COMPANION OVERLAY WIDGET (Alt Mode)
-       ========================================================================== */
-    .floating-companion-card {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 420px;
-      height: 600px;
-      background: var(--surface);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 28px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 100;
-      user-select: text;
-    }
-
-    .floating-companion-card.visible {
-      display: flex;
-    }
-
-    .companion-header {
-      height: 52px;
-      padding: 0 18px;
-      background: #18191a;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: grab;
-      user-select: none;
+      margin-bottom: 2px;
     }
 
     /* Scrollbars */
@@ -726,145 +820,157 @@
 <body>
 
   <!-- ========================================================================
-       1. LEFT COLLAPSIBLE SIDEBAR (Gemini Navigation)
+       1. SIDEBAR (Collapsible, Chat History, PSI Telemetry)
        ======================================================================== -->
-  <aside class="sidebar" id="mainSidebar">
-    <!-- Top Action -->
-    <div class="sidebar-top">
-      <button type="button" class="icon-btn" id="btnToggleSidebar" title="Collapse sidebar">
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-header">
+      <button type="button" class="icon-btn" id="btnSidebarCollapse" title="Toggle Sidebar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
       </button>
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: -0.02em; color: var(--text);">Oh My Works</div>
     </div>
 
     <!-- New Chat Pill -->
     <button type="button" class="btn-new-chat" id="btnNewChat">
-      <svg style="width: 18px; height: 18px; stroke-width: 2;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-      <span>New chat</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <span>New session</span>
     </button>
 
-    <!-- Recent Section -->
-    <div class="sidebar-label">Recent</div>
-    <div class="recent-list" id="recentList">
-      <div class="recent-item active" data-thread="1">
-        <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        <span>Audit Kernel PSI &amp; Anti-OOM</span>
+    <!-- Recent History Section -->
+    <div class="sidebar-section-title">Recent Chats</div>
+    <div class="chat-history-list" id="chatHistoryList">
+      <div class="history-item active">
+        <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Kernel PSI &amp; Anti-OOM</span>
       </div>
-      <div class="recent-item" data-thread="2">
-        <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        <span>45 Cindy Sessions Harvester</span>
+      <div class="history-item">
+        <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Cindy Sessions (45)</span>
       </div>
-      <div class="recent-item" data-thread="3">
-        <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        <span>Strix Autonomous Pentest</span>
+      <div class="history-item">
+        <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Strix Pentest Audit</span>
       </div>
     </div>
 
-    <!-- Sidebar Bottom Status -->
-    <div class="sidebar-bottom">
-      <div class="bottom-row">
-        <span>Kernel PSI</span>
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <div class="status-dot" id="psiDot"></div>
-          <span id="psiStatusText">Safe (0.00%)</span>
+    <!-- Sidebar Footer with Live PSI Telemetry -->
+    <div class="sidebar-footer">
+      <div class="telemetry-row">
+        <span>Kernel PSI Stall</span>
+        <div class="telemetry-badge">
+          <span class="pulse-dot" id="psiPulse"></span>
+          <span id="psiLabel">0.00% SAFE</span>
         </div>
       </div>
-      <div class="bottom-row">
+      <div class="telemetry-row">
         <span>Available RAM</span>
-        <span id="ramText">5,901 MB (46%)</span>
+        <span id="ramLabel">5,901 MB (46%)</span>
       </div>
     </div>
   </aside>
 
   <!-- ========================================================================
-       2. MAIN VIEWPORT & GEMINI CONVERSATION CANVAS
+       2. MAIN VIEWPORT & CONVERSATION CANVAS
        ======================================================================== -->
-  <main class="main-wrapper">
-    <!-- Top Header -->
-    <header class="top-header">
-      <div class="brand-section">
-        <div class="brand-title">
-          <span>Gemini</span>
-          <svg style="width: 14px; height: 14px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </div>
-        <div class="model-selector">
-          <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-            <defs>
-              <linearGradient id="gemini-sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#4285F4"/>
-                <stop offset="0.5" stop-color="#9B72CF"/>
-                <stop offset="1" stop-color="#D96570"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <span>Advanced 1.5 Pro • OMW Engine</span>
-        </div>
+  <main class="main-viewport">
+    <!-- Topbar (Model Selector & Actions) -->
+    <header class="app-topbar">
+      <div class="model-pill-btn" id="btnModelSelect">
+        <svg class="sparkle-icon-svg" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+          <defs>
+            <linearGradient id="gemini-sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#4285F4"/>
+              <stop offset="0.4" stop-color="#9B72CF"/>
+              <stop offset="0.75" stop-color="#D96570"/>
+              <stop offset="1" stop-color="#FF8F73"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Unified AI Engine</span>
+        <svg style="width: 12px; height: 12px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </div>
 
-      <div class="header-actions">
-        <button type="button" class="btn-floating-toggle" id="btnToggleFloatingMode">
-          <svg style="width: 15px; height: 15px; stroke-width: 2;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-          <span>Companion Mode</span>
+      <div class="topbar-right-actions">
+        <button type="button" class="action-btn-clean" id="btnTerminalToggle" title="Open PTY">
+          <span>>_ Terminal</span>
         </button>
-        <div class="user-avatar" title="Ivano Wisnu">I</div>
+        <div class="avatar-circle" title="Ivano">I</div>
       </div>
     </header>
 
     <!-- Scrollable Conversation Area -->
-    <div class="chat-scroll" id="chatScroll">
-      <div class="canvas-container" id="canvasContainer">
-        <!-- Gemini Hero State -->
-        <div class="gemini-hero" id="geminiHero">
-          <svg class="gemini-sparkle-hero" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-          </svg>
-          <div class="hero-title">Hello, Ivano</div>
-          <div class="hero-subtitle">How can I help you today?</div>
+    <div class="canvas-scroll-area" id="canvasScroll">
+      <div class="canvas-inner" id="canvasInner">
+        <!-- Welcome Hero Screen -->
+        <div class="welcome-hero" id="welcomeHero">
+          <div class="hero-badge-row">
+            <div class="hero-badge">
+              <svg class="sparkle-icon-svg" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+              </svg>
+              <span>Oh My Works • Meta-AI Workspace</span>
+            </div>
+          </div>
 
-          <div class="hero-cards-grid">
-            <div class="hero-card" data-prompt="Periksa kondisi kernel PSI di /proc/pressure/memory dan pastikan anti-OOM aktif">
-              <div class="hero-card-text">Audit tekanan memori kernel PSI dan earlyoom</div>
-              <div class="hero-card-bottom">🛡️</div>
+          <div class="hero-heading">Hello, Ivano</div>
+          <div class="hero-subheading">How can I help you orchestrate today?</div>
+
+          <div class="cards-grid">
+            <div class="suggestion-card" data-prompt="Periksa status kernel PSI di /proc/pressure/memory dan pastikan anti-OOM aktif">
+              <div class="card-prompt-title">Audit Tekanan Memori Kernel PSI &amp; Anti-OOM</div>
+              <div class="card-meta-row">
+                <span class="card-tag">omw-guardian</span>
+                <div class="card-icon-bubble">🛡️</div>
+              </div>
             </div>
 
-            <div class="hero-card" data-prompt="Pindai 45 sesi multi-turn di ~/.prime dan ~/.codex dengan Cindy Harvester">
-              <div class="hero-card-text">Sinkronkan 45 sesi transkrip agen lokal Cindy</div>
-              <div class="hero-card-bottom">🔄</div>
+            <div class="suggestion-card" data-prompt="Sinkronkan 45 sesi multi-turn di ~/.prime dan ~/.codex dengan Cindy Harvester">
+              <div class="card-prompt-title">Pindai 45 Sesi Transkrip Agen Lokal Cindy</div>
+              <div class="card-meta-row">
+                <span class="card-tag">omw-session</span>
+                <div class="card-icon-bubble">🔄</div>
+              </div>
             </div>
 
-            <div class="hero-card" data-prompt="Audit keamanan target dengan Strix Autonomous Pentest Scanner">
-              <div class="hero-card-text">Jalankan security pentest dan cek celah injeksi</div>
-              <div class="hero-card-bottom">🎯</div>
+            <div class="suggestion-card" data-prompt="Jalankan audit keamanan dengan Strix Autonomous Pentest">
+              <div class="card-prompt-title">Audit Keamanan &amp; Celah Injeksi Sistem</div>
+              <div class="card-meta-row">
+                <span class="card-tag">omw-clone::strix</span>
+                <div class="card-icon-bubble">🎯</div>
+              </div>
             </div>
 
-            <div class="hero-card" data-prompt="Ekstrak blueprint UI dan mock scaffold menggunakan REA Cloner">
-              <div class="hero-card-text">Ekstrak struktur arsitektur blueprint dengan REA</div>
-              <div class="hero-card-bottom">📐</div>
+            <div class="suggestion-card" data-prompt="Ekstrak blueprint arsitektur UI dan scaffold dengan REA Cloner">
+              <div class="card-prompt-title">Ekstrak Blueprint Arsitektur Aplikasi REA</div>
+              <div class="card-meta-row">
+                <span class="card-tag">omw-clone::rea</span>
+                <div class="card-icon-bubble">📐</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- The Iconic Gemini Floating Input Pill (Bottom) -->
-    <div class="floating-prompt-bar">
-      <!-- Mention Chips -->
-      <div class="prompt-pills-row">
-        <span class="pill-chip active" data-mention="@all">@all (Orchestrator)</span>
-        <span class="pill-chip" data-mention="@guardian">@guardian (Anti-OOM)</span>
-        <span class="pill-chip" data-mention="@cindy">@cindy (Sessions)</span>
-        <span class="pill-chip" data-mention="@terminal">@terminal (PTY)</span>
-        <span class="pill-chip" data-mention="@strix">@strix (Pentest)</span>
-        <span class="pill-chip" data-mention="@rea">@rea (Cloner)</span>
+    <!-- Floating Prompt Container (Bottom) -->
+    <div class="floating-prompt-wrapper">
+      <!-- Mention Strip -->
+      <div class="mention-chips-strip">
+        <span class="mention-pill active" data-mention="@all">@all (Orchestrator)</span>
+        <span class="mention-pill" data-mention="@guardian">@guardian (Anti-OOM)</span>
+        <span class="mention-pill" data-mention="@cindy">@cindy (Sessions)</span>
+        <span class="mention-pill" data-mention="@terminal">@terminal</span>
+        <span class="mention-pill" data-mention="@strix">@strix</span>
       </div>
 
       <div class="prompt-input-row">
-        <button type="button" class="btn-attach-plus" title="Add files or tools">+</button>
-        <textarea id="promptInput" class="main-textarea" rows="1" placeholder="Ask Gemini or type a task..."></textarea>
-        <button type="button" class="btn-submit-sparkle" id="btnSubmit" title="Send message">➔</button>
+        <button type="button" class="btn-attach-icon" title="Add files or tools">+</button>
+        <textarea id="corePromptTextarea" class="core-prompt-textarea" rows="1" placeholder="Ask anything, run tasks, or type @agent..."></textarea>
+        <button type="button" class="btn-send-pill" id="btnSendPrompt" title="Send message">➔</button>
       </div>
 
-      <div class="footer-disclaimer">Gemini may display inaccurate info, so double-check its responses.</div>
+      <div class="disclaimer-caption">OMW Unified AI Engine may produce unexpected outputs. Double check execution plans.</div>
     </div>
   </main>
 
@@ -874,166 +980,195 @@
       let selectedMention = '@all';
       let telemetry = { status: 'SAFE', available_percent: 46.3, some_avg10: 0.0, full_avg10: 0.0 };
 
-      // 1. Sidebar Collapse Toggle
-      const sidebar = document.getElementById('mainSidebar');
-      document.getElementById('btnToggleSidebar').addEventListener('click', () => {
+      // 1. Sidebar Collapse
+      const sidebar = document.getElementById('appSidebar');
+      document.getElementById('btnSidebarCollapse').addEventListener('click', () => {
         isSidebarCollapsed = !isSidebarCollapsed;
         sidebar.classList.toggle('collapsed', isSidebarCollapsed);
       });
 
       // 2. New Chat Button
       document.getElementById('btnNewChat').addEventListener('click', () => {
-        const container = document.getElementById('canvasContainer');
-        container.innerHTML = `
-          <div class="gemini-hero" id="geminiHero">
-            <svg class="gemini-sparkle-hero" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-            </svg>
-            <div class="hero-title">Hello, Ivano</div>
-            <div class="hero-subtitle">How can I help you today?</div>
-            <div class="hero-cards-grid">
-              <div class="hero-card" data-prompt="Periksa kondisi kernel PSI di /proc/pressure/memory dan pastikan anti-OOM aktif">
-                <div class="hero-card-text">Audit tekanan memori kernel PSI dan earlyoom</div>
-                <div class="hero-card-bottom">🛡️</div>
+        resetHeroView();
+      });
+
+      function resetHeroView() {
+        const inner = document.getElementById('canvasInner');
+        inner.innerHTML = `
+          <div class="welcome-hero" id="welcomeHero">
+            <div class="hero-badge-row">
+              <div class="hero-badge">
+                <svg class="sparkle-icon-svg" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+                </svg>
+                <span>Oh My Works • Meta-AI Workspace</span>
               </div>
-              <div class="hero-card" data-prompt="Pindai 45 sesi multi-turn di ~/.prime dan ~/.codex dengan Cindy Harvester">
-                <div class="hero-card-text">Sinkronkan 45 sesi transkrip agen lokal Cindy</div>
-                <div class="hero-card-bottom">🔄</div>
+            </div>
+
+            <div class="hero-heading">Hello, Ivano</div>
+            <div class="hero-subheading">How can I help you orchestrate today?</div>
+
+            <div class="cards-grid">
+              <div class="suggestion-card" data-prompt="Periksa status kernel PSI di /proc/pressure/memory dan pastikan anti-OOM aktif">
+                <div class="card-prompt-title">Audit Tekanan Memori Kernel PSI &amp; Anti-OOM</div>
+                <div class="card-meta-row">
+                  <span class="card-tag">omw-guardian</span>
+                  <div class="card-icon-bubble">🛡️</div>
+                </div>
               </div>
-              <div class="hero-card" data-prompt="Audit keamanan target dengan Strix Autonomous Pentest Scanner">
-                <div class="hero-card-text">Jalankan security pentest dan cek celah injeksi</div>
-                <div class="hero-card-bottom">🎯</div>
+
+              <div class="suggestion-card" data-prompt="Sinkronkan 45 sesi multi-turn di ~/.prime dan ~/.codex dengan Cindy Harvester">
+                <div class="card-prompt-title">Pindai 45 Sesi Transkrip Agen Lokal Cindy</div>
+                <div class="card-meta-row">
+                  <span class="card-tag">omw-session</span>
+                  <div class="card-icon-bubble">🔄</div>
+                </div>
               </div>
-              <div class="hero-card" data-prompt="Ekstrak blueprint UI dan mock scaffold menggunakan REA Cloner">
-                <div class="hero-card-text">Ekstrak struktur arsitektur blueprint dengan REA</div>
-                <div class="hero-card-bottom">📐</div>
+
+              <div class="suggestion-card" data-prompt="Jalankan audit keamanan dengan Strix Autonomous Pentest">
+                <div class="card-prompt-title">Audit Keamanan &amp; Celah Injeksi Sistem</div>
+                <div class="card-meta-row">
+                  <span class="card-tag">omw-clone::strix</span>
+                  <div class="card-icon-bubble">🎯</div>
+                </div>
+              </div>
+
+              <div class="suggestion-card" data-prompt="Ekstrak blueprint arsitektur UI dan scaffold dengan REA Cloner">
+                <div class="card-prompt-title">Ekstrak Blueprint Arsitektur Aplikasi REA</div>
+                <div class="card-meta-row">
+                  <span class="card-tag">omw-clone::rea</span>
+                  <div class="card-icon-bubble">📐</div>
+                </div>
               </div>
             </div>
           </div>
         `;
-        bindCardListeners();
-      });
+        bindSuggestionCards();
+      }
 
-      // 3. Mention Chips
-      document.querySelectorAll('.pill-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-          selectedMention = chip.getAttribute('data-mention');
-          document.querySelectorAll('.pill-chip').forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
+      // 3. Mention Pills
+      document.querySelectorAll('.mention-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          selectedMention = pill.getAttribute('data-mention');
+          document.querySelectorAll('.mention-pill').forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
         });
       });
 
-      // 4. Input auto-expand and submit
-      const input = document.getElementById('promptInput');
-      const btnSubmit = document.getElementById('btnSubmit');
-      const chatScroll = document.getElementById('chatScroll');
-
-      input.addEventListener('input', () => {
-        input.style.height = 'auto';
-        input.style.height = `${Math.min(160, input.scrollHeight)}px`;
-        btnSubmit.classList.toggle('ready', input.value.trim().length > 0);
-      });
-
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          const val = input.value.trim();
-          if (val) submitPrompt(val);
-        }
-      });
-
-      btnSubmit.addEventListener('click', () => {
-        const val = input.value.trim();
-        if (val) submitPrompt(val);
-      });
-
-      function bindCardListeners() {
-        document.querySelectorAll('.hero-card').forEach(card => {
+      // 4. Suggestion Cards Binding
+      function bindSuggestionCards() {
+        document.querySelectorAll('.suggestion-card').forEach(card => {
           card.addEventListener('click', () => {
             const prompt = card.getAttribute('data-prompt');
-            submitPrompt(prompt);
+            executePrompt(prompt);
           });
         });
       }
-      bindCardListeners();
+      bindSuggestionCards();
 
-      function submitPrompt(text) {
-        const hero = document.getElementById('geminiHero');
+      // 5. Input Auto-expand & Execution
+      const textarea = document.getElementById('corePromptTextarea');
+      const btnSend = document.getElementById('btnSendPrompt');
+      const scrollArea = document.getElementById('canvasScroll');
+
+      textarea.addEventListener('input', () => {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${Math.min(140, textarea.scrollHeight)}px`;
+        btnSend.classList.toggle('active', textarea.value.trim().length > 0);
+      });
+
+      textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          const val = textarea.value.trim();
+          if (val) executePrompt(val);
+        }
+      });
+
+      btnSend.addEventListener('click', () => {
+        const val = textarea.value.trim();
+        if (val) executePrompt(val);
+      });
+
+      function executePrompt(text) {
+        const hero = document.getElementById('welcomeHero');
         if (hero) hero.style.display = 'none';
 
-        const container = document.getElementById('canvasContainer');
+        const inner = document.getElementById('canvasInner');
 
-        // User Message
-        const userDiv = document.createElement('div');
-        userDiv.className = 'msg-row msg-user';
-        userDiv.innerHTML = `<div class="bubble-user">${escapeHtml(text)}</div>`;
-        container.appendChild(userDiv);
+        // User Row
+        const userRow = document.createElement('div');
+        userRow.className = 'chat-bubble-row user-msg-row';
+        userRow.innerHTML = `<div class="user-pill-bubble">${escapeHtml(text)}</div>`;
+        inner.appendChild(userRow);
 
-        // Assistant Gemini Message
+        // Assistant Logic
         const lower = text.toLowerCase();
-        let toolName = 'omw_guardian::assess()';
-        let toolOutput = 'Status: SAFE\nPressure stall (some_avg10): 0.00%\nAvailable RAM: 5,901 MB (46.3%)';
-        let thought = 'Menganalisis status memori kernel Linux melalui /proc/pressure/memory...';
-        let answer = 'Status memori kernel berada dalam kondisi **SAFE (Aman)** dengan tingkat stall **0.00%**.\n\n- **RAM Tersedia**: 5,901 MB (46.3% dari total 12.7 GB).\n- **Proteksi Anti-OOM**: Watchdog aktif dan sistem aman dari freeze.';
+        let toolTitle = 'omw_guardian::check_health()';
+        let toolOutput = 'Status: SAFE\nKernel stall: 0.00%\nRAM available: 5,901 MB (46.3%)';
+        let thoughts = 'Membaca /proc/pressure/memory kernel dan memverifikasi batas threshold earlyoom...';
+        let response = 'Status memori kernel berada dalam zona **SAFE** (*0.00% stall*).\n\n- **RAM Tersedia**: 5,901 MB dari 12.7 GB total.\n- **Anti-OOM Guardian**: Aktif memitigasi risiko pembekuan sistem.';
 
         if (lower.includes('cindy') || lower.includes('sesi') || lower.includes('session')) {
-          toolName = 'omw_session::scan_all()';
-          toolOutput = 'Scanned ~/.prime, ~/.codex, ~/.claude\nDiscovered: 45 active sessions';
-          thought = 'Memindai direktori sesi lokal dengan parser JSONL streaming...';
-          answer = 'Berhasil mengindeks **45 sesi multi-turn** lokal dari Cindy session harvester architecture. Transkrip siap diakses kapan saja.';
+          toolTitle = 'omw_session::harvest()';
+          toolOutput = 'Scanned: ~/.prime, ~/.codex, ~/.claude\nDiscovered: 45 sessions indexed';
+          thoughts = 'Memindai riwayat obrolan agen lokal menggunakan streaming JSONL harvester...';
+          response = 'Cindy session harvester berhasil mengindeks **45 sesi multi-turn** lokal. Data transkrip siap dieksplorasi.';
         } else if (lower.includes('strix') || lower.includes('pentest') || lower.includes('keamanan')) {
-          toolName = 'omw_clone::StrixScanner::audit()';
-          toolOutput = 'Endpoints scanned: 18\nCritical: 0\nHigh: 0\nLow: 1 (CSP header)';
-          thought = 'Menjalankan audit kerentanan statis dan dinamis pada daemon lokal...';
-          answer = 'Audit keamanan Strix selesai: **0 kerentanan kritis**. Target aman dari SQL Injection dan RCE.';
+          toolTitle = 'omw_clone::StrixScanner::scan()';
+          toolOutput = 'Endpoints audited: 18\nCritical: 0\nHigh: 0\nLow: 1 (CSP header)';
+          thoughts = 'Menilai vektor serangan RCE, SSRF, dan injeksi command pada daemon lokal...';
+          response = 'Audit Strix selesai: **0 kerentanan kritis**. Port daemon `:9180` terlindungi dari ancaman eksternal.';
         } else if (lower.includes('rea') || lower.includes('cloner') || lower.includes('blueprint')) {
-          toolName = 'omw_clone::ReaCloner::blueprint()';
-          toolOutput = 'Generated AppLayoutChrome.vue and AuthBridge.ts scaffold';
-          thought = 'Mengekstraksi hierarki komponen dan merekonstruksi arsitektur mock...';
-          answer = 'Blueprint arsitektur aplikasi berhasil digenerate di `crates/omw-clone/output`.';
+          toolTitle = 'omw_clone::ReaCloner::scaffold()';
+          toolOutput = 'Generated AppLayout.vue, Bridge.ts, and Tailwind CSS tokens';
+          thoughts = 'Merekontruksi arsitektur antarmuka dan mengekstrak komponen modular...';
+          response = 'Blueprint aplikasi REA berhasil digenerate di `crates/omw-clone/output`.';
         }
 
-        const geminiDiv = document.createElement('div');
-        geminiDiv.className = 'msg-row';
-        geminiDiv.innerHTML = `
-          <svg class="gemini-sparkle-avatar" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-          </svg>
-          <div class="bubble-gemini">
-            <details class="reasoning-box" open>
+        const aiRow = document.createElement('div');
+        aiRow.className = 'chat-bubble-row';
+        aiRow.innerHTML = `
+          <div class="ai-sparkle-avatar">
+            <svg class="sparkle-icon-svg" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
+            </svg>
+          </div>
+          <div class="assistant-body">
+            <details class="thinking-accordion" open>
               <summary>Show thinking</summary>
-              <div class="reasoning-text">${escapeHtml(thought)}</div>
+              <div class="thinking-content-text">${escapeHtml(thoughts)}</div>
             </details>
 
-            <div class="tool-execution-card">
-              <div class="tool-header">
-                <span>⚙ ${escapeHtml(toolName)}</span>
-                <span style="color: var(--green);">COMPLETED</span>
+            <div class="artifact-tool-box">
+              <div class="artifact-header">
+                <span>⚙ ${escapeHtml(toolTitle)}</span>
+                <span class="artifact-status-success">✓ COMPLETED</span>
               </div>
-              <div class="tool-body">${escapeHtml(toolOutput)}</div>
+              <div class="artifact-body">${escapeHtml(toolOutput)}</div>
             </div>
 
-            <div class="gemini-answer">${formatMarkdown(answer)}</div>
+            <div class="ai-rendered-markdown">${formatMarkdown(response)}</div>
 
-            <div class="answer-actions">
-              <button type="button" class="action-circle-btn" title="Good response">👍</button>
-              <button type="button" class="action-circle-btn" title="Bad response">👎</button>
-              <button type="button" class="action-circle-btn" title="Copy text" onclick="navigator.clipboard.writeText('${escapeHtml(answer).replace(/'/g, "\\'")}')">📋</button>
-              <button type="button" class="action-circle-btn" title="Share">↗</button>
-              <button type="button" class="action-circle-btn" title="Retry">↻</button>
+            <div class="message-action-bar">
+              <button type="button" class="btn-action-icon" title="Good">👍</button>
+              <button type="button" class="btn-action-icon" title="Bad">👎</button>
+              <button type="button" class="btn-action-icon" title="Copy" onclick="navigator.clipboard.writeText('${escapeHtml(response).replace(/'/g, "\\'")}')">📋</button>
+              <button type="button" class="btn-action-icon" title="Share">↗</button>
+              <button type="button" class="btn-action-icon" title="Retry">↻</button>
             </div>
           </div>
         `;
-        container.appendChild(geminiDiv);
+        inner.appendChild(aiRow);
 
-        input.value = '';
-        input.style.height = 'auto';
-        btnSubmit.classList.remove('ready');
-        chatScroll.scrollTop = chatScroll.scrollHeight;
+        textarea.value = '';
+        textarea.style.height = 'auto';
+        btnSend.classList.remove('active');
+        scrollArea.scrollTop = scrollArea.scrollHeight;
       }
 
-      // 5. Fetch Telemetry
-      async function fetchTelemetry() {
+      // 6. Real-time Telemetry Fetch
+      async function syncTelemetry() {
         try {
           let tel = null;
           if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
@@ -1044,15 +1179,15 @@
           }
           if (tel) {
             telemetry = tel;
-            const text = document.getElementById('psiStatusText');
-            const dot = document.getElementById('psiDot');
-            const ram = document.getElementById('ramText');
-            if (text) text.textContent = `Safe (${telemetry.some_avg10.toFixed(2)}%)`;
-            if (dot) dot.style.background = telemetry.status === 'SAFE' ? 'var(--green)' : '#f28b82';
+            const lbl = document.getElementById('psiLabel');
+            const ram = document.getElementById('ramLabel');
+            const pulse = document.getElementById('psiPulse');
+            if (lbl) lbl.textContent = `${telemetry.some_avg10.toFixed(2)}% ${telemetry.status}`;
             if (ram) ram.textContent = `5,901 MB (${telemetry.available_percent.toFixed(0)}%)`;
+            if (pulse) pulse.style.background = telemetry.status === 'SAFE' ? 'var(--green)' : 'var(--pink)';
           }
-        } catch (err) {
-          console.error("Telemetry error:", err);
+        } catch (e) {
+          console.error("Telemetry sync error:", e);
         }
       }
 
@@ -1060,7 +1195,8 @@
         if (!text) return '';
         let escaped = escapeHtml(text);
         escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        escaped = escaped.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px;">$1</code>');
+        escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        escaped = escaped.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px;">$1</code>');
         escaped = escaped.replace(/\n/g, '<br/>');
         return escaped;
       }
@@ -1075,8 +1211,8 @@
           .replace(/'/g, '&#39;');
       }
 
-      fetchTelemetry();
-      setInterval(fetchTelemetry, 4000);
+      syncTelemetry();
+      setInterval(syncTelemetry, 4000);
     })();
   </script>
 </body>
