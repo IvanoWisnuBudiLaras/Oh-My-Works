@@ -13,3 +13,4 @@ omw-harness = { path = "../omw-harness" }
 omw-memory = { path = "../omw-memory" }
 omw-sync = { path = "../omw-sync" }
 omw-clone = { path = "../omw-clone" }
+omw-browser = { path = "../omw-browser" }

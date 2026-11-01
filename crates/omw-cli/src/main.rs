@@ -5,6 +5,7 @@ use omw_harness::HarnessOrchestrator;
 use omw_memory::{GraphMemory, MemoryLayer};
 use omw_sync::WorkspaceSync;
 use omw_clone::CloneInspector;
+use omw_browser::{BrowserRunner, BrowserEngine};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -109,11 +110,30 @@ fn main() {
                 println!("    [{}] {} -> Fix: {}", f.severity, f.description, f.remediation);
             }
         }
+        "browse" => {
+            let url = args.get(2).map(|s| s.as_str()).unwrap_or("https://example.com");
+            let engine = if args.get(3).map(|s| s.as_str()) == Some("--full") {
+                BrowserEngine::FullBrowser
+            } else {
+                BrowserEngine::Lightpanda
+            };
+
+            match BrowserRunner::fetch(url, engine) {
+                Ok(snap) => {
+                    println!("Browser Snapshot [Engine: {:?}]:", snap.engine_used);
+                    println!("  URL: {}", snap.url);
+                    println!("  Title: {}", snap.title);
+                    println!("  Memory Footprint: {:.2} MB", snap.estimated_memory_kb as f64 / 1024.0);
+                    println!("  Text Content: {}", snap.text_content);
+                }
+                Err(e) => eprintln!("Browser navigation failed: {}", e),
+            }
+        }
         "version" | "--version" | "-v" => {
             println!("Oh My Works (OMW) CLI v0.1.0");
         }
         other => {
-            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, clone, version", other);
+            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, clone, browse, version", other);
             std::process::exit(1);
         }
     }

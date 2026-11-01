@@ -20,6 +20,7 @@ Oh-My-Works/
 │   ├── omw-memory/       # Hybrid Tri-Layer Graph Memory (episodic, semantic, procedural)
 │   ├── omw-sync/         # Automated GitHub backup & workspace state snapshot engine
 │   ├── omw-clone/        # App Cloner (REA) & Security Pentester (Strix) analyzer
+│   ├── omw-browser/      # Dual-Engine Browser Use (Lightpanda Zig <10MB vs Full Browser)
 │   └── omw-cli/          # Fast CLI entrypoint for telemetry and daemon control
 ├── apps/
 │   ├── desktop/          # Desktop UI application & interactive workspace (Tauri v2)
@@ -48,6 +49,7 @@ cargo run -p omw-cli -- harness
 cargo run -p omw-cli -- memory
 cargo run -p omw-cli -- sync [--backup]
 cargo run -p omw-cli -- clone <target-url-or-name>
+cargo run -p omw-cli -- browse <url> [--full]
 ```
 
 ### Run Server Telemetry Daemon

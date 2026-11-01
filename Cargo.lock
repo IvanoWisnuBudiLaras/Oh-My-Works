@@ -2118,9 +2118,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "omw-browser"
+version = "0.1.0"
+
+[[package]]
 name = "omw-cli"
 version = "0.1.0"
 dependencies = [
+ "omw-browser",
  "omw-clone",
  "omw-core",
  "omw-guardian",
