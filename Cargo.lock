@@ -2125,6 +2125,7 @@ dependencies = [
  "omw-guardian",
  "omw-harness",
  "omw-memory",
+ "omw-sync",
  "omw-terminal",
 ]
 
@@ -2174,6 +2175,10 @@ dependencies = [
  "omw-core",
  "omw-guardian",
 ]
+
+[[package]]
+name = "omw-sync"
+version = "0.1.0"
 
 [[package]]
 name = "omw-terminal"

@@ -14,13 +14,14 @@ Oh-My-Works/
 ├── Cargo.toml            # Workspace root
 ├── crates/
 │   ├── omw-core/         # Cross-platform abstractions (Linux PSI kernel sensors & Win32 memory API fallback)
-│   ├── omw-terminal/     # Multi-terminal multiplexer state & session manager
+│   ├── omw-terminal/     # Multi-terminal multiplexer state & process execution engine
 │   ├── omw-guardian/     # Anti-OOM evaluator & system health watchdog
 │   ├── omw-harness/      # Meta-AI harness orchestrator & agent task dispatcher
 │   ├── omw-memory/       # Hybrid Tri-Layer Graph Memory (episodic, semantic, procedural)
+│   ├── omw-sync/         # Automated GitHub backup & workspace state snapshot engine
 │   └── omw-cli/          # Fast CLI entrypoint for telemetry and daemon control
 ├── apps/
-│   ├── desktop/          # Desktop UI application & interactive workspace
+│   ├── desktop/          # Desktop UI application & interactive workspace (Tauri v2)
 │   └── server-daemon/    # Zero-dependency, ultra-lightweight telemetry daemon (<1MB, stdlib HTTP)
 └── docs/
     ├── prd_oh_my_works.md                                              # Complete PRD & 8 Pillars Architecture
@@ -44,6 +45,7 @@ cargo run -p omw-cli -- terminal
 cargo run -p omw-cli -- exec git status
 cargo run -p omw-cli -- harness
 cargo run -p omw-cli -- memory
+cargo run -p omw-cli -- sync [--backup]
 ```
 
 ### Run Server Telemetry Daemon

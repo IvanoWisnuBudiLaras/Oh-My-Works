@@ -6,6 +6,7 @@ members = [
     "crates/omw-guardian",
     "crates/omw-harness",
     "crates/omw-memory",
+    "crates/omw-sync",
     "crates/omw-cli",
     "apps/server-daemon",
     "apps/desktop/src-tauri",

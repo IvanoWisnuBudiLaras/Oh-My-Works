@@ -11,3 +11,4 @@ omw-guardian = { path = "../omw-guardian" }
 omw-terminal = { path = "../omw-terminal" }
 omw-harness = { path = "../omw-harness" }
 omw-memory = { path = "../omw-memory" }
+omw-sync = { path = "../omw-sync" }

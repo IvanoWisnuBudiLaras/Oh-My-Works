@@ -3,6 +3,7 @@ use omw_guardian::{Guardian, HealthLevel};
 use omw_terminal::TerminalMultiplexer;
 use omw_harness::HarnessOrchestrator;
 use omw_memory::{GraphMemory, MemoryLayer};
+use omw_sync::WorkspaceSync;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -69,11 +70,31 @@ fn main() {
                 println!("  ({}: {}) --[{}]--> ({})", edge.from, mem.nodes[0].title, edge.relation, edge.to);
             }
         }
+        "sync" => match WorkspaceSync::check_status(".") {
+            Ok(status) => {
+                println!("GitHub Sync Status (Branch: {}):", status.branch);
+                if status.is_clean {
+                    println!("  Working directory clean. Everything backed up.");
+                } else {
+                    println!("  {} uncommitted changes detected.", status.uncommitted_files);
+                    if args.get(2).map(|s| s.as_str()) == Some("--backup") {
+                        let msg = args.get(3).map(|s| s.as_str()).unwrap_or("chore: automated OMW workspace backup");
+                        match WorkspaceSync::auto_backup(".", msg) {
+                            Ok(res) => println!("  Backup successful: {}", res),
+                            Err(e) => eprintln!("  Backup failed: {}", e),
+                        }
+                    } else {
+                        println!("  Run 'cargo run -p omw-cli -- sync --backup' to commit snapshot.");
+                    }
+                }
+            }
+            Err(e) => eprintln!("Error checking sync status: {}", e),
+        },
         "version" | "--version" | "-v" => {
             println!("Oh My Works (OMW) CLI v0.1.0");
         }
         other => {
-            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, version", other);
+            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, version", other);
             std::process::exit(1);
         }
     }
