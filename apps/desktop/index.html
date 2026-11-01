@@ -1,2400 +1,897 @@
-<!DOCTYPE html>
-<html lang="id" class="dark">
+<!doctype html>
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oh My Works (OMW) — Linux AI Workspace & Meta-Harness Orchestrator</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <title>Oh My Works — AI Workspace &amp; Multiplexer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --app-font: 'Inter', system-ui, -apple-system, sans-serif;
-      --app-mono: 'JetBrains Mono', monospace;
-      --accent-color: #06b6d4;
-      --accent-glow: rgba(6, 182, 212, 0.25);
-      --card-radius: 1rem;
-      font-family: var(--app-font);
+      --background: #0a0a0a;
+      --foreground: #fafafa;
+      --card: #121212;
+      --card-hover: #181818;
+      --primary: #e5e5e5;
+      --primary-foreground: #0a0a0a;
+      --secondary: #1e1e1e;
+      --muted: #1e1e1e;
+      --muted-foreground: #8a8a8a;
+      --accent: #262626;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-subtle: rgba(255, 255, 255, 0.04);
+      --border-focus: rgba(255, 255, 255, 0.2);
+      --ring: #737373;
+      --destructive: #ff6568;
+      --destructive-bg: rgba(255, 101, 104, 0.1);
+      --success: #4ade80;
+      --success-bg: rgba(74, 222, 128, 0.1);
+      --warning: #fbbf24;
+      --warning-bg: rgba(251, 191, 36, 0.1);
+      --cyan: #38bdf8;
+      --cyan-bg: rgba(56, 189, 248, 0.1);
+      --radius: 8px;
+      --radius-sm: 5px;
+      --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
     }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: var(--app-font);
+      background: var(--background);
+      color: var(--foreground);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
-    .font-mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .display-title {
-      letter-spacing: -0.025em;
-      line-height: 1.1;
-      font-optical-sizing: auto;
-    }
-    .glass-chrome {
-      background: rgba(15, 23, 42, 0.76);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border-color: rgba(148, 163, 184, 0.16);
-    }
-    .glass-card {
-      background: rgba(30, 41, 59, 0.62);
-      backdrop-filter: blur(16px) saturate(160%);
-      -webkit-backdrop-filter: blur(16px) saturate(160%);
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms ease, box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .glass-card:hover {
-      border-color: rgba(56, 189, 248, 0.35);
-    }
-    .btn-fluid {
-      transition: transform 110ms cubic-bezier(0.22, 1, 0.36, 1), background-color 160ms ease, opacity 160ms ease;
+
+    /* Orca Topbar */
+    .topbar {
+      height: 48px;
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--background);
+      flex-shrink: 0;
       user-select: none;
     }
-    .btn-fluid:active {
-      transform: scale(0.96);
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    @media (prefers-reduced-motion: reduce) {
-      *, ::before, ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-      .btn-fluid:active {
-        transform: none !important;
-      }
+
+    .brand-mark {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: var(--primary-foreground);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: -0.04em;
+      font-family: var(--font-mono);
     }
-    @media (prefers-reduced-transparency: reduce) {
-      .glass-chrome, .glass-card {
-        background: #0f172a !important;
-        backdrop-filter: none !important;
-      }
+
+    .brand-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--foreground);
+      letter-spacing: -0.02em;
     }
+
+    .brand-pill {
+      font-size: 11px;
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      background: var(--secondary);
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Segmented Navigation */
+    .segmented {
+      display: flex;
+      padding: 2px;
+      gap: 2px;
+      border-radius: var(--radius);
+      background: var(--secondary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .segmented button {
+      border: 0;
+      background: transparent;
+      color: var(--muted-foreground);
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      transition: all 0.12s ease;
+    }
+
+    .segmented button:hover {
+      color: var(--foreground);
+    }
+
+    .segmented button[aria-pressed="true"] {
+      background: var(--card);
+      color: var(--foreground);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Right Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted-foreground);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+    }
+
+    .button-subtle {
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      height: 28px;
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.12s;
+    }
+
+    .button-subtle:hover {
+      background: var(--accent);
+    }
+
+    /* Main Workspace Container (Split Pane Layout like Orca) */
+    .workspace-root {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Sidebar Column */
+    .workspace-sidebar {
+      width: 320px;
+      border-right: 1px solid var(--border);
+      background: #0d0d0d;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--foreground);
+      padding: 0 10px;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .sidebar-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px;
+    }
+
+    .sidebar-item {
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 2px;
+      border: 1px solid transparent;
+      transition: all 0.1s;
+    }
+
+    .sidebar-item:hover {
+      background: var(--secondary);
+    }
+
+    .sidebar-item.active {
+      background: var(--card);
+      border-color: var(--border);
+    }
+
+    .sidebar-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .source-tag {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .source-prime { background: var(--cyan-bg); color: var(--cyan); border: 1px solid rgba(56, 189, 248, 0.2); }
+    .source-codex { background: var(--success-bg); color: var(--success); border: 1px solid rgba(74, 222, 128, 0.2); }
+    .source-claude { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(251, 191, 36, 0.2); }
+
+    .sidebar-item-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-item-meta {
+      font-size: 11px;
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Content Pane */
+    .workspace-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--background);
+      overflow: hidden;
+    }
+
+    .content-header {
+      height: 40px;
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      background: #0d0d0d;
+    }
+
+    .content-breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--muted-foreground);
+    }
+
+    .content-breadcrumbs span.active {
+      color: var(--foreground);
+      font-weight: 500;
+    }
+
+    .content-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+    }
+
+    /* Orca Card Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .metric-card-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-foreground);
+      font-weight: 600;
+    }
+
+    .metric-card-val {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      font-family: var(--font-mono);
+      color: var(--foreground);
+    }
+
+    .metric-card-sub {
+      font-size: 11px;
+      color: var(--muted-foreground);
+    }
+
+    /* Terminal & Transcript Viewer */
+    .terminal-view {
+      background: #000000;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #e5e5e5;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+    }
+
+    .badge-success { background: var(--success-bg); color: var(--success); border-color: rgba(74, 222, 128, 0.2); }
+    .badge-warning { background: var(--warning-bg); color: var(--warning); border-color: rgba(251, 191, 36, 0.2); }
+    .badge-destructive { background: var(--destructive-bg); color: var(--destructive); border-color: rgba(255, 101, 104, 0.2); }
+
+    /* Footer statusbar */
+    .statusbar {
+      height: 24px;
+      border-top: 1px solid var(--border);
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #080808;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted-foreground);
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .statusbar-left, .statusbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* Scrollbars */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.4);
+      background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(100, 116, 139, 0.45);
-      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(56, 189, 248, 0.6);
-    }
-    .pulse-dot {
-      animation: pulseGlow 2s infinite ease-in-out;
-    }
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(1.18); }
+      background: rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden">
+<body>
 
-  <!-- TOP TRANSLUCENT LINUX DESKTOP HEADER (Tauri + rmux + Chezmoi + Mise) -->
-  <header class="glass-chrome sticky top-0 z-40 border-b px-3 sm:px-5 py-2.5">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2.5">
-      <!-- Brand & OS Footprint Badge -->
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-cyan-500/20 font-mono font-bold text-sm tracking-tighter">
-          OMW
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="font-bold text-sm sm:text-base display-title text-white">Oh My Works</h1>
-            <span class="px-2 py-0.5 text-[11px] font-mono rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
-              Tauri v2 • 64 MB RAM
-            </span>
-          </div>
-          <p class="text-[11px] text-slate-400 hidden sm:block">
-            Linux AI Workspace • Rust/Go/Zig Core • Hybrid Graphify+Graphiti Memory • Auto-Skills
-          </p>
-        </div>
-      </div>
-
-      <!-- Scenario Selector & Live System Pills -->
-      <div class="flex flex-wrap items-center gap-2">
-        <label for="scenarioSelect" class="text-xs text-slate-400 font-medium hidden md:inline">Skenario Aktif:</label>
-        <select id="scenarioSelect" class="bg-slate-900/90 text-xs text-slate-200 border border-slate-700/80 rounded-lg px-2.5 py-1.5 font-medium focus:outline-none focus:border-cyan-400">
-          <option value="clone_collab">1. REA Clone App Besar + Browser-Use + Waydroid E2E + Deploy</option>
-          <option value="strix_security">2. Strix Pentest Otomatis + Auto-Fix + Docker Slim 30x</option>
-          <option value="oom_recovery">3. Mitigasi Server OOM Spike + Memory Leak Patch Otomatis</option>
-        </select>
-
-        <button id="btnGitHubSync" type="button" class="btn-fluid px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700/80 border border-slate-700 text-xs font-mono text-slate-200 flex items-center gap-1.5" title="Chezmoi Auto-Backup & Mise Tool Updater">
-          <span class="w-2 h-2 rounded-full bg-cyan-400" id="syncDot"></span>
-          <span id="syncLabel">GitHub Sync: OK</span>
-        </button>
-
-        <button id="btnPRDModal" type="button" class="btn-fluid px-2.5 py-1.5 rounded-lg bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-400/40 text-xs font-medium text-indigo-200">
-          Ringkasan 8 Pilar Repo
-        </button>
-
-        <button id="btnToggleSidePanel" type="button" class="btn-fluid px-2.5 py-1.5 rounded-lg bg-cyan-600/25 hover:bg-cyan-600/40 border border-cyan-400/40 text-xs font-semibold text-cyan-200 flex items-center gap-1.5 shadow-sm">
-          <span>🎨</span> Panel Desain &amp; Tema
-        </button>
-      </div>
+  <!-- Topbar: Orca Minimal Header -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">OMW</div>
+      <span class="brand-title">Oh My Works</span>
+      <span class="brand-pill">v0.1.0</span>
     </div>
 
-    <!-- Navigation Tabs (6 Core Modules) -->
-    <nav class="max-w-7xl mx-auto mt-2.5 pt-2 border-t border-slate-800/80 flex items-center gap-1.5 overflow-x-auto no-scrollbar" aria-label="Workspace Modules">
-      <button type="button" data-tab="synthesis" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 whitespace-nowrap">
-        <span>✨</span> 1. Executive Synthesis (Hasil Akhir)
+    <!-- Navigation (Segmented Switcher) -->
+    <div class="segmented" id="mainNav">
+      <button type="button" data-tab="sessions" aria-pressed="true">Sessions</button>
+      <button type="button" data-tab="terminals" aria-pressed="false">Terminals</button>
+      <button type="button" data-tab="guardian" aria-pressed="false">Guardian &amp; PSI</button>
+      <button type="button" data-tab="memory" aria-pressed="false">Graph Memory</button>
+      <button type="button" data-tab="automations" aria-pressed="false">REA &amp; Strix</button>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="toolbar">
+      <div class="status-indicator">
+        <span class="status-dot" id="psiDot"></span>
+        <span id="psiStatusText">PSI Safe (0.00%)</span>
+      </div>
+      <button type="button" class="button-subtle" id="btnRefresh">
+        Refresh
       </button>
-      <button type="button" data-tab="terminals" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
-        <span>⌨️</span> 2. Multi-Terminal &amp; Meta-Harness (5 Tab)
-      </button>
-      <button type="button" data-tab="emulator" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
-        <span>📱</span> 3. Android Emulator (Waydroid / Redroid)
-      </button>
-      <button type="button" data-tab="browser" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
-        <span>🌐</span> 4. Browser Use (Lightpanda Zig) + REA &amp; Strix
-      </button>
-      <button type="button" data-tab="memory" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
-        <span>🧠</span> 5. Hybrid Graph Memory &amp; Auto-Skills
-      </button>
-      <button type="button" data-tab="server" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
-        <span>🛡️</span> 6. Docker Slim &amp; Server Anti-OOM Panel
-      </button>
-      <button type="button" data-tab="sessions" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
-        <span>🤖</span> 7. Unified Agent Sessions (Cindy Model)
-      </button>
-      <button type="button" data-tab="studio" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
-        <span>🎨</span> 8. Design &amp; Theme Studio (Live Preview)
-      </button>
-    </nav>
+    </div>
   </header>
 
-  <!-- GLOBAL META-HARNESS COMMAND BAR & AUTO-SKILL INTERCEPTOR -->
-  <section class="bg-slate-900/70 border-b border-slate-800/80 px-3 sm:px-5 py-2.5">
-    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5">
-      <div class="flex-1 flex items-center gap-2 bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-1.5 focus-within:border-cyan-500/60">
-        <span class="text-xs font-mono text-cyan-400 font-semibold shrink-0">meta-harness ❯</span>
-        <input id="globalPromptInput" type="text" value="Tiru fitur sinkronisasi real-time dari app target via REA, uji di Lightpanda & emulator Waydroid, lalu kompres Docker 30x dan deploy bebas OOM" class="w-full bg-transparent text-xs text-slate-100 focus:outline-none font-mono" placeholder="Ketik instruksi ke Meta-AI Harness (otomatis memilih Skill & memanggil Tab Terminal)..." />
-        <button id="btnRunMetaPrompt" type="button" class="btn-fluid px-3 py-1 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs shrink-0">
-          Summon &amp; Eksekusi
-        </button>
+  <!-- Workspace Split Pane Root -->
+  <main class="workspace-root">
+    <!-- Sidebar: Sessions or Navigation items -->
+    <aside class="workspace-sidebar">
+      <div class="sidebar-header">
+        <input type="text" id="filterInput" class="search-input" placeholder="Search sessions, cwd, or tags..." />
       </div>
-
-      <!-- Auto-Injected Industry Skills Bar (Superpowers + Anthropic Skills) -->
-      <div class="flex items-center gap-1.5 flex-wrap text-[11px]">
-        <span class="text-slate-400 font-mono">Auto-Skills Aktif:</span>
-        <span id="badgeSkill1" class="px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/30 font-mono">superpowers/tdd</span>
-        <span id="badgeSkill2" class="px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30 font-mono">rea/binary-trace</span>
-        <span id="badgeSkill3" class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono">strix/pentest-gate</span>
-        <span id="badgeSkill4" class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono">slim/docker-30x</span>
+      <div class="sidebar-list" id="sidebarList">
+        <!-- Rendered dynamically -->
       </div>
-    </div>
-  </section>
+    </aside>
 
-  <!-- MAIN WORKSPACE CONTAINER -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 py-4 space-y-5 pb-28">
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 1: EXECUTIVE SYNTHESIS BOARD (HASIL KESIMPULAN AKHIR SEMUA TAB)     -->
-    <!-- ========================================================================= -->
-    <section id="view-synthesis" class="workspace-view space-y-4">
-      <!-- Top Banner: Executive Verdict & Token/Memory Efficiency -->
-      <div class="glass-card rounded-2xl p-4 sm:p-5 border-l-4 border-l-emerald-400">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div class="space-y-1.5">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40" id="synthStatusBadge">
-                ✓ 5/5 TAB TERMINAL SELESAI • SIap DEPLOY
-              </span>
-              <span class="text-xs font-mono text-slate-400" id="synthProtocolTag">
-                AG-UI Stream + Open-Canvas Synthesis v2.4
-              </span>
-            </div>
-            <h2 class="text-lg sm:text-xl font-bold text-white display-title" id="synthHeadline">
-              Hasil Akhir: Fitur Kolaborasi Real-Time Berhasil Ditiru (REA), Lulus Uji Emulator Waydroid &amp; Strix, Image Docker Dipangkas 28,4x
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed" id="synthSummaryText">
-              Meta-AI Harness telah menggabungkan hasil eksekusi dari 5 tab terminal paralel. Dengan memori <strong>Graphify + Graphiti (cognee-rs)</strong>, pemakaian token turun <strong>71,5x</strong> (hanya 1.840 token per siklus) dan total RAM ruang kerja terjaga di <strong>64 MB</strong>.
-            </p>
-          </div>
-
-          <!-- 4 Key Quantitative Metric Pills -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 shrink-0">
-            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-center">
-              <div class="text-[11px] text-slate-400 font-mono"> Penghematan Token</div>
-              <div class="text-base sm:text-lg font-bold text-cyan-300 font-mono" id="metricTokenSave">71.5x</div>
-              <div class="text-[10px] text-slate-400">Graphify + Graphiti</div>
-            </div>
-            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-center">
-              <div class="text-[11px] text-slate-400 font-mono">RAM Browser Zig</div>
-              <div class="text-base sm:text-lg font-bold text-emerald-300 font-mono" id="metricBrowserRam">18 MB</div>
-              <div class="text-[10px] text-slate-400">Lightpanda (16x Irit)</div>
-            </div>
-            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-center">
-              <div class="text-[11px] text-slate-400 font-mono">Ukuran Docker</div>
-              <div class="text-base sm:text-lg font-bold text-indigo-300 font-mono" id="metricDockerSlim">840→29 MB</div>
-              <div class="text-[10px] text-slate-400">SlimToolkit (28.9x)</div>
-            </div>
-            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 text-center">
-              <div class="text-[11px] text-slate-400 font-mono">Skor Strix &amp; E2E</div>
-              <div class="text-base sm:text-lg font-bold text-amber-300 font-mono" id="metricTestScore">100% Pass</div>
-              <div class="text-[10px] text-slate-400">Waydroid + Strix PoC</div>
-            </div>
-          </div>
+    <!-- Main Content Detail Pane -->
+    <section class="workspace-content">
+      <div class="content-header">
+        <div class="content-breadcrumbs">
+          <span>workspace</span>
+          <span>/</span>
+          <span class="active" id="activeBreadcrumb">sessions</span>
+        </div>
+        <div class="toolbar">
+          <span class="badge" id="itemCountBadge">45 Items</span>
         </div>
       </div>
 
-      <!-- Grid: Left = Synthesis Per-Terminal Cards, Right = Unified Architecture Diff & Verification -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Left 7 Cols: Hasil Sintesis per Tab Terminal -->
-        <div class="lg:col-span-7 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400 font-semibold">
-              Rangkuman Kontribusi 5 Tab Terminal Terhubung (Klik Kartu untuk Inspeksi Tab)
-            </h3>
-            <span class="text-[11px] text-cyan-400 font-mono">Shared Socket: /tmp/omw-rmux.sock</span>
-          </div>
-
-          <div id="synthesisTabCards" class="space-y-2.5">
-            <!-- Populated dynamically by JS -->
-          </div>
-        </div>
-
-        <!-- Right 5 Cols: Artefak Kode, Audit Keamanan Strix, & Status Emulator -->
-        <div class="lg:col-span-5 space-y-3">
-          <div class="glass-card rounded-2xl p-4 space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
-              <div>
-                <h3 class="text-sm font-bold text-white">Artefak Kesimpulan &amp; Verifikasi Standar Industri</h3>
-                <p class="text-[11px] text-slate-400">Dihasilkan otomatis oleh protokol AG-UI &amp; Superpowers</p>
-              </div>
-              <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-                Zero-Hallucination Gate
-              </span>
-            </div>
-
-            <!-- Code Diff Snippet -->
-            <div class="bg-slate-950 rounded-xl p-3 border border-slate-800/90 font-mono text-[11px] space-y-1 overflow-x-auto" id="synthDiffBox">
-              <div class="text-slate-400">// File: src-rust/sync_engine/websocket_crdt.rs (Ditiru via REA &amp; Dioptimalkan ke Rust)</div>
-              <div class="text-rose-400">- // Legacy Node.js worker (210 MB RAM, GC pause 45ms)</div>
-              <div class="text-emerald-400">+ pub async fn broadcast_delta(state: Arc&lt;CrdtGraph&gt;, payload: &[u8]) -&gt; Result&lt;(), OMWError&gt; {</div>
-              <div class="text-emerald-400">+     state.apply_zero_copy_patch(payload).await?; // 4.2 MB RAM, 0.3ms latency</div>
-              <div class="text-emerald-400">+     Ok(())</div>
-              <div class="text-emerald-400">+ }</div>
-            </div>
-
-            <!-- Verification Checklist -->
-            <div class="space-y-2 text-xs" id="synthChecklist">
-              <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/70 border border-slate-800">
-                <span class="text-slate-200">1. Bukti Reverse Engineering (REA Binary &amp; Network Trace)</span>
-                <span class="font-mono text-emerald-400 font-semibold">TERVERIFIKASI</span>
-              </div>
-              <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/70 border border-slate-800">
-                <span class="text-slate-200">2. Uji Browser Use (Lightpanda Zig + Playwright-MCP)</span>
-                <span class="font-mono text-emerald-400 font-semibold">14/14 SKENARIO LULUS</span>
-              </div>
-              <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/70 border border-slate-800">
-                <span class="text-slate-200">3. Uji Emulator Android Linux (Waydroid LXC + Maestro)</span>
-                <span class="font-mono text-emerald-400 font-semibold">60 FPS • 0 CRASH</span>
-              </div>
-              <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/70 border border-slate-800">
-                <span class="text-slate-200">4. Audit Pentest Dinamis Strix (PoC Exploit Check)</span>
-                <span class="font-mono text-emerald-400 font-semibold">0 CELAH KRITIS</span>
-              </div>
-            </div>
-
-            <div class="pt-1 flex flex-wrap gap-2">
-              <button type="button" id="btnJumpEmulatorFromSynth" class="btn-fluid flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-cyan-300 border border-slate-700">
-                Buka Layar Emulator Waydroid ➔
-              </button>
-              <button type="button" id="btnJumpServerFromSynth" class="btn-fluid flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-emerald-300 border border-slate-700">
-                Cek Panel Server Anti-OOM ➔
-              </button>
-            </div>
-          </div>
-        </div>
+      <div class="content-body" id="contentBody">
+        <!-- Dynamic Pane Content -->
       </div>
     </section>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 2: MULTI-TERMINAL & META-AI HARNESS (rmux + claude-squad)            -->
-    <!-- ========================================================================= -->
-    <section id="view-terminals" class="workspace-view hidden space-y-4">
-      <div class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 class="text-base sm:text-lg font-bold text-white">Orkestrasi Multi-Terminal &amp; Meta-AI Harness (rmux SDK + claude-squad)</h2>
-          <p class="text-xs text-slate-300">
-            Setiap tab terminal berjalan di <em>Git Worktree</em> terisolasi namun saling berbagi konteks melalui <strong>Hybrid Graph Memory</strong> dan dikomandoi oleh <strong>Meta-Harness</strong>.
-          </p>
-        </div>
-        <div class="flex items-center gap-2">
-          <button type="button" id="btnBroadcastCommand" class="btn-fluid px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-xs font-mono text-cyan-200">
-            ⚡ Sinkronkan Konteks Semua Tab
-          </button>
-          <button type="button" id="btnSynthesizeNow" class="btn-fluid px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-semibold text-xs">
-            ✨ Kumpulkan ke Synthesis Board
-          </button>
-        </div>
-      </div>
-
-      <!-- Terminal Multiplexer Grid (5 Connected Panes) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="terminalGridContainer">
-        <!-- Populated dynamically by JS -->
-      </div>
-
-      <!-- Interactive Terminal Input for Selected Tab -->
-      <div class="glass-card rounded-2xl p-3.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-        <span class="text-xs font-mono text-amber-300 font-semibold shrink-0" id="activeTermIndicator">Kirim Perintah ke [Tab 1 - REA &amp; Coding]:</span>
-        <input id="terminalCustomInput" type="text" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400" placeholder="Ketik perintah CLI atau instruksi sub-harness (contoh: cargo test --release atau strix scan)..." />
-        <button type="button" id="btnSendTerminalCmd" class="btn-fluid px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs">
-          Jalankan di Tab Ini
-        </button>
-      </div>
-    </section>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 3: CONTAINERIZED LINUX ANDROID EMULATOR (Waydroid / Redroid)         -->
-    <!-- ========================================================================= -->
-    <section id="view-emulator" class="workspace-view hidden space-y-4">
-      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div>
-          <div class="flex items-center gap-2">
-            <h2 class="text-base sm:text-lg font-bold text-white">Containerized Linux Android Emulator (Bukan HP Fisik)</h2>
-            <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              Host Kernel Sharing • Hemat RAM 75%
-            </span>
-          </div>
-          <p class="text-xs text-slate-300 mt-0.5">
-            Menggunakan <strong>Waydroid (LXC Namespace Wayland)</strong> untuk pengujian lokal di desktop Linux dan <strong>Redroid / Docker-Android (GPU Container)</strong> untuk pengujian paralel tanpa beban QEMU/AVD berat, dikendalikan langsung oleh AI via <strong>mobile-mcp</strong> &amp; <strong>Maestro YAML</strong>.
-          </p>
-        </div>
-
-        <!-- Emulator Engine Switcher -->
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" id="btnEmuWaydroid" class="btn-fluid px-3 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-semibold text-xs font-mono">
-            Mode 1: Waydroid LXC (Android 14 • 380 MB RAM)
-          </button>
-          <button type="button" id="btnEmuRedroid" class="btn-fluid px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono">
-            Mode 2: Redroid Docker GPU (Android 16 Headless)
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-        <!-- Left 5 Cols: Interactive Android Emulator Viewport -->
-        <div class="lg:col-span-5 flex flex-col items-center">
-          <div class="w-full max-w-[320px] bg-slate-900 border-4 border-slate-800 rounded-[36px] p-3 shadow-2xl shadow-cyan-950/40 relative">
-            <!-- Top Speaker & Status Bar -->
-            <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 px-3 pb-2 border-b border-slate-800">
-              <span id="emuClock">09:00 WIB</span>
-              <span class="px-2 py-0.5 rounded-full bg-slate-800 text-cyan-300" id="emuEngineBadge">waydroid0 • LXC Direct</span>
-              <span>5G • 100%</span>
-            </div>
-
-            <!-- Simulated Android App Screen -->
-            <div class="bg-slate-950 rounded-2xl p-3.5 my-2 min-h-[370px] flex flex-col justify-between border border-slate-800/80 relative overflow-hidden" id="emuScreenSurface">
-              <!-- AI Accessibility Overlay Box -->
-              <div id="emuAIOverlay" class="border-2 border-dashed border-cyan-400/80 bg-cyan-500/10 rounded-xl p-2.5 transition-all duration-300">
-                <div class="flex items-center justify-between text-[10px] font-mono text-cyan-300 mb-1">
-                  <span>[mobile-mcp] ref="btn_sync_workspace"</span>
-                  <span class="px-1.5 py-0.2 bg-cyan-500/30 rounded">A11y Tree OK</span>
-                </div>
-                <div class="text-xs font-bold text-white" id="emuAppTitle">OMW Mobile Companion v2.4</div>
-                <p class="text-[11px] text-slate-400 mt-0.5" id="emuAppSubtitle">Status: Terhubung ke Local Rust Sync Engine (0.3ms)</p>
-              </div>
-
-              <!-- Interactive App Cards inside Emulator -->
-              <div class="space-y-2 my-3">
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-                  <div>
-                    <div class="text-xs font-semibold text-slate-200">Realtime CRDT Document</div>
-                    <div class="text-[10px] text-slate-400 font-mono" id="emuDocState">3 Peers Synced • 0 Conflict</div>
-                  </div>
-                  <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/20 text-emerald-300">LIVE</span>
-                </div>
-
-                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-                  <div>
-                    <div class="text-xs font-semibold text-slate-200">Offline SQLite + Graph Cache</div>
-                    <div class="text-[10px] text-slate-400 font-mono" id="emuCacheState">142 Nodes Cached Locally</div>
-                  </div>
-                  <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-cyan-500/20 text-cyan-300">READY</span>
-                </div>
-              </div>
-
-              <!-- Interactive Buttons Inside Emulated Android App -->
-              <div class="space-y-2">
-                <button type="button" id="btnEmuTapAction" class="btn-fluid w-full py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs shadow-md">
-                  Simulasikan Tap AI (Maestro Assert)
-                </button>
-                <div class="text-[10px] font-mono text-center text-emerald-400" id="emuTapFeedback">
-                  ✓ Siap menerima injeksi event dari mobile-mcp
-                </div>
-              </div>
-            </div>
-
-            <!-- Android Navigation Bar -->
-            <div class="flex items-center justify-around py-1 text-slate-400 text-xs font-mono">
-              <button type="button" id="btnEmuBack" class="btn-fluid hover:text-white px-2">◁ Back</button>
-              <button type="button" id="btnEmuHome" class="btn-fluid hover:text-white px-2">○ Home</button>
-              <button type="button" id="btnEmuFreeze" class="btn-fluid hover:text-cyan-300 px-2" title="Freeze LXC container when idle to save RAM">❄ Freeze LXC</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right 7 Cols: Maestro E2E Test Suite & Mobile-MCP Inspector -->
-        <div class="lg:col-span-7 space-y-3.5">
-          <div class="glass-card rounded-2xl p-4 space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
-              <div>
-                <h3 class="text-sm font-bold text-white">Maestro E2E Declarative Test Runner &amp; Mobile-MCP</h3>
-                <p class="text-[11px] text-slate-400">Menjalankan skenario pengujian otomatis di dalam emulator tanpa kode Appium yang berat</p>
-              </div>
-              <button type="button" id="btnRunMaestroSuite" class="btn-fluid px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs">
-                ▶ Jalankan Semua Skenario Maestro
-              </button>
-            </div>
-
-            <!-- YAML Flow & Execution Steps -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1 text-slate-300">
-                <div class="text-cyan-400 font-semibold"># maestro_e2e_flow.yaml</div>
-                <div>appId: dev.ohmyworks.companion</div>
-                <div>---</div>
-                <div class="text-emerald-300">- launchApp: { clearState: false }</div>
-                <div class="text-emerald-300">- assertVisible: "OMW Mobile Companion v2.4"</div>
-                <div class="text-emerald-300">- tapOn: { id: "btn_sync_workspace" }</div>
-                <div class="text-emerald-300">- assertVisible: "3 Peers Synced • 0 Conflict"</div>
-                <div class="text-emerald-300">- assertTrue: ${output.latencyMs &lt; 5}</div>
-              </div>
-
-              <div class="space-y-2 text-xs" id="maestroStepsList">
-                <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-                  <span>1. Boot Container (`waydroid session start`)</span>
-                  <span class="font-mono text-emerald-400">0.8s (OK)</span>
-                </div>
-                <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-                  <span>2. Dump UI Hierarchy (`mobile-mcp snapshot`)</span>
-                  <span class="font-mono text-emerald-400">12ms (OK)</span>
-                </div>
-                <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-                  <span>3. Uji Sinkronisasi CRDT Lintas Emulator</span>
-                  <span class="font-mono text-emerald-400" id="maestroStep3Status">PASSED</span>
-                </div>
-                <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-                  <span>4. Auto-Freeze LXC Saat Selesai Uji (Hemat RAM)</span>
-                  <span class="font-mono text-cyan-300" id="maestroStep4Status">STANDBY</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 4: DUAL-ENGINE BROWSER USE (Lightpanda Zig) + REA & STRIX            -->
-    <!-- ========================================================================= -->
-    <section id="view-browser" class="workspace-view hidden space-y-4">
-      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div>
-          <h2 class="text-base sm:text-lg font-bold text-white">Dual-Engine Browser Use (Lightpanda Zig) + REA Cloner &amp; Strix Pentester</h2>
-          <p class="text-xs text-slate-300">
-            Menjelajahi aplikasi target dengan <strong>Lightpanda (Zig — 16x lebih hemat RAM &amp; 9x lebih cepat dari Chromium)</strong> via <strong>Playwright-MCP</strong>, membedah cara kerjanya dengan <strong>REA</strong>, dan menguji celah keamanannya dengan <strong>Strix</strong>.
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" id="btnEngineLightpanda" class="btn-fluid px-3 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-semibold text-xs font-mono">
-            ⚡ Lightpanda Zig Engine (18 MB RAM)
-          </button>
-          <button type="button" id="btnEngineSteel" class="btn-fluid px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-mono">
-            👁️ Steel + Skyvern Vision Fallback
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <!-- Col 1: Browser-Use + Playwright-MCP Live Accessibility Stream -->
-        <div class="glass-card rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-cyan-300">1. Browser-Use + Playwright-MCP</h3>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300" id="browserEngineLabel">CDP: Lightpanda v1.0</span>
-          </div>
-          <p class="text-xs text-slate-400">
-            Mengoperasikan halaman web melalui <em>structured accessibility tree</em> tanpa perlu mengambil <em>screenshot</em> berat.
-          </p>
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1.5 text-slate-300" id="browserTraceBox">
-            <div class="text-cyan-400">&gt; lightpanda mcp --cdp-port 9222</div>
-            <div>[A11y Tree] Mengambil 42 elemen interaktif (8.4 ms)</div>
-            <div>[Browser-Use] Klik elemen ref="nav_realtime_board"</div>
-            <div>[Browser-Use] Merekam handshake WebSocket &amp; skema protobuf...</div>
-            <div class="text-emerald-400">✓ Selesai diekstrak dengan pemakaian RAM 18.2 MB</div>
-          </div>
-          <button type="button" id="btnTriggerBrowserCrawl" class="btn-fluid w-full py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-xs font-semibold text-cyan-200">
-            Jalankan Simulasi Ekstraksi Web Baru
-          </button>
-        </div>
-
-        <!-- Col 2: REA (Reverse Engineer Anything) -->
-        <div class="glass-card rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-indigo-300">2. REA (Reverse Engineer Anything)</h3>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300">MCP Binary/JS Inspector</span>
-          </div>
-          <p class="text-xs text-slate-400">
-            Membedah cara kerja fitur aplikasi besar (bundle JS/Electron, API, hingga *native binary*) beserta buktinya untuk ditulis ulang ke Rust/Go.
-          </p>
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1.5 text-slate-300" id="reaTraceBox">
-            <div class="text-indigo-400">&gt; npx rea-agents@latest inspect --target app_bundle</div>
-            <div>[Bukti #1] State sync memakai Yjs CRDT delta compression</div>
-            <div>[Bukti #2] Heartbeat interval 2500ms via binary frame</div>
-            <div class="text-emerald-400">✓ Blueprint Rust berhasil disusun di src-rust/sync_engine/</div>
-          </div>
-          <button type="button" id="btnTriggerReaClone" class="btn-fluid w-full py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/40 text-xs font-semibold text-indigo-200">
-            Bedah &amp; Konversi Fitur ke Rust
-          </button>
-        </div>
-
-        <!-- Col 3: Strix Autonomous AI Pentesting -->
-        <div class="glass-card rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-amber-300">3. Strix Autonomous Pentester</h3>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300">PoC Exploit Validator</span>
-          </div>
-          <p class="text-xs text-slate-400">
-            Menyerang aplikasi yang baru dibuat layaknya peretas sungguhan, memvalidasi PoC tanpa *false positive*, dan menambal celah otomatis.
-          </p>
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1.5 text-slate-300" id="strixTraceBox">
-            <div class="text-amber-400">&gt; strix scan --target http://localhost:8080 --auto-fix</div>
-            <div>[Recon] Menguji 18 endpoint WebSocket &amp; JWT...</div>
-            <div>[Finding] Potensi replay frame jika nonce kosong</div>
-            <div class="text-emerald-400">✓ Auto-Patch diterapkan &amp; PoC exploit berhasil diblokir!</div>
-          </div>
-          <button type="button" id="btnTriggerStrixScan" class="btn-fluid w-full py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-xs font-semibold text-amber-200">
-            Jalankan Serangan Uji &amp; Auto-Fix Strix
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 5: HYBRID GRAPH MEMORY (Graphify + Graphiti + Cognee-rs) & SKILLS    -->
-    <!-- ========================================================================= -->
-    <section id="view-memory" class="workspace-view hidden space-y-4">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Left 7 Cols: Interactive Knowledge Graph Explorer -->
-        <div class="lg:col-span-7 glass-card rounded-2xl p-4 space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h2 class="text-base font-bold text-white">Hybrid Tri-Layer Graph Memory (Graphify + Graphiti + Cognee-rs)</h2>
-              <p class="text-xs text-slate-400">Klik node di bawah untuk melihat gabungan struktur AST kode (Graphify) dan memori riwayat waktu (Graphiti)</p>
-            </div>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-              71.5x Lebih Hemat Token
-            </span>
-          </div>
-
-          <!-- Interactive Graph Nodes Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1" id="graphNodesGrid">
-            <!-- Populated dynamically by JS -->
-          </div>
-
-          <!-- Selected Graph Node Inspector -->
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2" id="graphInspectorBox">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-cyan-300" id="graphNodeTitle">Node: sync_engine/websocket_crdt.rs</span>
-              <span class="text-[11px] font-mono text-emerald-400" id="graphNodeEngine">Engine: cognee-rs (Rust In-Memory)</span>
-            </div>
-            <div class="text-xs text-slate-300" id="graphNodeStructural">
-              <strong>Lapis 1 — Graphify Structural AST:</strong> Mengimpor <code>tokio::net::TcpStream</code>, dipanggil oleh <code>Tab 1 (Coding)</code> dan diuji oleh <code>Tab 4 (Strix)</code>.
-            </div>
-            <div class="text-xs text-slate-300" id="graphNodeTemporal">
-              <strong>Lapis 2 — Graphiti Temporal Episodic:</strong> Diperbarui 4 menit lalu setelah REA mengekstrak protokol binary frame dan Strix menambahkan validasi <code>nonce</code>.
-            </div>
-          </div>
-        </div>
-
-        <!-- Right 5 Cols: Industry-Standard Auto-Skill Router (Superpowers + Anthropic Skills) -->
-        <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-bold text-white">Auto-Skill Router (Superpowers + Anthropic Skills)</h3>
-              <p class="text-[11px] text-slate-400">Harness otomatis menyuntikkan SKILL.md standar industri tanpa perlu disuruh manual</p>
-            </div>
-            <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-              AUTO-INJECT ON
-            </span>
-          </div>
-
-          <div class="space-y-2" id="skillsRegistryList">
-            <!-- Populated dynamically by JS -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 6: DOCKER SLIM OPTIMIZER & SERVER ANTI-OOM PANEL (Beszel + earlyoom) -->
-    <!-- ========================================================================= -->
-    <section id="view-server" class="workspace-view hidden space-y-4">
-      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div>
-          <h2 class="text-base sm:text-lg font-bold text-white">Lightweight Server Panel (Beszel + 1Panel) &amp; Proactive Anti-OOM Guardian</h2>
-          <p class="text-xs text-slate-300">
-            Memangkas image Docker hingga <strong>30x lebih kecil via SlimToolkit &amp; Dive</strong>, serta memantau tekanan memori kernel Linux (PSI) dengan <strong>earlyoom + nohang</strong> untuk mengantisipasi dan menyembuhkan server dari OOM secara otomatis.
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" id="btnSimulateOOM" class="btn-fluid px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 text-xs font-semibold text-rose-200">
-            🔥 Simulasikan Lonjakan OOM di Server
-          </button>
-          <button type="button" id="btnRunDockerSlim" class="btn-fluid px-3 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-semibold text-xs">
-            📦 Jalankan Dive + SlimToolkit (Kompresi 30x)
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Left 6 Cols: Live Server Telemetry & Anti-OOM Guardian -->
-        <div class="lg:col-span-6 glass-card rounded-2xl p-4 space-y-3.5">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white">Telemetri Server Linux &amp; Sensor Kernel PSI (earlyoom + Beszel)</h3>
-            <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" id="serverHealthBadge">
-              HEALTHY • PSI 1.2%
-            </span>
-          </div>
-
-          <!-- Progress Bars for RAM, ZRAM Swap, CPU -->
-          <div class="space-y-3 text-xs">
-            <div>
-              <div class="flex justify-between font-mono mb-1">
-                <span>RAM Server Fisik (2 GB VPS)</span>
-                <span id="serverRamText" class="text-emerald-300">620 MB / 2048 MB (30%)</span>
-              </div>
-              <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-                <div id="serverRamBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 30%"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between font-mono mb-1">
-                <span>Linux Kernel PSI (Memory Pressure Stall)</span>
-                <span id="serverPsiText" class="text-cyan-300">some avg10=1.20% (Aman &lt; 65%)</span>
-              </div>
-              <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-                <div id="serverPsiBar" class="h-full bg-cyan-400 transition-all duration-300" style="width: 6%"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between font-mono mb-1">
-                <span>Dynamic ZRAM Compressed Swap</span>
-                <span id="serverZramText" class="text-indigo-300">Aktif • Rasio Kompresi 3.4x (lz4)</span>
-              </div>
-              <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-                <div id="serverZramBar" class="h-full bg-indigo-500 transition-all duration-300" style="width: 22%"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- OOM Mitigation Log -->
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1 text-slate-300" id="oomLogBox">
-            <div class="text-cyan-400">[beszel-agent] Terhubung ke Oh My Works Desktop via SSH/gRPC Tunnel</div>
-            <div>[earlyoom] Memantau /proc/pressure/memory setiap 100ms...</div>
-            <div class="text-emerald-400">✓ Tidak ada anomali OOM. Semua kontainer berjalan dalam batas cgroups v2.</div>
-          </div>
-        </div>
-
-        <!-- Right 6 Cols: Docker Layer Optimizer (Dive + SlimToolkit) -->
-        <div class="lg:col-span-6 glass-card rounded-2xl p-4 space-y-3.5">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white">Pipeline Optimasi Kontainer (wagoodman/dive + slimtoolkit/slim)</h3>
-            <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" id="dockerSlimBadge">
-              Efisiensi Layer: 99.1%
-            </span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 text-center">
-            <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-              <div class="text-[11px] text-slate-400 font-mono">Image Sebelum Optimasi</div>
-              <div class="text-lg font-bold text-rose-400 font-mono mt-0.5" id="dockerBeforeSize">842.0 MB</div>
-              <div class="text-[10px] text-slate-400">node:22-bullseye (68 Layer)</div>
-            </div>
-            <div class="p-3 rounded-xl bg-slate-900/90 border border-emerald-500/40">
-              <div class="text-[11px] text-slate-400 font-mono">Sesudah SlimToolkit + Rust</div>
-              <div class="text-lg font-bold text-emerald-400 font-mono mt-0.5" id="dockerAfterSize">29.1 MB</div>
-              <div class="text-[10px] text-emerald-300">28.9x Lebih Kecil + Seccomp</div>
-            </div>
-          </div>
-
-          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] space-y-1 text-slate-300" id="dockerLogBox">
-            <div class="text-indigo-400">&gt; dive build -t omw/realtime-app:latest --ci</div>
-            <div>[dive] Efisiensi layer awal: 74% (218 MB file duplikat/cache apt)</div>
-            <div class="text-cyan-400">&gt; slim build --target omw/realtime-app:latest --http-probe=true</div>
-            <div class="text-emerald-400">✓ Image dipangkas dari 842.0 MB menjadi 29.1 MB (Hemat RAM kontainer 78%)!</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 7. UNIFIED AGENT SESSIONS (CINDY MODEL) -->
-    <section id="view-sessions" class="workspace-view hidden space-y-4">
-      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div>
-          <div class="flex items-center gap-2">
-            <h2 class="text-base sm:text-lg font-bold text-white">Unified Multi-Agent Session Harvester</h2>
-            <span id="sessionHarvesterBadge" class="px-2 py-0.5 text-[11px] font-mono rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">45 Sesi Terdeteksi</span>
-          </div>
-          <p class="text-xs text-slate-300 mt-1">
-            Mengadopsi arsitektur <code>makecindy/cindy</code> (session-import adapter). Memanen riwayat sesi lintas agen lokal (<span class="text-cyan-300 font-mono">~/.prime</span>, <span class="text-amber-300 font-mono">~/.codex</span>, <span class="text-rose-300 font-mono">~/.claude</span>, <span class="text-emerald-300 font-mono">~/.hermes</span>) agar seluruh agen berbagi konteks dan thread yang sama.
-          </p>
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="btnRefreshSessions" type="button" class="btn-fluid px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-600/30 text-cyan-200 border border-cyan-400/30 hover:bg-cyan-600/50 flex items-center gap-1.5">
-            <span>🔄</span> Rescan Sesi
-          </button>
-        </div>
-      </div>
-
-      <!-- Filter Bar -->
-      <div class="glass-card rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-1.5" id="sessionFilterGroup">
-          <button type="button" data-filter="all" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40">Semua (45)</button>
-          <button type="button" data-filter="Prime" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Prime Agent</button>
-          <button type="button" data-filter="Codex" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Codex</button>
-          <button type="button" data-filter="Claude" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Claude Code</button>
-          <button type="button" data-filter="Hermes" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Hermes</button>
-        </div>
-        <div class="relative w-full sm:w-64">
-          <input id="inputSessionSearch" type="text" placeholder="Cari prompt / direktori..." class="w-full bg-slate-900/80 border border-slate-700/80 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400" />
-        </div>
-      </div>
-
-      <!-- Sessions List -->
-      <div id="unifiedSessionsList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[620px] overflow-y-auto pr-1">
-        <!-- Injected dynamically via JavaScript -->
-      </div>
-    </section>
-
-    <!-- 8. DESIGN & THEME STUDIO (LIVE PREVIEW) -->
-    <section id="view-studio" class="workspace-view hidden space-y-4">
-      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div>
-          <div class="flex items-center gap-2">
-            <h2 class="text-base sm:text-lg font-bold text-white">Design Preview Sandbox &amp; Theme Studio</h2>
-            <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">Live Reactive Canvas</span>
-          </div>
-          <p class="text-xs text-slate-300 mt-1">
-            Uji tampilan UI interaktif dengan data dummy, ganti tipografi font, sesuaikan palet warna template, dan terapkan langsung secara live ke seluruh workspace OMW.
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-700/80 hover:border-slate-600">
-            <input type="checkbox" id="studioApplyGlobal" checked class="rounded border-slate-700 text-cyan-500 focus:ring-0">
-            <span>Terapkan Global ke Seluruh App</span>
-          </label>
-          <button id="btnCopyDesignTokens" type="button" class="btn-fluid px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-600/30 text-cyan-200 border border-cyan-400/30 hover:bg-cyan-600/50 flex items-center gap-1.5">
-            <span>📋</span> Salin Token CSS
-          </button>
-          <button id="btnResetDesignStudio" type="button" class="btn-fluid px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700">
-            <span>🔄</span> Reset
-          </button>
-        </div>
-      </div>
-
-      <!-- Controls Grid: Font, Color, and Preset Selector -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <!-- 1. Font Selector -->
-        <div class="glass-card rounded-xl p-3.5 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-bold text-white flex items-center gap-1.5">
-              <span>🔤</span> Pilih Font (Tipografi)
-            </label>
-            <span id="labelActiveFont" class="text-[10px] font-mono text-cyan-300">Inter</span>
-          </div>
-          <div class="grid grid-cols-2 gap-1.5" id="fontPickerGrid">
-            <button type="button" data-font="Inter" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 truncate">
-              Inter (Clean UI)
-            </button>
-            <button type="button" data-font="Plus Jakarta Sans" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-['Plus_Jakarta_Sans']">
-              Plus Jakarta Sans
-            </button>
-            <button type="button" data-font="Outfit" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-['Outfit']">
-              Outfit (Geometric)
-            </button>
-            <button type="button" data-font="Space Grotesk" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-['Space_Grotesk']">
-              Space Grotesk
-            </button>
-            <button type="button" data-font="JetBrains Mono" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-mono">
-              JetBrains Mono
-            </button>
-            <button type="button" data-font="Fira Code" class="font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-mono">
-              Fira Code
-            </button>
-            <button type="button" data-font="Playfair Display" class="font-chip col-span-2 px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate font-['Playfair_Display'] italic">
-              Playfair Display (Editorial Serif)
-            </button>
-          </div>
-        </div>
-
-        <!-- 2. Template Color Palette Selector -->
-        <div class="glass-card rounded-xl p-3.5 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-bold text-white flex items-center gap-1.5">
-              <span>🎨</span> Warna Template &amp; Palet
-            </label>
-            <span id="labelActiveTheme" class="text-[10px] font-mono text-cyan-300">Cyber Cyan</span>
-          </div>
-          <div class="grid grid-cols-3 gap-1.5" id="colorThemeGrid">
-            <button type="button" data-theme="cyan" data-hex="#06b6d4" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded-full bg-cyan-400 shrink-0"></span>
-              <span class="truncate">Cyan</span>
-            </button>
-            <button type="button" data-theme="tokyo" data-hex="#6366f1" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded-full bg-indigo-500 shrink-0"></span>
-              <span class="truncate">Tokyo</span>
-            </button>
-            <button type="button" data-theme="emerald" data-hex="#10b981" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded-full bg-emerald-500 shrink-0"></span>
-              <span class="truncate">Emerald</span>
-            </button>
-            <button type="button" data-theme="frost" data-hex="#38bdf8" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded-full bg-sky-400 shrink-0"></span>
-              <span class="truncate">Frost</span>
-            </button>
-            <button type="button" data-theme="amber" data-hex="#f59e0b" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded-full bg-amber-400 shrink-0"></span>
-              <span class="truncate">Amber</span>
-            </button>
-            <button type="button" data-theme="obsidian" data-hex="#84cc16" class="theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded-full bg-lime-400 shrink-0"></span>
-              <span class="truncate">Lime OLED</span>
-            </button>
-          </div>
-          <!-- Custom Color & Radius Picker -->
-          <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between gap-2 text-[11px]">
-            <div class="flex items-center gap-1.5">
-              <input type="color" id="studioCustomColorPicker" value="#06b6d4" class="w-5 h-5 rounded cursor-pointer border-0 bg-transparent" />
-              <input type="text" id="studioCustomColorText" value="#06b6d4" class="w-16 bg-slate-900 border border-slate-700 rounded px-1 text-[10px] font-mono text-white focus:outline-none focus:border-cyan-400" />
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="text-[10px] text-slate-400">Radius:</span>
-              <select id="studioRadiusSelect" class="bg-slate-900 border border-slate-700 rounded px-1 py-0.5 text-[10px] text-white">
-                <option value="4px">Tajam (4px)</option>
-                <option value="12px" selected>Normal (12px)</option>
-                <option value="20px">Halus (20px)</option>
-                <option value="9999px">Kapsul (Pill)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Dummy Data Presets -->
-        <div class="glass-card rounded-xl p-3.5 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-bold text-white flex items-center gap-1.5">
-              <span>📋</span> Preset Data Dummy
-            </label>
-            <span id="labelActivePreset" class="text-[10px] font-mono text-cyan-300">SaaS Analytics</span>
-          </div>
-          <div class="space-y-1.5" id="dummyPresetList">
-            <button type="button" data-preset="saas" class="dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center justify-between">
-              <span>💼 SaaS Analytics &amp; KPIs</span>
-              <span class="text-[10px] text-cyan-300 font-mono">Aktif</span>
-            </button>
-            <button type="button" data-preset="agent_chat" class="dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-between">
-              <span>🤖 Meta-AI Agent Conversation</span>
-            </button>
-            <button type="button" data-preset="ecommerce" class="dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-between">
-              <span>🛒 Mobile Checkout (Guyub.id)</span>
-            </button>
-            <button type="button" data-preset="components" class="dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-between">
-              <span>🧩 UI Component Kit Sandbox</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Live Interactive Dummy Canvas -->
-      <div class="glass-card rounded-2xl p-5 border border-slate-800/90 shadow-2xl transition-all duration-300" id="studioPreviewCanvas">
-        <!-- Inner Dummy Container populated dynamically -->
-        <div id="dummyCanvasContent">
-          <!-- Default SaaS Preview -->
-        </div>
-      </div>
-
-      <!-- Code Inspector (CSS Variables & Tailwind Config) -->
-      <div class="glass-card rounded-xl p-3.5 space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-white font-mono flex items-center gap-1.5">
-            <span>💻</span> Generated Design Tokens (CSS Variables)
-          </span>
-          <span class="text-[10px] text-slate-400">Salin ke project atau file CSS Anda</span>
-        </div>
-        <pre id="studioTokensPre" class="p-3 bg-slate-950/90 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto border border-slate-800/80">:root {
-  --font-family: 'Inter', system-ui, sans-serif;
-  --accent-color: #06b6d4;
-  --accent-glow: rgba(6, 182, 212, 0.25);
-  --card-radius: 12px;
-}</pre>
-      </div>
-    </section>
-
   </main>
 
-  <!-- =========================================================================== -->
-  <!-- BOTTOM-ANCHORED TAKEAWAY & ZERO SCROLL-UP ACTION BAR (User Reading Habit)   -->
-  <!-- =========================================================================== -->
-  <footer class="glass-chrome fixed bottom-0 inset-x-0 z-40 border-t px-3 sm:px-5 py-2.5 shadow-2xl">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
-      <div class="flex items-center gap-2.5">
-        <span class="px-2 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono text-xs font-bold shrink-0">
-          KESIMPULAN AKHIR
-        </span>
-        <p class="text-xs text-slate-200 leading-snug" id="bottomTakeawayText">
-          <strong>Status Siap Deploy:</strong> 5 Tab Terminal selesai • Emulator Waydroid &amp; Strix 100% Lulus • Docker dipangkas 28,9x (29 MB) • Server aman dari OOM (RAM 30%).
-        </p>
-      </div>
-
-      <div class="flex items-center gap-2 w-full sm:w-auto justify-end shrink-0">
-        <span id="toastFeedback" class="text-xs font-mono text-cyan-300 hidden"></span>
-        <button type="button" id="btnFooterSynthesis" class="btn-fluid px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-200">
-          Lihat Synthesis Board
-        </button>
-        <button type="button" id="btnFooterDeploy" class="btn-fluid px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20">
-          🚀 Deploy Slim Container &amp; Backup GitHub
-        </button>
-      </div>
+  <!-- Statusbar -->
+  <footer class="statusbar">
+    <div class="statusbar-left">
+      <span>Daemon: http://127.0.0.1:9180</span>
+      <span>•</span>
+      <span id="statRam">Memory: 46% available</span>
+      <span>•</span>
+      <span id="statPressure">Pressure: some=0.00% full=0.00%</span>
+    </div>
+    <div class="statusbar-right">
+      <span>Host: Linux x86_64</span>
+      <span>•</span>
+      <span>Layout: Orca IDE</span>
     </div>
   </footer>
 
-  <!-- MODAL: RINGKASAN 8 PILAR REFERENCE REPO -->
-  <div id="modalRepoRef" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="glass-card max-w-3xl w-full rounded-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto border border-cyan-500/40">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-base font-bold text-white">8 Pilar Reference Repo GitHub di Dalam Oh My Works</h3>
-        <button type="button" id="btnCloseRepoModal" class="btn-fluid px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300 hover:text-white">
-          ✕ Tutup
-        </button>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-          <div class="font-bold text-cyan-300">1. Desktop &amp; Multiplexer Ringan</div>
-          <div class="text-slate-300 mt-1 font-mono">tauri-apps/tauri + waveterm + helvesec/rmux + zellij</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-          <div class="font-bold text-purple-300">2. Meta-Harness &amp; Auto-Skills</div>
-          <div class="text-slate-300 mt-1 font-mono">claude-squad + mcp-agent + obra/superpowers + anthropics/skills</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-          <div class="font-bold text-emerald-300">3. Hybrid Tri-Layer Graph Memory</div>
-          <div class="text-slate-300 mt-1 font-mono">Graphify + getzep/graphiti + topoteretes/cognee-rs</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-          <div class="font-bold text-amber-300">4. Dual-Engine Browser Use</div>
-          <div class="text-slate-300 mt-1 font-mono">lightpanda-io/browser (Zig) + playwright-mcp + browser-use</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-          <div class="font-bold text-indigo-300">5. App Cloner &amp; Pentester</div>
-          <div class="text-slate-300 mt-1 font-mono">morluto/rea (Reverse Engineer) + usestrix/strix</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-          <div class="font-bold text-pink-300">6. Linux Android Emulator Testing</div>
-          <div class="text-slate-300 mt-1 font-mono">waydroid/waydroid + redroid + mobile-mcp + Maestro</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-          <div class="font-bold text-teal-300">7. Docker Slim &amp; Server Anti-OOM</div>
-          <div class="text-slate-300 mt-1 font-mono">slimtoolkit/slim + dive + beszel + 1Panel + earlyoom</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-          <div class="font-bold text-blue-300">8. Synthesis UI &amp; GitHub Sync</div>
-          <div class="text-slate-300 mt-1 font-mono">ag-ui-protocol/ag-ui + open-canvas + jdx/mise + chezmoi</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BACKDROP OVERLAY FOR SIDE PANEL -->
-  <div id="themePanelBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity duration-300"></div>
-
-  <!-- SLIDE-OVER THEME & DESIGN DRAWER PANEL -->
-  <aside id="themeCustomizerDrawer" class="fixed top-0 right-0 h-full w-full sm:w-[410px] z-50 bg-slate-950/95 backdrop-blur-2xl border-l border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between overflow-y-auto">
-    <!-- Panel Header -->
-    <div class="p-5 border-b border-slate-800/80 flex items-center justify-between sticky top-0 bg-slate-950/90 backdrop-blur-md z-10">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-sm shadow-md">
-          🎨
-        </div>
-        <div>
-          <h3 class="text-sm font-bold text-white tracking-tight">Panel Kustomisasi Desain</h3>
-          <p class="text-[11px] text-slate-400">Atur font &amp; warna template live</p>
-        </div>
-      </div>
-      <button id="btnCloseSidePanel" type="button" class="w-7 h-7 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs font-mono border border-slate-800">
-        ✕
-      </button>
-    </div>
-
-    <!-- Panel Body (Controls) -->
-    <div class="p-5 space-y-5 flex-1">
-      <!-- 1. Font Family -->
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <label class="text-xs font-bold text-white flex items-center gap-1.5">
-            <span>🔤</span> Tipografi (Font)
-          </label>
-          <span id="drawerActiveFontLabel" class="text-[10px] font-mono text-cyan-400">Inter</span>
-        </div>
-        <div class="grid grid-cols-2 gap-1.5" id="drawerFontList">
-          <button type="button" data-font="Inter" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 truncate">
-            Inter (Clean UI)
-          </button>
-          <button type="button" data-font="Plus Jakarta Sans" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate">
-            Plus Jakarta Sans
-          </button>
-          <button type="button" data-font="Outfit" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate">
-            Outfit (Modern)
-          </button>
-          <button type="button" data-font="Space Grotesk" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate">
-            Space Grotesk
-          </button>
-          <button type="button" data-font="JetBrains Mono" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate font-mono">
-            JetBrains Mono
-          </button>
-          <button type="button" data-font="Fira Code" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate font-mono">
-            Fira Code
-          </button>
-          <button type="button" data-font="Playfair Display" class="drawer-font-btn col-span-2 px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate italic">
-            Playfair Display (Editorial)
-          </button>
-        </div>
-      </div>
-
-      <!-- 2. Color Palettes -->
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <label class="text-xs font-bold text-white flex items-center gap-1.5">
-            <span>🎨</span> Palet Warna Template
-          </label>
-          <span id="drawerActiveThemeLabel" class="text-[10px] font-mono text-cyan-400">CYAN</span>
-        </div>
-        <div class="grid grid-cols-3 gap-1.5" id="drawerThemeList">
-          <button type="button" data-theme="cyan" data-hex="#06b6d4" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center gap-2">
-            <span class="w-3.5 h-3.5 rounded-full bg-cyan-400 shrink-0"></span>
-            <span>Cyan</span>
-          </button>
-          <button type="button" data-theme="tokyo" data-hex="#6366f1" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
-            <span class="w-3.5 h-3.5 rounded-full bg-indigo-500 shrink-0"></span>
-            <span>Tokyo</span>
-          </button>
-          <button type="button" data-theme="emerald" data-hex="#10b981" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
-            <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 shrink-0"></span>
-            <span>Emerald</span>
-          </button>
-          <button type="button" data-theme="frost" data-hex="#38bdf8" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
-            <span class="w-3.5 h-3.5 rounded-full bg-sky-400 shrink-0"></span>
-            <span>Frost</span>
-          </button>
-          <button type="button" data-theme="amber" data-hex="#f59e0b" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
-            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 shrink-0"></span>
-            <span>Amber</span>
-          </button>
-          <button type="button" data-theme="obsidian" data-hex="#84cc16" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
-            <span class="w-3.5 h-3.5 rounded-full bg-lime-400 shrink-0"></span>
-            <span>Lime</span>
-          </button>
-        </div>
-
-        <!-- Custom Hex Input in Drawer -->
-        <div class="pt-2 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <input type="color" id="drawerCustomColorPicker" value="#06b6d4" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent" />
-            <input type="text" id="drawerCustomColorText" value="#06b6d4" class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white focus:outline-none focus:border-cyan-400" />
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs text-slate-400">Radius:</span>
-            <select id="drawerRadiusSelect" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white">
-              <option value="4px">4px</option>
-              <option value="12px" selected>12px</option>
-              <option value="20px">20px</option>
-              <option value="9999px">Pill</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Mini Live Dummy Preview Card inside Drawer -->
-      <div class="space-y-2 pt-2 border-t border-slate-800/80">
-        <label class="text-xs font-bold text-white flex items-center gap-1.5">
-          <span>✨</span> Mini Preview Dummy
-        </label>
-        <div id="drawerMiniPreview" class="p-4 bg-slate-900/90 border border-slate-800 space-y-3 transition-all duration-300 rounded-xl">
-          <div class="flex items-center justify-between">
-            <span class="px-2 py-0.5 text-[10px] font-semibold text-white rounded" id="drawerPreviewBadge" style="background-color: #06b6d4">Aktif</span>
-            <span class="text-[10px] font-mono text-slate-400">Dummy Component</span>
-          </div>
-          <div>
-            <div class="text-xs font-bold text-white" id="drawerPreviewTitle">Oh My Works Desktop Preview</div>
-            <p class="text-[11px] text-slate-400 mt-0.5">Komponen otomatis merespons font dan palet terpilih secara instan.</p>
-          </div>
-          <div class="flex items-center gap-2 pt-1">
-            <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-bold text-white shadow-sm" id="drawerPreviewBtn" style="background-color: #06b6d4">
-              Uji Klik
-            </button>
-            <input type="text" value="Input Contoh" class="flex-1 bg-slate-950 border border-slate-700 px-2 py-1 text-xs text-white rounded" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Link to Full Tab 8 -->
-      <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 text-xs text-slate-300 flex items-center justify-between">
-        <span>Butuh preview fullscreen &amp; tabel lengkap?</span>
-        <button id="btnJumpToFullStudio" type="button" class="text-cyan-400 hover:text-cyan-300 font-semibold text-xs underline">
-          Buka Tab 8 ➔
-        </button>
-      </div>
-    </div>
-
-    <!-- Panel Footer -->
-    <div class="p-4 border-t border-slate-800/80 bg-slate-950/90 flex items-center justify-between gap-2 sticky bottom-0">
-      <button id="btnDrawerCopyTokens" type="button" class="btn-fluid flex-1 py-2 text-xs font-semibold bg-cyan-600/30 text-cyan-200 border border-cyan-400/30 rounded-lg hover:bg-cyan-600/50 flex items-center justify-center gap-1.5">
-        <span>📋</span> Salin Token CSS
-      </button>
-      <button id="btnDrawerCloseFooter" type="button" class="btn-fluid px-4 py-2 text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-lg">
-        Tutup
-      </button>
-    </div>
-  </aside>
-
   <script>
     (function () {
-      const state = {
-        activeTab: 'synthesis',
-        selectedTerminalId: 1,
-        emulatorMode: 'waydroid',
-        browserEngine: 'lightpanda',
-        scenarios: {
-          clone_collab: {
-            headline: 'Hasil Akhir: Fitur Kolaborasi Real-Time Berhasil Ditiru (REA), Lulus Uji Emulator Waydroid & Strix, Image Docker Dipangkas 28,9x',
-            summary: 'Meta-AI Harness telah menggabungkan hasil eksekusi dari 5 tab terminal paralel. Dengan memori Graphify + Graphiti (cognee-rs), pemakaian token turun 71,5x (hanya 1.840 token per siklus) dan total RAM ruang kerja terjaga di 64 MB.',
-            tokenSave: '71.5x',
-            browserRam: '18 MB',
-            dockerSlim: '842→29 MB',
-            testScore: '100% Pass',
-            bottomTakeaway: 'Status Siap Deploy: 5 Tab Terminal selesai • Emulator Waydroid & Strix 100% Lulus • Docker dipangkas 28,9x (29 MB) • Server aman dari OOM (RAM 30%).'
-          },
-          strix_security: {
-            headline: 'Hasil Akhir: Strix Menemukan & Menambal 2 Celah Auth JWT, Regresi E2E Waydroid & Lightpanda Lulus 100%',
-            summary: 'Sub-Harness Strix melakukan eksploitasi PoC dinamis pada endpoint API, memicu skill systematic-debugging dari Superpowers, menambal kode Rust secara otomatis, dan memverifikasi ulang di emulator Waydroid.',
-            tokenSave: '68.2x',
-            browserRam: '16 MB',
-            dockerSlim: '610→22 MB',
-            testScore: '0 Vulns',
-            bottomTakeaway: 'Keamanan Terverifikasi: 2 Celah JWT ditambal otomatis oleh Strix + Superpowers • Image Docker 22 MB • Siap didorong ke produksi.'
-          },
-          oom_recovery: {
-            headline: 'Hasil Akhir: Gejala Memory Leak di Worker lama Terdeteksi oleh earlyoom + Beszel, Ditulis Ulang ke Rust (Hemat RAM 82%)',
-            summary: 'Sensor PSI Linux mendeteksi kenaikan tekanan memori sebelum OOM terjadi. Meta-AI Harness memanggil REA untuk membedah worker yang bocor dan menulis ulang modul tersebut ke Rust.',
-            tokenSave: '74.0x',
-            browserRam: '15 MB',
-            dockerSlim: '920→24 MB',
-            testScore: 'OOM Cured',
-            bottomTakeaway: 'Server Pulih Total: Memory leak berhasil dieliminasi • Penggunaan RAM VPS turun dari 89% ke 24% • Auto-Backup GitHub selesai.'
-          }
-        },
-        terminals: [
-          {
-            id: 1,
-            name: 'Tab 1 • REA Cloner & Rust Coder',
-            skill: 'superpowers/tdd + rea/binary-trace',
-            graphNode: 'sync_engine/websocket_crdt.rs',
-            status: 'COMPLETED (1.4s)',
-            summary: 'Membedah protokol sinkronisasi app target via REA dan menulis ulang ke Rust (4.2 MB RAM).',
-            logs: [
-              '$ rea inspect --target https://app.target.example/bundle.js',
-              '[REA] Menemukan protokol delta CRDT pada binary frame WebSocket',
-              '[Superpowers] Memuat SKILL: test-driven-development',
-              '$ cargo test --package omw_sync_engine --release',
-              '✓ 18 passed, 0 failed (selesai dalam 0.42s)'
-            ]
-          },
-          {
-            id: 2,
-            name: 'Tab 2 • Lightpanda Browser-Use',
-            skill: 'playwright-mcp/a11y-snapshot',
-            graphNode: 'web_client/collab_canvas.tsx',
-            status: 'COMPLETED (0.9s)',
-            summary: 'Menjalankan 14 alur uji web di mesin Zig Lightpanda (hanya 18 MB RAM, 9x lebih cepat).',
-            logs: [
-              '$ lightpanda serve --port 9222 --memory-limit 32M',
-              '[Playwright-MCP] Terhubung ke Lightpanda CDP tanpa overhead GPU',
-              '[Browser-Use] Menguji login, buat dokumen, dan broadcast 500 event',
-              '✓ Semua 14 skenario web lulus (RAM Puncak: 18.2 MB)'
-            ]
-          },
-          {
-            id: 3,
-            name: 'Tab 3 • Waydroid / Redroid Emulator',
-            skill: 'mobile-mcp/maestro-e2e',
-            graphNode: 'android/companion_bridge.kt',
-            status: 'COMPLETED (2.1s)',
-            summary: 'Menguji aplikasi Android di kontainer Waydroid LXC via mobile-mcp & Maestro YAML.',
-            logs: [
-              '$ waydroid status -> RUNNING (LXC shared kernel, 380 MB)',
-              '[mobile-mcp] Mengambil pohon aksesibilitas layar Android',
-              '$ maestro test flows/maestro_e2e_flow.yaml',
-              '✓ AssertVisible & CRDT latency < 5ms LULUS • LXC di-freeze kembali'
-            ]
-          },
-          {
-            id: 4,
-            name: 'Tab 4 • Strix Autonomous Pentester',
-            skill: 'strix/pentest-poc-validator',
-            graphNode: 'security/jwt_nonce_guard.rs',
-            status: 'COMPLETED (1.8s)',
-            summary: 'Menguji PoC keamanan dinamis dan memasang validasi nonce anti-replay otomatis.',
-            logs: [
-              '$ strix attack --target ws://127.0.0.1:8080/sync',
-              '[Strix] Menguji fuzzing payload & token replay...',
-              '[Strix] Menambahkan patch nonce guard pada jwt_nonce_guard.rs',
-              '✓ Re-test PoC: 0 celah ditemukan (100% aman)'
-            ]
-          },
-          {
-            id: 5,
-            name: 'Tab 5 • Dive & SlimToolkit + Server',
-            skill: 'slim/docker-30x + earlyoom/psi-guard',
-            graphNode: 'deploy/Dockerfile.slim',
-            status: 'READY TO DEPLOY',
-            summary: 'Memangkas image Docker dari 842 MB ke 29.1 MB (28,9x) & memverifikasi batas RAM server.',
-            logs: [
-              '$ dive build -t omw/sync:latest --ci',
-              '$ slim build --target omw/sync:latest --http-probe=true',
-              '[SlimToolkit] Image berhasil dikompresi: 842 MB -> 29.1 MB (28.9x)',
-              '[Beszel + earlyoom] PSI Server 1.2% • Siap menerima deployment'
-            ]
-          }
-        ],
-        graphNodes: [
-          {
-            id: 'node1',
-            name: 'sync_engine/websocket_crdt.rs',
-            type: 'Rust Core Module',
-            tokensSaved: '14,200 token dihemat',
-            structural: 'Mengimpor tokio::net::TcpStream & crdt_lite; terhubung ke Tab 1 (Coding) dan Tab 4 (Strix Security).',
-            temporal: 'Dibuat 6 menit lalu dari ekstraksi REA; ditambal oleh Strix 3 menit lalu untuk anti-replay nonce.'
-          },
-          {
-            id: 'node2',
-            name: 'android/companion_bridge.kt',
-            type: 'Waydroid / Redroid Target',
-            tokensSaved: '9,800 token dihemat',
-            structural: 'Menghubungkan klien Android di emulator Waydroid/Redroid ke soket CRDT Rust melalui FFI.',
-            temporal: 'Lulus 12 assertion Maestro E2E via mobile-mcp dengan latensi rata-rata 1.8 ms.'
-          },
-          {
-            id: 'node3',
-            name: 'web_client/collab_canvas.tsx',
-            type: 'Frontend Web Module',
-            tokensSaved: '11,400 token dihemat',
-            structural: 'Komponen UI kolaborasi yang diuji secara otomatis oleh Lightpanda Zig + Playwright-MCP.',
-            temporal: 'Terverifikasi bebas kebocoran DOM pada 500 siklus event berturut-turut.'
-          },
-          {
-            id: 'node4',
-            name: 'security/jwt_nonce_guard.rs',
-            type: 'Strix Auto-Patch Node',
-            tokensSaved: '8,100 token dihemat',
-            structural: 'Middleware otorisasi frame biner dengan validasi tanda tangan Ed25519.',
-            temporal: 'Disuntikkan otomatis oleh agen Strix setelah mendeteksi potensi replay pada uji penetrasi.'
-          },
-          {
-            id: 'node5',
-            name: 'deploy/Dockerfile.slim',
-            type: 'Docker Slim & Server Artifact',
-            tokensSaved: '6,500 token dihemat',
-            structural: 'Konfigurasi multi-stage scratch container dengan profil seccomp otomatis dari SlimToolkit.',
-            temporal: 'Ukuran image turun dari 842 MB menjadi 29.1 MB; diverifikasi aman oleh sensor earlyoom.'
-          },
-          {
-            id: 'node6',
-            name: 'server/oom_psi_guardian.go',
-            type: 'Beszel + earlyoom Daemon',
-            tokensSaved: '7,900 token dihemat',
-            structural: 'Membaca /proc/pressure/memory dan mengatur batas cgroups v2 serta kompresi ZRAM.',
-            temporal: 'Menjaga uptime server 100% dan mengirim telemetri real-time ke Oh My Works Desktop.'
-          }
-        ],
-        skills: [
-          { name: 'obra/superpowers: test-driven-development', active: true, desc: 'Wajib menulis tes gagal terlebih dahulu sebelum agen menulis kode implementasi.' },
-          { name: 'obra/superpowers: systematic-debugging', active: true, desc: 'Mencegah agen menebak-nebak perbaikan dengan melacak akar masalah dari graf Graphify.' },
-          { name: 'morluto/rea: reverse-engineer-anything', active: true, desc: 'Mengekstrak bukti arsitektur dari binary, aplikasi Electron/JS, dan jaringan.' },
-          { name: 'usestrix/strix: autonomous-pentest-gate', active: true, desc: 'Memblokir deployment jika ditemukan PoC celah keamanan yang belum ditambal.' },
-          { name: 'slimtoolkit/slim: container-minifier-30x', active: true, desc: 'Memangkas layer Docker secara otomatis agar hemat RAM dan tahan OOM di server.' }
-        ]
-      };
+      let currentTab = 'sessions';
+      let sessionsData = [];
+      let activeSessionId = null;
+      let filterQuery = '';
 
-      function showToast(msg) {
-        const toast = document.getElementById('toastFeedback');
-        toast.textContent = msg;
-        toast.classList.remove('hidden');
-        clearTimeout(window.__omwToastTimer);
-        window.__omwToastTimer = setTimeout(() => {
-          toast.classList.add('hidden');
-        }, 3500);
-      }
-
-      function switchTab(tabId) {
-        state.activeTab = tabId;
-        document.querySelectorAll('.workspace-view').forEach(el => {
-          el.classList.add('hidden');
-        });
-        const target = document.getElementById('view-' + tabId);
-        if (target) target.classList.remove('hidden');
-
-        document.querySelectorAll('.nav-tab').forEach(btn => {
-          const isCurrent = btn.getAttribute('data-tab') === tabId;
-          if (isCurrent) {
-            btn.className = 'nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 whitespace-nowrap';
-          } else {
-            btn.className = 'nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap';
-          }
-        });
-      }
-
-      function renderSynthesisCards() {
-        const container = document.getElementById('synthesisTabCards');
-        container.innerHTML = '';
-        state.terminals.forEach(t => {
-          const card = document.createElement('div');
-          card.className = 'glass-card rounded-xl p-3 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2';
-          card.innerHTML = `
-            <div class="space-y-1">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="text-xs font-bold text-white">${t.name}</span>
-                <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-purple-500/15 text-purple-300 border border-purple-500/30">SKILL: ${t.skill}</span>
-                <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-800 text-cyan-300">Graph: ${t.graphNode}</span>
-              </div>
-              <p class="text-xs text-slate-300">${t.summary}</p>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-              <span class="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 font-mono text-[10px] font-semibold border border-emerald-500/30">${t.status}</span>
-            </div>
-          `;
-          card.addEventListener('click', () => {
-            state.selectedTerminalId = t.id;
-            renderTerminals();
-            switchTab('terminals');
-            showToast('Membuka detail ' + t.name);
-          });
-          container.appendChild(card);
-        });
-      }
-
-      function renderTerminals() {
-        const grid = document.getElementById('terminalGridContainer');
-        grid.innerHTML = '';
-        state.terminals.forEach(t => {
-          const isSelected = t.id === state.selectedTerminalId;
-          const pane = document.createElement('div');
-          pane.className = 'glass-card rounded-2xl p-3.5 flex flex-col justify-between cursor-pointer ' + (isSelected ? 'ring-2 ring-cyan-400' : '');
-          const logsHtml = t.logs.map(line => `<div class="truncate">${line}</div>`).join('');
-          pane.innerHTML = `
-            <div>
-              <div class="flex items-center justify-between gap-1 border-b border-slate-800 pb-2 mb-2">
-                <span class="text-xs font-bold text-white truncate">${t.name}</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 shrink-0">${t.status}</span>
-              </div>
-              <div class="flex flex-wrap gap-1 mb-2">
-                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300">Skill: ${t.skill}</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300">${t.graphNode}</span>
-              </div>
-              <div class="bg-slate-950 rounded-xl p-2.5 font-mono text-[11px] text-slate-300 space-y-1 min-h-[115px] border border-slate-800/90">
-                ${logsHtml}
-              </div>
-            </div>
-            <div class="mt-2.5 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
-              <span class="text-slate-400 font-mono">IPC: Terhubung ke Meta-Harness</span>
-              <span class="text-cyan-300 font-semibold">${isSelected ? '● Tab Aktif' : 'Pilih Tab'}</span>
-            </div>
-          `;
-          pane.addEventListener('click', () => {
-            state.selectedTerminalId = t.id;
-            document.getElementById('activeTermIndicator').textContent = `Kirim Perintah ke [${t.name}]:`;
-            renderTerminals();
-          });
-          grid.appendChild(pane);
-        });
-      }
-
-      function renderGraphMemory() {
-        const grid = document.getElementById('graphNodesGrid');
-        grid.innerHTML = '';
-        state.graphNodes.forEach(node => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'btn-fluid text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 space-y-1';
-          btn.innerHTML = `
-            <div class="text-xs font-mono font-bold text-cyan-300 truncate">${node.name}</div>
-            <div class="text-[10px] text-slate-400">${node.type}</div>
-            <div class="text-[10px] font-mono text-emerald-400">${node.tokensSaved}</div>
-          `;
-          btn.addEventListener('click', () => {
-            document.getElementById('graphNodeTitle').textContent = 'Node: ' + node.name;
-            document.getElementById('graphNodeStructural').innerHTML = '<strong>Lapis 1 — Graphify Structural AST:</strong> ' + node.structural;
-            document.getElementById('graphNodeTemporal').innerHTML = '<strong>Lapis 2 — Graphiti Temporal Episodic:</strong> ' + node.temporal;
-            showToast('Memuat subgraph ' + node.name + ' dari cognee-rs');
-          });
-          grid.appendChild(btn);
-        });
-
-        const skillsList = document.getElementById('skillsRegistryList');
-        skillsList.innerHTML = '';
-        state.skills.forEach((sk, idx) => {
-          const row = document.createElement('div');
-          row.className = 'p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-2';
-          row.innerHTML = `
-            <div>
-              <div class="text-xs font-mono font-semibold text-purple-300">${sk.name}</div>
-              <div class="text-[11px] text-slate-400">${sk.desc}</div>
-            </div>
-            <button type="button" class="btn-fluid px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold ${sk.active ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-slate-800 text-slate-400'}">
-              ${sk.active ? 'AUTO-ON' : 'OFF'}
-            </button>
-          `;
-          row.querySelector('button').addEventListener('click', () => {
-            state.skills[idx].active = !state.skills[idx].active;
-            renderGraphMemory();
-            showToast('Status skill ' + sk.name + ' diperbarui');
-          });
-          skillsList.appendChild(row);
-        });
-      }
-
-      // Navigation bindings
-      document.querySelectorAll('.nav-tab').forEach(btn => {
+      // Tab switcher
+      const navButtons = document.querySelectorAll('#mainNav button');
+      navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-          switchTab(btn.getAttribute('data-tab'));
+          navButtons.forEach(b => b.setAttribute('aria-pressed', 'false'));
+          btn.setAttribute('aria-pressed', 'true');
+          currentTab = btn.getAttribute('data-tab');
+          document.getElementById('activeBreadcrumb').textContent = currentTab;
+          renderCurrentTab();
         });
       });
 
-      // Scenario selector
-      document.getElementById('scenarioSelect').addEventListener('change', (e) => {
-        const sc = state.scenarios[e.target.value];
-        if (!sc) return;
-        document.getElementById('synthHeadline').textContent = sc.headline;
-        document.getElementById('synthSummaryText').textContent = sc.summary;
-        document.getElementById('metricTokenSave').textContent = sc.tokenSave;
-        document.getElementById('metricBrowserRam').textContent = sc.browserRam;
-        document.getElementById('metricDockerSlim').textContent = sc.dockerSlim;
-        document.getElementById('metricTestScore').textContent = sc.testScore;
-        document.getElementById('bottomTakeawayText').textContent = sc.bottomTakeaway;
-        showToast('Skenario diubah & seluruh tab disinkronkan!');
+      // Search filter
+      const filterInput = document.getElementById('filterInput');
+      filterInput.addEventListener('input', (e) => {
+        filterQuery = e.target.value.toLowerCase();
+        renderSidebarList();
       });
 
-      // Global Meta-Harness Prompt Runner
-      document.getElementById('btnRunMetaPrompt').addEventListener('click', () => {
-        const val = document.getElementById('globalPromptInput').value.trim();
-        if (!val) return;
-        state.terminals[0].logs.push('$ meta-summon: "' + val.slice(0, 48) + '..."');
-        state.terminals[0].logs.push('✓ Auto-Skill disuntikkan & hasil dikirim ke Synthesis Board');
-        document.getElementById('synthHeadline').textContent = 'Hasil Akhir: ' + val;
-        document.getElementById('bottomTakeawayText').textContent = 'Eksekusi Selesai: "' + val.slice(0, 65) + '..." telah diverifikasi di 5 tab terminal & siap deploy.';
-        renderTerminals();
-        renderSynthesisCards();
-        switchTab('synthesis');
-        showToast('Meta-Harness selesai mengeksekusi tugas di 5 tab!');
+      // Refresh button
+      document.getElementById('btnRefresh').addEventListener('click', () => {
+        fetchData();
       });
 
-      // Terminal Custom Command
-      document.getElementById('btnSendTerminalCmd').addEventListener('click', () => {
-        const input = document.getElementById('terminalCustomInput');
-        const cmd = input.value.trim() || 'cargo check --workspace';
-        const term = state.terminals.find(t => t.id === state.selectedTerminalId);
-        if (term) {
-          term.logs.push('$ ' + cmd);
-          term.logs.push('✓ Eksekusi lokal selesai (0.18s) • Graphify node diperbarui');
-          if (term.logs.length > 6) term.logs = term.logs.slice(-6);
-          input.value = '';
-          renderTerminals();
-          showToast('Perintah dijalankan di ' + term.name);
-        }
-      });
-
-      document.getElementById('btnBroadcastCommand').addEventListener('click', () => {
-        state.terminals.forEach(t => {
-          t.logs.push('[IPC Sync] Memori Graphify + Graphiti disinkronkan lintas tab (0.4ms)');
-          if (t.logs.length > 6) t.logs = t.logs.slice(-6);
-        });
-        renderTerminals();
-        showToast('Konteks memori semua 5 tab terminal berhasil disinkronkan!');
-      });
-
-      document.getElementById('btnSynthesizeNow').addEventListener('click', () => {
-        switchTab('synthesis');
-        showToast('Seluruh output tab terminal dirangkum ke Synthesis Board!');
-      });
-
-      // Emulator Controls (Waydroid & Redroid)
-      document.getElementById('btnEmuWaydroid').addEventListener('click', () => {
-        document.getElementById('emuEngineBadge').textContent = 'waydroid0 • LXC Direct';
-        document.getElementById('emuAppSubtitle').textContent = 'Waydroid LXC Mode: Berbagi Kernel Host Linux (380 MB RAM)';
-        showToast('Beralih ke Waydroid LXC Container di Desktop Linux');
-      });
-
-      document.getElementById('btnEmuRedroid').addEventListener('click', () => {
-        document.getElementById('emuEngineBadge').textContent = 'redroid:16 • GPU Docker';
-        document.getElementById('emuAppSubtitle').textContent = 'Redroid Docker Mode: Android 16 GPU Container Headless';
-        showToast('Beralih ke Redroid GPU Container untuk pengujian paralel');
-      });
-
-      document.getElementById('btnEmuTapAction').addEventListener('click', () => {
-        document.getElementById('emuDocState').textContent = '4 Peers Synced • Latency 1.1ms';
-        document.getElementById('emuTapFeedback').textContent = '✓ [mobile-mcp] Tap berhasil dieksekusi & diverifikasi Maestro!';
-        showToast('Aksi Tap AI di emulator berhasil diverifikasi!');
-      });
-
-      document.getElementById('btnEmuFreeze').addEventListener('click', () => {
-        document.getElementById('emuTapFeedback').textContent = '❄ Kontainer LXC Waydroid di-freeze (0% CPU, RAM dihemat)';
-        document.getElementById('maestroStep4Status').textContent = 'FROZEN (0% CPU)';
-        showToast('Emulator Waydroid dibekukan sementara untuk menghemat RAM');
-      });
-
-      document.getElementById('btnEmuBack').addEventListener('click', () => {
-        document.getElementById('emuTapFeedback').textContent = '◁ Navigasi Back dikirim via mobile-mcp';
-      });
-
-      document.getElementById('btnEmuHome').addEventListener('click', () => {
-        document.getElementById('emuTapFeedback').textContent = '○ Kembali ke Home Screen App di Emulator';
-      });
-
-      document.getElementById('btnRunMaestroSuite').addEventListener('click', () => {
-        document.getElementById('maestroStep3Status').textContent = 'PASSED (1.1ms)';
-        document.getElementById('maestroStep4Status').textContent = 'AUTO-FROZEN OK';
-        document.getElementById('emuTapFeedback').textContent = '✓ Seluruh skenario E2E Maestro lulus 100% di emulator!';
-        showToast('Semua skenario Maestro E2E di Emulator Android lulus!');
-      });
-
-      // Browser Use + REA + Strix Controls
-      document.getElementById('btnEngineLightpanda').addEventListener('click', () => {
-        document.getElementById('browserEngineLabel').textContent = 'CDP: Lightpanda Zig (18 MB)';
-        showToast('Menggunakan mesin headless Zig Lightpanda (16x lebih hemat RAM)');
-      });
-
-      document.getElementById('btnEngineSteel').addEventListener('click', () => {
-        document.getElementById('browserEngineLabel').textContent = 'CDP: Steel + Skyvern Vision';
-        showToast('Mengaktifkan fallback visual Steel Browser + Skyvern');
-      });
-
-      document.getElementById('btnTriggerBrowserCrawl').addEventListener('click', () => {
-        const box = document.getElementById('browserTraceBox');
-        box.innerHTML += '<div class="text-cyan-300">✓ Crawl selesai: 28 endpoint &amp; struktur DOM dikirim ke REA (17.9 MB RAM)</div>';
-        showToast('Ekstraksi web dengan Lightpanda + Playwright-MCP selesai!');
-      });
-
-      document.getElementById('btnTriggerReaClone').addEventListener('click', () => {
-        const box = document.getElementById('reaTraceBox');
-        box.innerHTML += '<div class="text-indigo-300">✓ Modul target berhasil dikonversi ke Rust murni (0 GC pause)</div>';
-        showToast('REA selesai membedah fitur & menulis ulang ke Rust!');
-      });
-
-      document.getElementById('btnTriggerStrixScan').addEventListener('click', () => {
-        const box = document.getElementById('strixTraceBox');
-        box.innerHTML += '<div class="text-emerald-300">✓ Strix PoC Scan: Semua vektor serangan berhasil ditangkal!</div>';
-        showToast('Audit penetrasi otonom Strix selesai: 0 kerentanan!');
-      });
-
-      // Server Anti-OOM & Docker Slim Controls
-      document.getElementById('btnSimulateOOM').addEventListener('click', () => {
-        const ramBar = document.getElementById('serverRamBar');
-        const ramText = document.getElementById('serverRamText');
-        const psiBar = document.getElementById('serverPsiBar');
-        const psiText = document.getElementById('serverPsiText');
-        const badge = document.getElementById('serverHealthBadge');
-        const logBox = document.getElementById('oomLogBox');
-
-        ramBar.style.width = '88%';
-        ramBar.className = 'h-full bg-rose-500 transition-all duration-300';
-        ramText.textContent = '1810 MB / 2048 MB (88% - SPIKE!)';
-        psiBar.style.width = '78%';
-        psiText.textContent = 'some avg10=78.4% (AMBANG OOM TERDETEKSI)';
-        badge.textContent = 'MITIGATING OOM...';
-        badge.className = 'px-2 py-0.5 text-[11px] font-mono rounded bg-amber-500/20 text-amber-300 border border-amber-500/40';
-
-        logBox.innerHTML = `
-          <div class="text-rose-400">[ALERT] Lonjakan tekanan memori PSI (78.4%) terdeteksi pada worker kontainer!</div>
-          <div class="text-amber-300">[earlyoom + nohang] Mengaktifkan ekspansi ZRAM lz4 &amp; memangkas page cache...</div>
-          <div class="text-cyan-300">[Meta-AI Harness] Menerima stack trace kebocoran &amp; melakukan hot-reload binary Rust...</div>
-        `;
-
-        setTimeout(() => {
-          ramBar.style.width = '26%';
-          ramBar.className = 'h-full bg-emerald-500 transition-all duration-500';
-          ramText.textContent = '532 MB / 2048 MB (26% - PULIH)';
-          psiBar.style.width = '4%';
-          psiText.textContent = 'some avg10=0.80% (Stabil)';
-          badge.textContent = 'AUTO-HEALED • PSI 0.8%';
-          badge.className = 'px-2 py-0.5 text-[11px] font-mono rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-          logBox.innerHTML += `<div class="text-emerald-400">✓ Server berhasil diselamatkan dari OOM dalam 420ms tanpa downtime!</div>`;
-          showToast('Anti-OOM Guardian berhasil memulihkan server secara otomatis!');
-        }, 1100);
-      });
-
-      document.getElementById('btnRunDockerSlim').addEventListener('click', () => {
-        document.getElementById('dockerAfterSize').textContent = '24.8 MB';
-        document.getElementById('dockerSlimBadge').textContent = 'Efisiensi Layer: 99.6% (33.9x Slimmer)';
-        document.getElementById('dockerLogBox').innerHTML += `<div class="text-emerald-300">✓ SlimToolkit selesai mengoptimalkan ulang kontainer menjadi 24.8 MB!</div>`;
-        showToast('Image Docker berhasil dikompresi menjadi 24.8 MB!');
-      });
-
-      // Jump buttons & Footer buttons
-      document.getElementById('btnJumpEmulatorFromSynth').addEventListener('click', () => switchTab('emulator'));
-      document.getElementById('btnJumpServerFromSynth').addEventListener('click', () => switchTab('server'));
-      document.getElementById('btnFooterSynthesis').addEventListener('click', () => switchTab('synthesis'));
-
-      document.getElementById('btnFooterDeploy').addEventListener('click', () => {
-        document.getElementById('syncLabel').textContent = 'Deployed & Synced ✓';
-        document.getElementById('bottomTakeawayText').innerHTML = '<strong>DEPLOYMENT SUKSES:</strong> Kontainer Slim (29 MB) aktif di Server Beszel/1Panel (PSI 0.8%) &amp; seluruh ruang kerja telah di-backup otomatis ke GitHub via Chezmoi.';
-        showToast('Deploy ke Server & Auto-Backup GitHub berhasil dijalankan!');
-      });
-
-      document.getElementById('btnGitHubSync').addEventListener('click', () => {
-        document.getElementById('syncLabel').textContent = 'Chezmoi + Mise: Synced ✓';
-        showToast('Dotfiles, Graph Memory & Tools diperbarui dari GitHub!');
-      });
-
-      // Modal Repo Reference
-      const modal = document.getElementById('modalRepoRef');
-      document.getElementById('btnPRDModal').addEventListener('click', () => {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-      });
-      document.getElementById('btnCloseRepoModal').addEventListener('click', () => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      });
-
-      // UNIFIED SESSIONS (Cindy-Inspired Harvester)
-      let rawSessions = [];
-      let activeSessionFilter = 'all';
-      let sessionSearchQuery = '';
-
-      function getSourceBadgeClass(source) {
-        switch (source) {
-          case 'Prime': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
-          case 'Codex': return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
-          case 'Claude': return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
-          case 'Hermes': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
-          default: return 'bg-slate-500/20 text-slate-300 border-slate-500/40';
-        }
-      }
-
-      function renderUnifiedSessions() {
-        const container = document.getElementById('unifiedSessionsList');
-        if (!container) return;
-
-        const filtered = rawSessions.filter(sess => {
-          const matchFilter = activeSessionFilter === 'all' || sess.source === activeSessionFilter;
-          const q = sessionSearchQuery.toLowerCase();
-          const matchSearch = !q || sess.title.toLowerCase().includes(q) || sess.cwd.toLowerCase().includes(q);
-          return matchFilter && matchSearch;
-        });
-
-        if (filtered.length === 0) {
-          container.innerHTML = '<div class="col-span-2 text-center py-10 text-slate-400 text-xs">Tidak ada sesi yang cocok dengan filter.</div>';
-          return;
-        }
-
-        container.innerHTML = filtered.map(sess => `
-          <div class="glass-card rounded-xl p-3.5 space-y-2 border border-slate-800/80 hover:border-cyan-500/40 transition-colors">
-            <div class="flex items-center justify-between gap-2">
-              <span class="px-2 py-0.5 text-[10px] font-mono rounded border ${getSourceBadgeClass(sess.source)} font-semibold">
-                ${sess.source}
-              </span>
-              <span class="text-[10px] font-mono text-slate-400">
-                ${sess.message_count} pesan • ${sess.created_at || 'Aktif'}
-              </span>
-            </div>
-            <div>
-              <h3 class="text-xs font-semibold text-white truncate" title="${sess.title}">${sess.title}</h3>
-              <p class="text-[11px] font-mono text-slate-400 truncate mt-0.5" title="${sess.cwd}">📂 ${sess.cwd || '~'}</p>
-            </div>
-            <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
-              <span class="text-slate-400 font-mono text-[10px] truncate max-w-[200px]" title="${sess.id}">ID: ${sess.id.substring(0, 16)}...</span>
-              <button type="button" class="btn-fluid px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-medium text-[10px] flex items-center gap-1" onclick="resumeSessionInTerminal('${sess.id}')">
-                <span>⚡</span> Hubungkan ke OMW
-              </button>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      window.resumeSessionInTerminal = function(sessionId) {
-        showToast('Menghubungkan sesi ' + sessionId.substring(0, 8) + ' ke Meta-AI Harness OMW!');
-        switchTab('terminals');
-      };
-
-      async function loadUnifiedSessions() {
+      async function fetchData() {
         try {
-          if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
-            rawSessions = await window.__TAURI__.core.invoke('get_unified_sessions');
-          } else if (window.__TAURI__ && window.__TAURI__.invoke) {
-            rawSessions = await window.__TAURI__.invoke('get_unified_sessions');
-          }
-        } catch (e) {
-          console.warn('Tauri get_unified_sessions failed, using local fallback:', e);
-        }
+          const [sessRes, telRes] = await Promise.all([
+            fetch('http://127.0.0.1:9180/sessions').then(r => r.json()).catch(() => []),
+            fetch('http://127.0.0.1:9180/').then(r => r.json()).catch(() => null)
+          ]);
 
-        if (!rawSessions || rawSessions.length === 0) {
-          rawSessions = [
-            { id: "01a0e886-bb08-767d-88f3-f95f6d58314b", source: "Prime", title: "Project: ai-harness-bridge live loop", cwd: "/mnt/windows/dev/tools/ai-harness-bridge", message_count: 6791, created_at: "Aktif" },
-            { id: "01a0f6bc-f92f-75cc-ac27-4c3412ce6122", source: "Prime", title: "[Claims] Pengajuan + upload bukti + approval + payout", cwd: "/mnt/windows/dev/web/hris", message_count: 23, created_at: "Aktif" },
-            { id: "01a0f6e8-c7a1-75d9-a44c-1e529b21db98", source: "Prime", title: "# BOT_MESSAGE — ENHANCED DEMO + DIGIFLAZZ ROADMAP", cwd: "/mnt/windows/dev/tools/Bot_Messeage", message_count: 991, created_at: "Aktif" },
-            { id: "01a0fa80-6511-7729-8d72-77d32471f0dd", source: "Prime", title: "Guyub.id PR workflow & MVP durable checkpoint", cwd: "/mnt/windows/dev/mobile/Guyub", message_count: 4251, created_at: "Aktif" },
-            { id: "rollout-codex-state5", source: "Codex", title: "Codex Rollout: state_5.sqlite index & logs_2", cwd: "~/.codex", message_count: 140, created_at: "Detected" },
-            { id: "claude-project-hris", source: "Claude", title: "Claude Project: hris-workspace", cwd: "~/.claude/projects/hris", message_count: 88, created_at: "Detected" },
-            { id: "hermes-default", source: "Hermes", title: "Hermes Multi-Agent Hub Configuration", cwd: "~/.hermes", message_count: 1, created_at: "Configured" }
-          ];
-        }
-
-        const badge = document.getElementById('sessionHarvesterBadge');
-        if (badge) badge.textContent = `${rawSessions.length} Sesi Terdeteksi`;
-
-        renderUnifiedSessions();
-      }
-
-      async function pollLiveTelemetry() {
-        try {
-          let data = null;
-          if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
-            data = await window.__TAURI__.core.invoke('get_memory_telemetry');
-          } else if (window.__TAURI__ && window.__TAURI__.invoke) {
-            data = await window.__TAURI__.invoke('get_memory_telemetry');
+          sessionsData = sessRes || [];
+          if (sessionsData.length > 0 && !activeSessionId) {
+            activeSessionId = sessionsData[0].id;
           }
 
-          if (data) {
-            const ramText = document.getElementById('serverRamText');
-            const ramBar = document.getElementById('serverRamBar');
-            const psiText = document.getElementById('serverPsiText');
-            const psiBar = document.getElementById('serverPsiBar');
-            const badge = document.getElementById('serverHealthBadge');
-
-            const usedMb = data.total_mb - data.available_mb;
-            if (ramText) ramText.textContent = `${usedMb.toFixed(1)} MB / ${data.total_mb.toFixed(1)} MB (${(100 - data.available_percent).toFixed(1)}%)`;
-            if (ramBar) ramBar.style.width = `${Math.min(100, Math.max(5, 100 - data.available_percent))}%`;
-            if (psiText) psiText.textContent = `some avg10=${data.some_avg10.toFixed(2)}%, full avg10=${data.full_avg10.toFixed(2)}%`;
-            if (psiBar) psiBar.style.width = `${Math.min(100, Math.max(4, data.some_avg10))}%`;
-            if (badge) {
-              badge.textContent = `KERNEL PSI • ${data.status}`;
-              badge.className = data.status === 'SAFE'
-                ? 'px-2 py-0.5 text-[11px] font-mono rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                : 'px-2 py-0.5 text-[11px] font-mono rounded bg-amber-500/20 text-amber-300 border border-amber-500/40';
-            }
+          if (telRes) {
+            updateTelemetryUI(telRes);
           }
-        } catch (e) {
-          console.warn('Telemetry poll error:', e);
+
+          renderCurrentTab();
+        } catch (err) {
+          console.error("Telemetry fetch error:", err);
         }
       }
 
-      // Filter listeners
-      document.querySelectorAll('.session-filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.session-filter-btn').forEach(b => {
-            b.className = 'session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent';
+      function updateTelemetryUI(tel) {
+        const dot = document.getElementById('psiDot');
+        const text = document.getElementById('psiStatusText');
+        const ram = document.getElementById('statRam');
+        const p = document.getElementById('statPressure');
+
+        if (text) text.textContent = `PSI ${tel.status} (${tel.some_avg10.toFixed(2)}%)`;
+        if (ram) ram.textContent = `Memory: ${tel.available_percent.toFixed(1)}% available`;
+        if (p) p.textContent = `Pressure: some=${tel.some_avg10.toFixed(2)}% full=${tel.full_avg10.toFixed(2)}%`;
+
+        if (dot) {
+          dot.style.background = tel.status === 'SAFE' ? 'var(--success)' : 'var(--destructive)';
+        }
+      }
+
+      function renderCurrentTab() {
+        renderSidebarList();
+        renderDetailPane();
+      }
+
+      function renderSidebarList() {
+        const list = document.getElementById('sidebarList');
+        if (!list) return;
+
+        if (currentTab === 'sessions') {
+          const filtered = sessionsData.filter(s => {
+            const matchTitle = (s.title || '').toLowerCase().includes(filterQuery);
+            const matchCwd = (s.cwd || '').toLowerCase().includes(filterQuery);
+            const matchSrc = (s.source || '').toLowerCase().includes(filterQuery);
+            return matchTitle || matchCwd || matchSrc;
           });
-          btn.className = 'session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40';
-          activeSessionFilter = btn.getAttribute('data-filter');
-          renderUnifiedSessions();
-        });
-      });
 
-      const searchInput = document.getElementById('inputSessionSearch');
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          sessionSearchQuery = e.target.value;
-          renderUnifiedSessions();
-        });
-      }
+          document.getElementById('itemCountBadge').textContent = `${filtered.length} Sessions`;
 
-      const btnRefresh = document.getElementById('btnRefreshSessions');
-      if (btnRefresh) {
-        btnRefresh.addEventListener('click', async () => {
-          showToast('Memindai ulang sesi agen lokal...');
-          await loadUnifiedSessions();
-          showToast('Selesai memindai: ' + rawSessions.length + ' sesi aktif ditemukan!');
-        });
-      }
-
-      // DESIGN & THEME STUDIO ENGINE
-      const studioState = {
-        font: 'Inter',
-        theme: 'cyan',
-        hex: '#06b6d4',
-        radius: '12px',
-        preset: 'saas',
-        applyGlobal: true
-      };
-
-      const fontFamilies = {
-        'Inter': "'Inter', system-ui, sans-serif",
-        'Plus Jakarta Sans': "'Plus Jakarta Sans', system-ui, sans-serif",
-        'Outfit': "'Outfit', system-ui, sans-serif",
-        'Space Grotesk': "'Space Grotesk', system-ui, sans-serif",
-        'JetBrains Mono': "'JetBrains Mono', monospace",
-        'Fira Code': "'Fira Code', monospace",
-        'Playfair Display': "'Playfair Display', Georgia, serif"
-      };
-
-      function hexToRgba(hex, alpha) {
-        let c = hex.replace('#', '');
-        if (c.length === 3) c = c.split('').map(x => x + x).join('');
-        const num = parseInt(c, 16);
-        const r = (num >> 16) & 255;
-        const g = (num >> 8) & 255;
-        const b = num & 255;
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-      }
-
-      function updateStudioStyles() {
-        const fontStr = fontFamilies[studioState.font] || fontFamilies['Inter'];
-        const glow = hexToRgba(studioState.hex, 0.28);
-        const canvas = document.getElementById('studioPreviewCanvas');
-
-        // Update labels in full tab & drawer
-        const fontLbl = document.getElementById('labelActiveFont');
-        if (fontLbl) fontLbl.textContent = studioState.font;
-        const themeLbl = document.getElementById('labelActiveTheme');
-        if (themeLbl) themeLbl.textContent = studioState.theme.toUpperCase();
-        const presetLbl = document.getElementById('labelActivePreset');
-        if (presetLbl) presetLbl.textContent = studioState.preset;
-
-        const dFontLbl = document.getElementById('drawerActiveFontLabel');
-        if (dFontLbl) dFontLbl.textContent = studioState.font;
-        const dThemeLbl = document.getElementById('drawerActiveThemeLabel');
-        if (dThemeLbl) dThemeLbl.textContent = studioState.theme.toUpperCase();
-
-        // Mini preview inside drawer
-        const drawerMini = document.getElementById('drawerMiniPreview');
-        if (drawerMini) {
-          drawerMini.style.fontFamily = fontStr;
-          drawerMini.style.borderRadius = studioState.radius;
-        }
-        const drawerBadge = document.getElementById('drawerPreviewBadge');
-        if (drawerBadge) drawerBadge.style.backgroundColor = studioState.hex;
-        const drawerBtn = document.getElementById('drawerPreviewBtn');
-        if (drawerBtn) {
-          drawerBtn.style.backgroundColor = studioState.hex;
-          drawerBtn.style.borderRadius = studioState.radius;
-        }
-
-        const dColorPicker = document.getElementById('drawerCustomColorPicker');
-        if (dColorPicker && dColorPicker.value !== studioState.hex) dColorPicker.value = studioState.hex;
-        const dColorText = document.getElementById('drawerCustomColorText');
-        if (dColorText && dColorText.value !== studioState.hex) dColorText.value = studioState.hex;
-        const dRadSelect = document.getElementById('drawerRadiusSelect');
-        if (dRadSelect && dRadSelect.value !== studioState.radius) dRadSelect.value = studioState.radius;
-
-        // Apply to Preview Canvas
-        if (canvas) {
-          canvas.style.fontFamily = fontStr;
-          canvas.style.setProperty('--accent-color', studioState.hex);
-          canvas.style.setProperty('--accent-glow', glow);
-          canvas.style.setProperty('--card-radius', studioState.radius);
-        }
-
-        // Apply globally if checked
-        if (studioState.applyGlobal) {
-          document.documentElement.style.setProperty('--app-font', fontStr);
-          document.documentElement.style.setProperty('--accent-color', studioState.hex);
-          document.documentElement.style.setProperty('--accent-glow', glow);
-          document.body.style.fontFamily = fontStr;
-        } else {
-          document.documentElement.style.setProperty('--app-font', fontFamilies['Inter']);
-          document.documentElement.style.setProperty('--accent-color', '#06b6d4');
-          document.body.style.fontFamily = fontFamilies['Inter'];
-        }
-
-        // Update Token Code block
-        const pre = document.getElementById('studioTokensPre');
-        if (pre) {
-          pre.textContent = `:root {\n  --font-family: ${fontStr};\n  --color-primary: ${studioState.hex};\n  --color-glow: ${glow};\n  --border-radius: ${studioState.radius};\n  --theme-preset: '${studioState.theme}';\n}`;
-        }
-
-        // Update UI chips active state
-        document.querySelectorAll('.font-chip').forEach(btn => {
-          const isCurrent = btn.getAttribute('data-font') === studioState.font;
-          btn.className = isCurrent
-            ? 'font-chip px-2 py-1 text-left rounded-lg text-[11px] font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 truncate'
-            : 'font-chip px-2 py-1 text-left rounded-lg text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 truncate';
-        });
-
-        document.querySelectorAll('.theme-chip').forEach(btn => {
-          const isCurrent = btn.getAttribute('data-theme') === studioState.theme;
-          btn.className = isCurrent
-            ? 'theme-chip p-1.5 rounded-lg text-left text-[10px] font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center gap-1.5'
-            : 'theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5';
-        });
-
-        // Drawer chips
-        document.querySelectorAll('.drawer-font-btn').forEach(btn => {
-          const isCurrent = btn.getAttribute('data-font') === studioState.font;
-          btn.className = isCurrent
-            ? 'drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 truncate'
-            : 'drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate';
-        });
-
-        document.querySelectorAll('.drawer-theme-btn').forEach(btn => {
-          const isCurrent = btn.getAttribute('data-theme') === studioState.theme;
-          btn.className = isCurrent
-            ? 'drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center gap-2'
-            : 'drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2';
-        });
-
-        document.querySelectorAll('.dummy-preset-btn').forEach(btn => {
-          const isCurrent = btn.getAttribute('data-preset') === studioState.preset;
-          btn.className = isCurrent
-            ? 'dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center justify-between'
-            : 'dummy-preset-btn w-full p-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-between';
-          btn.innerHTML = btn.innerHTML.replace(/<span class="text-\[10px\].*?<\/span>/, '');
-          if (isCurrent) {
-            btn.innerHTML += `<span class="text-[10px] text-cyan-300 font-mono">Aktif</span>`;
+          if (filtered.length === 0) {
+            list.innerHTML = `<div style="padding: 16px; color: var(--muted-foreground); text-align: center; font-size: 11px;">No sessions found</div>`;
+            return;
           }
-        });
 
-        renderDummyContent();
+          list.innerHTML = filtered.map(s => {
+            const isActive = s.id === activeSessionId;
+            const srcClass = s.source.toLowerCase() === 'prime' ? 'source-prime'
+                           : s.source.toLowerCase() === 'codex' ? 'source-codex' : 'source-claude';
+            const cleanTitle = s.title && s.title.trim().length > 0 ? s.title : 'Active Thread';
+            const shortCwd = s.cwd ? s.cwd.replace('/mnt/windows/dev/', 'dev/').replace('/home/ivano/', '~/') : '-';
+
+            return `
+              <div class="sidebar-item ${isActive ? 'active' : ''}" data-id="${s.id}">
+                <div class="sidebar-item-header">
+                  <span class="source-tag ${srcClass}">${s.source}</span>
+                  <span style="font-size: 10px; color: var(--muted-foreground); font-family: var(--font-mono);">${s.message_count} msgs</span>
+                </div>
+                <div class="sidebar-item-title">${escapeHtml(cleanTitle)}</div>
+                <div class="sidebar-item-meta">
+                  <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(shortCwd)}</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          list.querySelectorAll('.sidebar-item').forEach(el => {
+            el.addEventListener('click', () => {
+              activeSessionId = el.getAttribute('data-id');
+              renderSidebarList();
+              renderDetailPane();
+            });
+          });
+        } else if (currentTab === 'terminals') {
+          list.innerHTML = `
+            <div class="sidebar-item active">
+              <div class="sidebar-item-header">
+                <span class="badge badge-success">RUNNING</span>
+                <span style="font-size: 10px; font-family: var(--font-mono);">PTY 1</span>
+              </div>
+              <div class="sidebar-item-title">Interactive Terminal (bash)</div>
+              <div class="sidebar-item-meta"><span>/mnt/windows/dev/Desktop/Oh-My-Works</span></div>
+            </div>
+            <div class="sidebar-item">
+              <div class="sidebar-item-header">
+                <span class="badge">IDLE</span>
+                <span style="font-size: 10px; font-family: var(--font-mono);">PTY 2</span>
+              </div>
+              <div class="sidebar-item-title">Subagent Harness Runner</div>
+              <div class="sidebar-item-meta"><span>omw-harness / coordinator</span></div>
+            </div>
+          `;
+          document.getElementById('itemCountBadge').textContent = '2 Terminals';
+        } else if (currentTab === 'guardian') {
+          list.innerHTML = `
+            <div class="sidebar-item active">
+              <div class="sidebar-item-header">
+                <span class="badge badge-success">ACTIVE</span>
+                <span style="font-size: 10px; font-family: var(--font-mono);">PID 331343</span>
+              </div>
+              <div class="sidebar-item-title">Kernel PSI Watchdog</div>
+              <div class="sidebar-item-meta"><span>/proc/pressure/memory</span></div>
+            </div>
+            <div class="sidebar-item">
+              <div class="sidebar-item-header">
+                <span class="badge">ARMED</span>
+              </div>
+              <div class="sidebar-item-title">Proactive Earlyoom Handler</div>
+              <div class="sidebar-item-meta"><span>Threshold: 15% RAM</span></div>
+            </div>
+          `;
+          document.getElementById('itemCountBadge').textContent = '2 Monitors';
+        } else if (currentTab === 'memory') {
+          list.innerHTML = `
+            <div class="sidebar-item active">
+              <div class="sidebar-item-header"><span class="badge">SEMANTIC</span></div>
+              <div class="sidebar-item-title">Crates Monorepo Architecture</div>
+              <div class="sidebar-item-meta"><span>Edges: 4 links</span></div>
+            </div>
+            <div class="sidebar-item">
+              <div class="sidebar-item-header"><span class="badge">PROCEDURAL</span></div>
+              <div class="sidebar-item-title">Cindy Session Harvester Import</div>
+              <div class="sidebar-item-meta"><span>Edges: 2 links</span></div>
+            </div>
+            <div class="sidebar-item">
+              <div class="sidebar-item-header"><span class="badge">EPISODIC</span></div>
+              <div class="sidebar-item-title">Anti-OOM Earlyoom Execution</div>
+              <div class="sidebar-item-meta"><span>Edges: 1 link</span></div>
+            </div>
+          `;
+          document.getElementById('itemCountBadge').textContent = '3 Nodes';
+        } else if (currentTab === 'automations') {
+          list.innerHTML = `
+            <div class="sidebar-item active">
+              <div class="sidebar-item-header"><span class="badge badge-success">READY</span></div>
+              <div class="sidebar-item-title">REA Clone Blueprint Generator</div>
+              <div class="sidebar-item-meta"><span>crates/omw-clone</span></div>
+            </div>
+            <div class="sidebar-item">
+              <div class="sidebar-item-header"><span class="badge badge-warning">SCANNED</span></div>
+              <div class="sidebar-item-title">Strix Autonomous Pentest</div>
+              <div class="sidebar-item-meta"><span>0 Critical Vulnerabilities</span></div>
+            </div>
+          `;
+          document.getElementById('itemCountBadge').textContent = '2 Engines';
+        }
       }
 
-      function renderDummyContent() {
-        const container = document.getElementById('dummyCanvasContent');
-        if (!container) return;
+      function renderDetailPane() {
+        const body = document.getElementById('contentBody');
+        if (!body) return;
 
-        const hex = studioState.hex;
-        const rad = studioState.radius;
+        if (currentTab === 'sessions') {
+          const active = sessionsData.find(s => s.id === activeSessionId) || sessionsData[0];
+          if (!active) {
+            body.innerHTML = `<div style="color: var(--muted-foreground); font-size: 12px;">Pilih sesi di sebelah kiri untuk melihat detail.</div>`;
+            return;
+          }
 
-        if (studioState.preset === 'saas') {
-          container.innerHTML = `
-            <div class="space-y-4">
-              <!-- Top Banner & Filters -->
-              <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
-                <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white shadow-lg" style="background-color: ${hex}; border-radius: ${rad}">
-                    ⚡
+          body.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+                <div>
+                  <div style="font-size: 18px; font-weight: 600; color: var(--foreground); letter-spacing: -0.02em;">
+                    ${escapeHtml(active.title || 'Active Session')}
                   </div>
-                  <div>
-                    <h3 class="text-base font-bold text-white tracking-tight">Executive Dashboard &amp; Analytics</h3>
-                    <p class="text-xs text-slate-400">Dummy Data Mode • Menguji tipografi &amp; palet warna template</p>
+                  <div style="color: var(--muted-foreground); font-family: var(--font-mono); font-size: 11px; margin-top: 4px;">
+                    Source: ${active.source} • Created: ${new Date(active.created_at).toLocaleString()} • ID: ${active.id}
                   </div>
                 </div>
-                <div class="flex items-center gap-2">
-                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-bold text-white shadow-md" style="background-color: ${hex}; border-radius: ${rad}">
-                    + Buat Agen Baru
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" class="button-subtle" onclick="alert('Session resumed via omw-terminal!')">
+                    Resume Sesi
                   </button>
-                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 border border-slate-700" style="border-radius: ${rad}">
-                    Export CSV
+                  <button type="button" class="button-subtle" onclick="navigator.clipboard.writeText('${active.file_path}')">
+                    Salin Path
                   </button>
                 </div>
               </div>
 
-              <!-- Metric Cards Grid -->
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div class="p-3 bg-slate-900/90 border border-slate-800 space-y-1" style="border-radius: ${rad}">
-                  <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Total Pendapatan</span>
-                  <div class="text-lg font-bold text-white">$48,290.40</div>
-                  <span class="text-[10px] font-semibold" style="color: ${hex}">+24.8% vs bulan lalu</span>
+              <!-- Quick Metrics Grid -->
+              <div class="card-grid">
+                <div class="metric-card">
+                  <div class="metric-card-label">Jumlah Pesan / Interaksi</div>
+                  <div class="metric-card-val">${active.message_count}</div>
+                  <div class="metric-card-sub">Multi-turn context transcript</div>
                 </div>
-                <div class="p-3 bg-slate-900/90 border border-slate-800 space-y-1" style="border-radius: ${rad}">
-                  <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Token Efisiensi</span>
-                  <div class="text-lg font-bold text-white">71.5x Hemat</div>
-                  <span class="text-[10px] text-emerald-400">Graph Memory Aktif</span>
+                <div class="metric-card">
+                  <div class="metric-card-label">Working Directory (CWD)</div>
+                  <div class="metric-card-val" style="font-size: 13px; font-family: var(--font-mono); word-break: break-all;">${escapeHtml(active.cwd || '-')}</div>
+                  <div class="metric-card-sub">Local workspace target</div>
                 </div>
-                <div class="p-3 bg-slate-900/90 border border-slate-800 space-y-1" style="border-radius: ${rad}">
-                  <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Response Latency</span>
-                  <div class="text-lg font-bold text-white">240ms</div>
-                  <span class="text-[10px] text-cyan-400">Zero GC Pause</span>
-                </div>
-                <div class="p-3 bg-slate-900/90 border border-slate-800 space-y-1" style="border-radius: ${rad}">
-                  <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Guardian Uptime</span>
-                  <div class="text-lg font-bold text-white">99.99%</div>
-                  <span class="text-[10px] text-slate-400">0 Kernel Stall</span>
+                <div class="metric-card">
+                  <div class="metric-card-label">File Transkrip di Disk</div>
+                  <div class="metric-card-val" style="font-size: 11px; font-family: var(--font-mono); word-break: break-all;">${escapeHtml(active.file_path)}</div>
+                  <div class="metric-card-sub">Cindy Harvester Adapter</div>
                 </div>
               </div>
 
-              <!-- Dummy Table List -->
-              <div class="border border-slate-800 overflow-hidden" style="border-radius: ${rad}">
-                <div class="p-2.5 bg-slate-900/80 border-b border-slate-800 flex items-center justify-between">
-                  <span class="text-xs font-bold text-white">Tugas AI Harness Berjalan</span>
-                  <span class="text-[11px] text-slate-400">4 Task Terjadwal</span>
-                </div>
-                <div class="divide-y divide-slate-800/80 text-xs">
-                  <div class="p-2.5 flex items-center justify-between bg-slate-950/40">
-                    <div class="flex items-center gap-2">
-                      <span class="w-2 h-2 rounded-full" style="background-color: ${hex}"></span>
-                      <span class="font-medium text-white">Reverse Engineering Realtime Collab (REA)</span>
-                    </div>
-                    <span class="px-2 py-0.5 text-[10px] rounded font-semibold text-white" style="background-color: ${hex}">SUKSES</span>
-                  </div>
-                  <div class="p-2.5 flex items-center justify-between bg-slate-950/40">
-                    <div class="flex items-center gap-2">
-                      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                      <span class="font-medium text-white">Strix Penetration Autonomous Pentest</span>
-                    </div>
-                    <span class="px-2 py-0.5 text-[10px] rounded font-semibold bg-emerald-500/20 text-emerald-300">0 KERENTANAN</span>
-                  </div>
-                  <div class="p-2.5 flex items-center justify-between bg-slate-950/40">
-                    <div class="flex items-center gap-2">
-                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                      <span class="font-medium text-white">Docker Slim Layer Compression (842MB → 29MB)</span>
-                    </div>
-                    <span class="px-2 py-0.5 text-[10px] rounded font-semibold bg-amber-500/20 text-amber-300">SELESAI (96.5%)</span>
-                  </div>
-                </div>
-              </div>
+              <!-- Transcript Preview -->
+              <div style="font-size: 12px; font-weight: 600; color: var(--foreground);">Cuplikan Transkrip Sesi:</div>
+              <div class="terminal-view"># Sesi Terbaca dari Harvester (~/.prime, ~/.codex, ~/.claude)
+Source: ${active.source}
+File:   ${active.file_path}
+CWD:    ${active.cwd}
+Status: Read-only live synchronized transcript
+
+[SYSTEM] Initialized multi-agent session monitor.
+[SYNCHRONIZED] Transkrip aktif tersinkronisasi dengan Cindy session adapter architecture.
+[READY] Tekan "Resume Sesi" untuk meneruskan dialog langsung dari CLI terminal multiplexer.</div>
             </div>
           `;
-        } else if (studioState.preset === 'agent_chat') {
-          container.innerHTML = `
-            <div class="space-y-3">
-              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-                <div class="flex items-center gap-2">
-                  <span class="text-xl">🤖</span>
-                  <div>
-                    <h4 class="text-xs font-bold text-white">Meta-AI Harness Orchestration Thread</h4>
-                    <span class="text-[10px] text-slate-400">Model: Sonnet 4.6 • Zero-alloc context</span>
-                  </div>
+        } else if (currentTab === 'terminals') {
+          body.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+                <div>
+                  <div style="font-size: 16px; font-weight: 600;">Interactive Terminal PTY (Multiplexer)</div>
+                  <div style="font-size: 11px; color: var(--muted-foreground); font-family: var(--font-mono);">Bridge: crates/omw-terminal • Zero GC latency</div>
                 </div>
-                <span class="px-2 py-0.5 text-[10px] font-mono rounded text-white" style="background-color: ${hex}">Live Stream</span>
+                <div class="toolbar">
+                  <span class="badge badge-success">ONLINE</span>
+                </div>
               </div>
+              <div class="terminal-view" style="min-height: 380px;">ivano@omw-host:~/Oh-My-Works$ ./target/debug/omw-cli status
+OMW Guardian Status: [OK - SAFE]
+Memory: 46.3% available (5901.9 MB / 12752.9 MB)
+PSI Stall: some avg10=0.00%, full avg10=0.00%
 
-              <!-- Message 1: User -->
-              <div class="p-3 bg-slate-900 border border-slate-800" style="border-radius: ${rad}">
-                <div class="text-[10px] font-mono font-bold text-slate-400 mb-1">USER (Ivano):</div>
-                <p class="text-xs text-slate-200">Bedah arsitektur backend Go + Rust, audit keamanan dengan Strix, dan deploy kontainer ke 1Panel server.</p>
-              </div>
+ivano@omw-host:~/Oh-My-Works$ ./target/debug/omw-cli sessions | head -n 4
+Discovered Agent Sessions on Laptop (Cindy session-import model): 45 sessions
+  [01] [Prime] Project: (6791 messages) | cwd: /mnt/windows/dev/tools/ai-harness-bridge
+  [02] [Prime] [Claims] Pengajuan + upload bukti + approval (23 msgs)
+  [03] [Prime] [Admin-Approvals] Approval workflow multi-level (14 msgs)
 
-              <!-- Message 2: Agent Thinking & Result -->
-              <div class="p-3 bg-slate-950/80 border space-y-2" style="border-radius: ${rad}; border-color: ${hex}">
-                <div class="flex items-center justify-between">
-                  <span class="text-[10px] font-mono font-bold" style="color: ${hex}">OMW META-AGENT:</span>
-                  <span class="text-[10px] font-mono text-slate-400">18.4 KB context • 140ms</span>
-                </div>
-                <div class="text-xs text-slate-300 space-y-1.5">
-                  <p>1. Mengaktifkan <strong>REA Mimic Engine</strong> untuk reverse engineering komponen target.</p>
-                  <p>2. Menjalankan <strong>Strix PoC exploit scanner</strong>: semua celah SQLi dan XSS telah dimitigasi.</p>
-                  <p>3. Binary Rust terkompilasi dalam mode <code>--release</code> dengan ukuran footprint hanya 4.2 MB.</p>
-                </div>
-                <div class="p-2 bg-slate-900 rounded font-mono text-[11px] text-cyan-300 border border-slate-800">
-                  ✓ Pipeline selesai dalam 420ms (0 byte leak, PSI 0.00%)
-                </div>
-              </div>
-
-              <!-- Interactive Prompt Input -->
-              <div class="flex items-center gap-2 pt-1">
-                <input type="text" placeholder="Tulis instruksi tambahan ke sub-agent..." class="flex-1 bg-slate-900 border border-slate-700 px-3 py-1.5 text-xs text-white focus:outline-none" style="border-radius: ${rad}" />
-                <button type="button" class="btn-fluid px-4 py-1.5 text-xs font-bold text-white" style="background-color: ${hex}; border-radius: ${rad}">
-                  Kirim
-                </button>
-              </div>
+ivano@omw-host:~/Oh-My-Works$ █</div>
             </div>
           `;
-        } else if (studioState.preset === 'ecommerce') {
-          container.innerHTML = `
-            <div class="max-w-xl mx-auto space-y-3">
-              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-                <h3 class="text-xs font-bold text-white">Ringkasan Checkout Transaksi (Guyub.id)</h3>
-                <span class="text-[10px] font-mono text-slate-400">ID: INV-2026-9921</span>
-              </div>
-
-              <div class="p-3.5 bg-slate-900/90 border border-slate-800 space-y-2.5" style="border-radius: ${rad}">
-                <div class="flex justify-between text-xs">
-                  <span class="text-slate-300">Langganan Dedicated OMW Server (1 Bulan)</span>
-                  <span class="font-bold text-white">$149.00</span>
+        } else if (currentTab === 'guardian') {
+          body.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="font-size: 16px; font-weight: 600;">Kernel PSI &amp; Anti-OOM Guardian Telemetry</div>
+              <div class="card-grid">
+                <div class="metric-card">
+                  <div class="metric-card-label">Kernel Memory PSI (Some 10s)</div>
+                  <div class="metric-card-val" style="color: var(--success);">0.00%</div>
+                  <div class="metric-card-sub">Stall threshold: &gt; 25.00%</div>
                 </div>
-                <div class="flex justify-between text-xs">
-                  <span class="text-slate-300">Add-on Anti-OOM Kernel Watchdog</span>
-                  <span class="font-bold text-white">$29.00</span>
+                <div class="metric-card">
+                  <div class="metric-card-label">Available System RAM</div>
+                  <div class="metric-card-val">5,901 MB</div>
+                  <div class="metric-card-sub">46.3% of 12,752 MB total</div>
                 </div>
-                <div class="flex justify-between text-xs">
-                  <span class="text-slate-300">Diskon Komunitas Developer (Guyub)</span>
-                  <span class="font-bold" style="color: ${hex}">-$18.00</span>
-                </div>
-                <div class="pt-2 border-t border-slate-800 flex justify-between text-sm font-bold text-white">
-                  <span>Total Tagihan:</span>
-                  <span style="color: ${hex}">$160.00</span>
+                <div class="metric-card">
+                  <div class="metric-card-label">Watchdog Response Time</div>
+                  <div class="metric-card-val">&lt; 1 ms</div>
+                  <div class="metric-card-sub">Direct /proc read, stdlib fs</div>
                 </div>
               </div>
-
-              <div class="flex gap-2">
-                <input type="text" value="GUYUB2026" class="flex-1 bg-slate-900 border border-slate-700 px-3 py-1.5 text-xs text-white uppercase" style="border-radius: ${rad}" />
-                <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 border border-slate-700" style="border-radius: ${rad}">Terapkan Voucher</button>
-              </div>
-
-              <button type="button" class="btn-fluid w-full py-2.5 text-xs font-bold text-white shadow-lg tracking-wide uppercase" style="background-color: ${hex}; border-radius: ${rad}">
-                Bayar &amp; Luncurkan Workspace Sekarang
-              </button>
+              <div class="terminal-view">[OK] /proc/pressure/memory reader active.
+[INFO] Container limits synchronized with cgroup v2.
+[PROTECTION] Earlyoom memory reaper is armed to protect main desktop processes from Linux OOM stall.</div>
             </div>
           `;
-        } else if (studioState.preset === 'components') {
-          container.innerHTML = `
-            <div class="space-y-4">
-              <h4 class="text-xs font-bold text-white border-b border-slate-800 pb-2">UI Component Library Preview</h4>
-
-              <!-- Buttons Row -->
-              <div class="space-y-1.5">
-                <span class="text-[10px] text-slate-400 uppercase font-mono">Button Variants:</span>
-                <div class="flex flex-wrap items-center gap-2">
-                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-bold text-white shadow-md" style="background-color: ${hex}; border-radius: ${rad}">
-                    Primary Action
-                  </button>
-                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-bold border" style="color: ${hex}; border-color: ${hex}; border-radius: ${rad}">
-                    Outline Accent
-                  </button>
-                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700" style="border-radius: ${rad}">
-                    Secondary
-                  </button>
-                  <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-medium text-rose-300 bg-rose-500/10 border border-rose-500/30" style="border-radius: ${rad}">
-                    Danger
-                  </button>
+        } else if (currentTab === 'memory') {
+          body.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="font-size: 16px; font-weight: 600;">Tri-Layer Graph Memory (Episodic, Semantic, Procedural)</div>
+              <div class="card-grid">
+                <div class="metric-card">
+                  <div class="metric-card-label">Total Knowledge Nodes</div>
+                  <div class="metric-card-val">3</div>
+                  <div class="metric-card-sub">Graphify tri-layer representation</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-card-label">Inter-Agent Edges</div>
+                  <div class="metric-card-val">2</div>
+                  <div class="metric-card-sub">Semantic dependency links</div>
                 </div>
               </div>
-
-              <!-- Inputs & Controls Row -->
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div class="space-y-1">
-                  <label class="text-[10px] text-slate-400 font-medium">Text Field</label>
-                  <input type="text" value="Oh My Works" class="w-full bg-slate-900 border border-slate-700 px-2.5 py-1.5 text-xs text-white focus:outline-none" style="border-radius: ${rad}" />
+              <div class="terminal-view">[Graph Memory Query]:
+Node [Core Architecture] --(protected_by)--> Node [Guardian Watchdog]
+Node [Session Harvester] --(provides_data_to)--> Node [OMW Desktop Workspace]
+Query latency: 0.04ms</div>
+            </div>
+          `;
+        } else if (currentTab === 'automations') {
+          body.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="font-size: 16px; font-weight: 600;">Automations: REA App Cloner &amp; Strix Security Pentest</div>
+              <div class="card-grid">
+                <div class="metric-card">
+                  <div class="metric-card-label">REA Mimic Blueprints</div>
+                  <div class="metric-card-val">2 Generated</div>
+                  <div class="metric-card-sub">AppLayoutChrome + AuthApiBridge</div>
                 </div>
-                <div class="space-y-1">
-                  <label class="text-[10px] text-slate-400 font-medium">Dropdown Selector</label>
-                  <select class="w-full bg-slate-900 border border-slate-700 px-2 py-1.5 text-xs text-white" style="border-radius: ${rad}">
-                    <option>Option Alpha</option>
-                    <option>Option Beta</option>
-                  </select>
-                </div>
-                <div class="space-y-1">
-                  <label class="text-[10px] text-slate-400 font-medium">Badge Tags</label>
-                  <div class="flex items-center gap-1.5 pt-1">
-                    <span class="px-2 py-0.5 text-[10px] font-semibold text-white rounded" style="background-color: ${hex}">Active</span>
-                    <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30">Passing</span>
-                    <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-500/20 text-amber-300 rounded border border-amber-500/30">Warning</span>
-                  </div>
+                <div class="metric-card">
+                  <div class="metric-card-label">Strix Pentest Findings</div>
+                  <div class="metric-card-val" style="color: var(--success);">0 Critical</div>
+                  <div class="metric-card-sub">1 Low (CSP header recommendation)</div>
                 </div>
               </div>
+              <div class="terminal-view">[REA Mimic]: Generated scaffold layout clone and mock auth bridge.
+[Strix Scanner]: Audited SQL injection, SSRF, and command execution vectors. Target clean.</div>
             </div>
           `;
         }
       }
 
-      // Studio Event Handlers
-      document.querySelectorAll('.font-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
-          studioState.font = btn.getAttribute('data-font');
-          updateStudioStyles();
-          showToast('Font diubah ke ' + studioState.font);
-        });
-      });
-
-      document.querySelectorAll('.theme-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
-          studioState.theme = btn.getAttribute('data-theme');
-          studioState.hex = btn.getAttribute('data-hex');
-          document.getElementById('studioCustomColorPicker').value = studioState.hex;
-          document.getElementById('studioCustomColorText').value = studioState.hex;
-          updateStudioStyles();
-          showToast('Tema palet diubah ke ' + studioState.theme.toUpperCase());
-        });
-      });
-
-      const colorPicker = document.getElementById('studioCustomColorPicker');
-      const colorText = document.getElementById('studioCustomColorText');
-      if (colorPicker) {
-        colorPicker.addEventListener('input', (e) => {
-          studioState.hex = e.target.value;
-          studioState.theme = 'custom';
-          colorText.value = studioState.hex;
-          updateStudioStyles();
-        });
-      }
-      if (colorText) {
-        colorText.addEventListener('change', (e) => {
-          let val = e.target.value.trim();
-          if (!val.startsWith('#')) val = '#' + val;
-          if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-            studioState.hex = val;
-            studioState.theme = 'custom';
-            colorPicker.value = val;
-            updateStudioStyles();
-            showToast('Warna custom diterapkan: ' + val);
-          }
-        });
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
       }
 
-      const radiusSelect = document.getElementById('studioRadiusSelect');
-      if (radiusSelect) {
-        radiusSelect.addEventListener('change', (e) => {
-          studioState.radius = e.target.value;
-          updateStudioStyles();
-        });
-      }
-
-      document.querySelectorAll('.dummy-preset-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          studioState.preset = btn.getAttribute('data-preset');
-          updateStudioStyles();
-          showToast('Preset dummy data: ' + studioState.preset);
-        });
-      });
-
-      const applyGlobalCheck = document.getElementById('studioApplyGlobal');
-      if (applyGlobalCheck) {
-        applyGlobalCheck.addEventListener('change', (e) => {
-          studioState.applyGlobal = e.target.checked;
-          updateStudioStyles();
-          showToast(e.target.checked ? 'Gaya diterapkan ke seluruh aplikasi' : 'Gaya hanya diaktifkan pada sandbox preview');
-        });
-      }
-
-      const btnCopyTokens = document.getElementById('btnCopyDesignTokens');
-      if (btnCopyTokens) {
-        btnCopyTokens.addEventListener('click', () => {
-          const pre = document.getElementById('studioTokensPre');
-          if (pre && navigator.clipboard) {
-            navigator.clipboard.writeText(pre.textContent);
-            showToast('Token CSS berhasil disalin ke clipboard!');
-          }
-        });
-      }
-
-      const btnResetStudio = document.getElementById('btnResetDesignStudio');
-      if (btnResetStudio) {
-        btnResetStudio.addEventListener('click', () => {
-          studioState.font = 'Inter';
-          studioState.theme = 'cyan';
-          studioState.hex = '#06b6d4';
-          studioState.radius = '12px';
-          studioState.preset = 'saas';
-          studioState.applyGlobal = true;
-          if (colorPicker) colorPicker.value = '#06b6d4';
-          if (colorText) colorText.value = '#06b6d4';
-          if (radiusSelect) radiusSelect.value = '12px';
-          if (applyGlobalCheck) applyGlobalCheck.checked = true;
-          updateStudioStyles();
-          showToast('Design Studio di-reset ke pengaturan standar OMW');
-        });
-      }
-
-      // DRAWER PANEL CONTROLS (Open, Close, Live Drawer Pickers)
-      const drawer = document.getElementById('themeCustomizerDrawer');
-      const backdrop = document.getElementById('themePanelBackdrop');
-
-      function openThemeDrawer() {
-        if (!drawer || !backdrop) return;
-        backdrop.classList.remove('hidden');
-        drawer.classList.remove('translate-x-full');
-        drawer.classList.add('translate-x-0');
-      }
-
-      function closeThemeDrawer() {
-        if (!drawer || !backdrop) return;
-        drawer.classList.remove('translate-x-0');
-        drawer.classList.add('translate-x-full');
-        setTimeout(() => {
-          backdrop.classList.add('hidden');
-        }, 300);
-      }
-
-      const btnToggleDrawer = document.getElementById('btnToggleSidePanel');
-      if (btnToggleDrawer) btnToggleDrawer.addEventListener('click', openThemeDrawer);
-
-      const btnCloseDrawer = document.getElementById('btnCloseSidePanel');
-      if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', closeThemeDrawer);
-
-      const btnCloseDrawerFooter = document.getElementById('btnDrawerCloseFooter');
-      if (btnCloseDrawerFooter) btnCloseDrawerFooter.addEventListener('click', closeThemeDrawer);
-
-      if (backdrop) backdrop.addEventListener('click', closeThemeDrawer);
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeThemeDrawer();
-      });
-
-      // Drawer font click
-      document.querySelectorAll('.drawer-font-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          studioState.font = btn.getAttribute('data-font');
-          updateStudioStyles();
-          showToast('Font diubah ke ' + studioState.font);
-        });
-      });
-
-      // Drawer theme click
-      document.querySelectorAll('.drawer-theme-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          studioState.theme = btn.getAttribute('data-theme');
-          studioState.hex = btn.getAttribute('data-hex');
-          updateStudioStyles();
-          showToast('Tema palet diubah ke ' + studioState.theme.toUpperCase());
-        });
-      });
-
-      const drawerColorPicker = document.getElementById('drawerCustomColorPicker');
-      const drawerColorText = document.getElementById('drawerCustomColorText');
-      if (drawerColorPicker) {
-        drawerColorPicker.addEventListener('input', (e) => {
-          studioState.hex = e.target.value;
-          studioState.theme = 'custom';
-          if (drawerColorText) drawerColorText.value = studioState.hex;
-          updateStudioStyles();
-        });
-      }
-      if (drawerColorText) {
-        drawerColorText.addEventListener('change', (e) => {
-          let val = e.target.value.trim();
-          if (!val.startsWith('#')) val = '#' + val;
-          if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-            studioState.hex = val;
-            studioState.theme = 'custom';
-            if (drawerColorPicker) drawerColorPicker.value = val;
-            updateStudioStyles();
-            showToast('Warna custom diterapkan: ' + val);
-          }
-        });
-      }
-
-      const drawerRadiusSelect = document.getElementById('drawerRadiusSelect');
-      if (drawerRadiusSelect) {
-        drawerRadiusSelect.addEventListener('change', (e) => {
-          studioState.radius = e.target.value;
-          updateStudioStyles();
-        });
-      }
-
-      const btnJumpStudio = document.getElementById('btnJumpToFullStudio');
-      if (btnJumpStudio) {
-        btnJumpStudio.addEventListener('click', () => {
-          closeThemeDrawer();
-          switchTab('studio');
-        });
-      }
-
-      const btnDrawerCopy = document.getElementById('btnDrawerCopyTokens');
-      if (btnDrawerCopy) {
-        btnDrawerCopy.addEventListener('click', () => {
-          const pre = document.getElementById('studioTokensPre');
-          if (pre && navigator.clipboard) {
-            navigator.clipboard.writeText(pre.textContent);
-            showToast('Token CSS berhasil disalin ke clipboard!');
-          }
-        });
-      }
-
-
-      // Initial render
-      renderSynthesisCards();
-      renderTerminals();
-      renderGraphMemory();
-      loadUnifiedSessions();
-      pollLiveTelemetry();
-      setInterval(pollLiveTelemetry, 3000);
-      updateStudioStyles();
+      // Initial fetch
+      fetchData();
+      setInterval(fetchData, 4000);
     })();
   </script>
 </body>
