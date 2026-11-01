@@ -4,6 +4,7 @@ use omw_terminal::TerminalMultiplexer;
 use omw_harness::HarnessOrchestrator;
 use omw_memory::{GraphMemory, MemoryLayer};
 use omw_sync::WorkspaceSync;
+use omw_clone::CloneInspector;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -90,11 +91,29 @@ fn main() {
             }
             Err(e) => eprintln!("Error checking sync status: {}", e),
         },
+        "clone" => {
+            let target = args.get(2).map(|s| s.as_str()).unwrap_or("https://example.com (React + Tauri)");
+            let profile = CloneInspector::inspect_target(target);
+            println!("Target Analysis: {}", profile.target);
+            println!("  Detected Stack: {}", profile.detected_stack.join(", "));
+
+            let blueprints = CloneInspector::generate_blueprints(&profile);
+            println!("  Generated Blueprints (REA Mimic): {}", blueprints.len());
+            for b in &blueprints {
+                println!("    - [{}] {}: {}", b.artifact_type, b.component_name, b.blueprint_snippet);
+            }
+
+            let findings = CloneInspector::run_security_scan(target);
+            println!("  Security Vulnerability Scan (Strix Pentest): {} findings", findings.len());
+            for f in &findings {
+                println!("    [{}] {} -> Fix: {}", f.severity, f.description, f.remediation);
+            }
+        }
         "version" | "--version" | "-v" => {
             println!("Oh My Works (OMW) CLI v0.1.0");
         }
         other => {
-            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, version", other);
+            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, clone, version", other);
             std::process::exit(1);
         }
     }

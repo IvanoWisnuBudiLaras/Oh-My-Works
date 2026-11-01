@@ -19,6 +19,7 @@ Oh-My-Works/
 │   ├── omw-harness/      # Meta-AI harness orchestrator & agent task dispatcher
 │   ├── omw-memory/       # Hybrid Tri-Layer Graph Memory (episodic, semantic, procedural)
 │   ├── omw-sync/         # Automated GitHub backup & workspace state snapshot engine
+│   ├── omw-clone/        # App Cloner (REA) & Security Pentester (Strix) analyzer
 │   └── omw-cli/          # Fast CLI entrypoint for telemetry and daemon control
 ├── apps/
 │   ├── desktop/          # Desktop UI application & interactive workspace (Tauri v2)
@@ -46,6 +47,7 @@ cargo run -p omw-cli -- exec git status
 cargo run -p omw-cli -- harness
 cargo run -p omw-cli -- memory
 cargo run -p omw-cli -- sync [--backup]
+cargo run -p omw-cli -- clone <target-url-or-name>
 ```
 
 ### Run Server Telemetry Daemon

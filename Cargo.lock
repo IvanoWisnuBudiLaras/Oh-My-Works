@@ -2121,6 +2121,7 @@ dependencies = [
 name = "omw-cli"
 version = "0.1.0"
 dependencies = [
+ "omw-clone",
  "omw-core",
  "omw-guardian",
  "omw-harness",
@@ -2128,6 +2129,10 @@ dependencies = [
  "omw-sync",
  "omw-terminal",
 ]
+
+[[package]]
+name = "omw-clone"
+version = "0.1.0"
 
 [[package]]
 name = "omw-core"
