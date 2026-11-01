@@ -6,7 +6,7 @@
   <title>Oh My Works</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     /* JetBrains New UI Theme System */
     :root[data-theme="dark"] {
@@ -25,6 +25,9 @@
       --accent-hover: #4682f7;
       --code-bg: #191a1c;
       --shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      --green: #4ec9b0;
+      --amber: #cca700;
+      --red: #f14c4c;
     }
 
     :root[data-theme="light"] {
@@ -43,6 +46,9 @@
       --accent-hover: #2762d6;
       --code-bg: #f0f2f5;
       --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --green: #2e8b57;
+      --amber: #b8860b;
+      --red: #cd5c5c;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -61,7 +67,7 @@
       transition: background 0.2s ease, color 0.2s ease;
     }
 
-    /* Sidebar - JetBrains Tool Window */
+    /* Sidebar */
     .sidebar {
       width: 250px;
       background: var(--sidebar);
@@ -136,12 +142,17 @@
     .sidebar-footer {
       padding: 10px 14px;
       border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .telemetry-line {
+      display: flex;
+      justify-content: space-between;
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
     }
 
     /* Main Viewport */
@@ -169,10 +180,10 @@
     .topbar-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .model-selector-btn {
+    .btn-topbar {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -187,27 +198,23 @@
       transition: all 0.12s ease;
     }
 
-    .model-selector-btn:hover { border-color: var(--border-focus); }
+    .btn-topbar:hover { border-color: var(--border-focus); }
+
+    .combo-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(53, 116, 240, 0.15);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
 
     .topbar-right {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-
-    .btn-theme-toggle {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 4px 10px;
-      font-size: 11.5px;
-      font-family: 'JetBrains Mono', monospace;
-      cursor: pointer;
-      transition: all 0.12s ease;
-    }
-
-    .btn-theme-toggle:hover { color: var(--text-bright); border-color: var(--border-focus); }
 
     /* Workspace */
     .workspace {
@@ -269,7 +276,7 @@
       box-shadow: var(--shadow);
     }
 
-    /* AI-Controlled Side Canvas (Rounded JetBrains Inspector) */
+    /* AI-Controlled Side Canvas */
     .side-canvas {
       width: 0;
       border-left: 0 solid var(--border);
@@ -402,7 +409,7 @@
 
     .btn-submit:hover { background: var(--accent-hover); }
 
-    /* Searchable Model Modal */
+    /* Modals (JetBrains Rounded Preferences) */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -416,9 +423,9 @@
     .modal-overlay.show { display: grid; }
 
     .modal-box {
-      width: 580px;
+      width: 620px;
       max-width: calc(100vw - 32px);
-      max-height: 75vh;
+      max-height: 80vh;
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -429,12 +436,12 @@
     }
 
     .modal-header {
-      padding: 10px 14px;
+      padding: 10px 16px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 600;
       background: var(--sidebar);
     }
@@ -483,6 +490,87 @@
     .modal-item:hover { background: var(--panel-hover); color: var(--text-bright); }
     .modal-item.active { background: var(--panel-active); color: var(--accent); }
 
+    /* Settings Form */
+    .settings-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .setting-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .setting-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .setting-input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: var(--text-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .setting-input:focus { border-color: var(--border-focus); }
+
+    .setting-select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: var(--text-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .settings-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--sidebar);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 5px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover { background: var(--panel-hover); color: var(--text-bright); }
+
     .code-block {
       background: var(--code-bg);
       border: 1px solid var(--border);
@@ -505,8 +593,17 @@
     <button type="button" class="btn-new" id="btnNewSession">+ New Thread</button>
     <div class="history-list" id="historyList"></div>
     <div class="sidebar-footer">
-      <div>PSI: <span style="color:#4ec9b0">0.00% SAFE</span></div>
-      <div>RAM: 5,901 MB Free (46%)</div>
+      <div class="telemetry-line">
+        <span>Kernel PSI</span>
+        <span style="color:var(--green)">0.00% SAFE</span>
+      </div>
+      <div class="telemetry-line">
+        <span>System RAM</span>
+        <span>5,901 MB Free</span>
+      </div>
+      <button type="button" class="btn-secondary" id="btnOpenSettingsSide" style="margin-top:4px;width:100%;text-align:center;">
+        Preferences / Settings
+      </button>
     </div>
   </aside>
 
@@ -514,13 +611,14 @@
   <main class="main">
     <header class="topbar">
       <div class="topbar-left">
-        <button type="button" class="model-selector-btn" id="btnModelPicker">
+        <button type="button" class="btn-topbar" id="btnModelPicker">
           Engine: <span id="currentModelLabel">ag/gemini-4-argon-high</span>
         </button>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);" id="routerStatus">• 9Router :20128 (65 Models)</span>
+        <span class="combo-badge" id="activeRouterBadge">Unified 9Router + OmniRoute</span>
       </div>
       <div class="topbar-right">
-        <button type="button" class="btn-theme-toggle" id="btnThemeToggle">Theme: Dark</button>
+        <button type="button" class="btn-topbar" id="btnSettingsTop">Settings</button>
+        <button type="button" class="btn-topbar" id="btnThemeToggle">Theme: Dark</button>
       </div>
     </header>
 
@@ -534,12 +632,13 @@
 
         <!-- Prompt Bar -->
         <div class="prompt-container">
-          <textarea id="promptInput" class="prompt-textarea" placeholder="Instruct agent or run task..."></textarea>
+          <textarea id="promptInput" class="prompt-textarea" placeholder="Instruct lead engine or run multi-agent task..."></textarea>
           <div class="prompt-footer">
             <div class="chips-group">
-              <button type="button" class="chip-btn active" data-agent="@all">@all</button>
+              <button type="button" class="chip-btn active" data-agent="@all">@all (Combo)</button>
               <button type="button" class="chip-btn" data-agent="@terminal">@terminal</button>
               <button type="button" class="chip-btn" data-agent="@guardian">@guardian</button>
+              <button type="button" class="chip-btn" data-agent="@cindy">@cindy</button>
             </div>
             <button type="button" class="btn-submit" id="btnSubmit">Send</button>
           </div>
@@ -557,7 +656,7 @@
     </div>
   </main>
 
-  <!-- Searchable Model Modal -->
+  <!-- Searchable Model Selector Modal -->
   <div class="modal-overlay" id="modelModal">
     <div class="modal-box">
       <div class="modal-header">
@@ -565,29 +664,119 @@
         <button type="button" class="btn-close-canvas" id="btnHideModal">[Esc]</button>
       </div>
       <div class="modal-search">
-        <input type="text" class="modal-input" id="modelSearchInput" placeholder="Filter 65+ models (gemini, claude, deepseek, qwen, kimi, glm)..." />
+        <input type="text" class="modal-input" id="modelSearchInput" placeholder="Filter 65+ models (gemini, claude, deepseek, qwen, kimi, glm, combos)..." />
       </div>
       <div class="modal-list" id="modalModelList"></div>
     </div>
   </div>
 
+  <!-- Settings & Permissions Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span>Settings &amp; Server Connection</span>
+        <button type="button" class="btn-close-canvas" id="btnHideSettings">[Esc]</button>
+      </div>
+      <div class="settings-body">
+        <!-- Server Connection -->
+        <div class="setting-group">
+          <label class="setting-label">Server IP / Base URL</label>
+          <div class="setting-desc">Primary endpoint for router completions. Default: local 9Router port 20128.</div>
+          <input type="text" class="setting-input" id="cfgServerUrl" value="http://127.0.0.1:20128" />
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">API Key / Token</label>
+          <div class="setting-desc">Bearer authentication key for 9Router / OmniRoute proxy.</div>
+          <input type="password" class="setting-input" id="cfgApiKey" value="sk-9d6e79acb260096f-53jdmp-b86fbd6e" />
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">OMW Server Daemon Endpoint</label>
+          <div class="setting-desc">Daemon endpoint managing telemetry, guardian, and Cindy sessions.</div>
+          <input type="text" class="setting-input" id="cfgDaemonUrl" value="http://127.0.0.1:9180" />
+        </div>
+
+        <!-- Router Aggregation & Combo Engine -->
+        <div class="setting-group">
+          <label class="setting-label">Router Source &amp; Aggregator</label>
+          <div class="setting-desc">Combines 9Router and OmniRoute models with auto-fallback.</div>
+          <select class="setting-select" id="cfgRouterMode">
+            <option value="unified">Unified Hybrid (9Router + OmniRoute Auto-Fallback)</option>
+            <option value="9router">9Router Standalone (:20128)</option>
+            <option value="omniroute">OmniRoute Standalone (:20129)</option>
+            <option value="custom">Custom Remote Server IP</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-label">Model Gabungan / Ensemble Pipeline</label>
+          <div class="setting-desc">Route reasoning to Lead Engine and code execution to Specialist Engine.</div>
+          <select class="setting-select" id="cfgEnsembleMode">
+            <option value="auto">Auto Ensemble (ag/gemini-4-argon-high + cbcn/deepseek-v4-pro)</option>
+            <option value="single">Single Model Direct Execution</option>
+            <option value="haltech">Haltech Intelligent Router Combo</option>
+            <option value="union">oc/union-alpha Multi-Provider Ensemble</option>
+          </select>
+        </div>
+
+        <!-- Permissions -->
+        <div class="setting-group">
+          <label class="setting-label">Permissions &amp; Execution Access</label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="permPty" checked />
+            <span>Allow native Terminal PTY command execution</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="permGuardian" checked />
+            <span>Allow Kernel PSI memory guardian auto-mitigation</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="permCindy" checked />
+            <span>Allow indexing local sessions (~/.prime, ~/.codex)</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="permAutoSplit" checked />
+            <span>Allow AI to dynamically trigger side canvas split</span>
+          </label>
+        </div>
+      </div>
+      <div class="settings-footer">
+        <button type="button" class="btn-secondary" id="btnCancelSettings">Cancel</button>
+        <button type="button" class="btn-submit" id="btnSaveSettings">Save &amp; Apply</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
-      const ROUTER_URL = 'http://127.0.0.1:20128/v1/chat/completions';
-      const ROUTER_KEY = 'Bearer sk-9d6e79acb260096f-53jdmp-b86fbd6e';
+      // Configuration & State
+      let config = {
+        serverUrl: localStorage.getItem('omw_server_url') || 'http://127.0.0.1:20128',
+        apiKey: localStorage.getItem('omw_api_key') || 'sk-9d6e79acb260096f-53jdmp-b86fbd6e',
+        daemonUrl: localStorage.getItem('omw_daemon_url') || 'http://127.0.0.1:9180',
+        routerMode: localStorage.getItem('omw_router_mode') || 'unified',
+        ensembleMode: localStorage.getItem('omw_ensemble_mode') || 'auto',
+        permPty: true,
+        permGuardian: true,
+        permCindy: true,
+        permAutoSplit: true
+      };
 
-      let currentTheme = 'dark';
+      let currentTheme = localStorage.getItem('omw_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', currentTheme);
+
       let activeModel = 'ag/gemini-4-argon-high';
       let allModels = [
         "ag/gemini-4-argon-high", "ag/gemini-3.8-flash-high", "ag/claude-opus-5-5-high",
         "cbcn/deepseek-v4-pro", "cbcn/deepseek-v4.1-flash", "cbcn/glm-5.3", "cbcn/glm-5.2",
         "ivano/gpt-5.6-luna", "ivano/gpt-5.6-sol", "ivano/claude-sonnet-4.5", "ivano/claude-haiku-4.5",
         "ivano/gemini-3.7-flash", "ivano/deepseek-v4-pro", "ivano/qwen-3.8-max", "ivano/kimi-k3",
-        "auto", "paid", "Haltech"
+        "auto", "paid", "Haltech", "oc/union-alpha"
       ];
 
       let sessions = [
-        { id: 'sess-1', title: 'JetBrains Workspace Init', messages: [] }
+        { id: 'sess-1', title: 'Workspace & Kernel PSI Init', messages: [] }
       ];
       let activeSessionId = 'sess-1';
 
@@ -602,18 +791,87 @@
       const tabTitle = document.getElementById('tabTitle');
       const btnCloseCanvas = document.getElementById('btnCloseCanvas');
       const btnThemeToggle = document.getElementById('btnThemeToggle');
+      const activeRouterBadge = document.getElementById('activeRouterBadge');
 
-      // Theme Toggle (JetBrains Dark / Light)
-      // ponytail: theme stored in memory. Upgrade to localStorage persistence when config persistence crate hooks in.
+      btnThemeToggle.textContent = 'Theme: ' + (currentTheme === 'dark' ? 'Dark' : 'Light');
       btnThemeToggle.addEventListener('click', () => {
         currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', currentTheme);
+        localStorage.setItem('omw_theme', currentTheme);
         btnThemeToggle.textContent = 'Theme: ' + (currentTheme === 'dark' ? 'Dark' : 'Light');
+      });
+
+      // Settings Modal
+      const settingsModal = document.getElementById('settingsModal');
+      const btnSettingsTop = document.getElementById('btnSettingsTop');
+      const btnOpenSettingsSide = document.getElementById('btnOpenSettingsSide');
+      const btnHideSettings = document.getElementById('btnHideSettings');
+      const btnCancelSettings = document.getElementById('btnCancelSettings');
+      const btnSaveSettings = document.getElementById('btnSaveSettings');
+
+      const cfgServerUrl = document.getElementById('cfgServerUrl');
+      const cfgApiKey = document.getElementById('cfgApiKey');
+      const cfgDaemonUrl = document.getElementById('cfgDaemonUrl');
+      const cfgRouterMode = document.getElementById('cfgRouterMode');
+      const cfgEnsembleMode = document.getElementById('cfgEnsembleMode');
+
+      function openSettings() {
+        cfgServerUrl.value = config.serverUrl;
+        cfgApiKey.value = config.apiKey;
+        cfgDaemonUrl.value = config.daemonUrl;
+        cfgRouterMode.value = config.routerMode;
+        cfgEnsembleMode.value = config.ensembleMode;
+        settingsModal.classList.add('show');
+      }
+
+      function closeSettings() {
+        settingsModal.classList.remove('show');
+      }
+
+      btnSettingsTop.addEventListener('click', openSettings);
+      btnOpenSettingsSide.addEventListener('click', openSettings);
+      btnHideSettings.addEventListener('click', closeSettings);
+      btnCancelSettings.addEventListener('click', closeSettings);
+      settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) closeSettings();
+      });
+
+      btnSaveSettings.addEventListener('click', () => {
+        config.serverUrl = cfgServerUrl.value.trim() || 'http://127.0.0.1:20128';
+        config.apiKey = cfgApiKey.value.trim();
+        config.daemonUrl = cfgDaemonUrl.value.trim() || 'http://127.0.0.1:9180';
+        config.routerMode = cfgRouterMode.value;
+        config.ensembleMode = cfgEnsembleMode.value;
+
+        config.permPty = document.getElementById('permPty').checked;
+        config.permGuardian = document.getElementById('permGuardian').checked;
+        config.permCindy = document.getElementById('permCindy').checked;
+        config.permAutoSplit = document.getElementById('permAutoSplit').checked;
+
+        localStorage.setItem('omw_server_url', config.serverUrl);
+        localStorage.setItem('omw_api_key', config.apiKey);
+        localStorage.setItem('omw_daemon_url', config.daemonUrl);
+        localStorage.setItem('omw_router_mode', config.routerMode);
+        localStorage.setItem('omw_ensemble_mode', config.ensembleMode);
+
+        if (config.routerMode === 'unified') {
+          activeRouterBadge.textContent = 'Unified 9Router + OmniRoute';
+        } else if (config.routerMode === '9router') {
+          activeRouterBadge.textContent = '9Router (:20128)';
+        } else if (config.routerMode === 'omniroute') {
+          activeRouterBadge.textContent = 'OmniRoute (:20129)';
+        } else {
+          activeRouterBadge.textContent = 'Custom Server';
+        }
+
+        closeSettings();
+        syncModels();
       });
 
       // AI Split Canvas Control
       // ponytail: AI triggers split on code block detection. Upgrade to DAG streaming events when omw-harness stream is wired.
       function aiOpenSideCanvas(title, html) {
+        if (!config.permAutoSplit) return;
         tabTitle.textContent = title;
         canvasContent.innerHTML = html;
         sideCanvas.classList.add('open');
@@ -718,7 +976,7 @@
         return body;
       }
 
-      // Prompt Submit & AI Response
+      // Prompt Submit & AI Response with Aggregator Routing
       async function handleSend() {
         const text = promptInput.value.trim();
         if (!text) return;
@@ -738,18 +996,37 @@
         cur.messages.push(aiMsg);
         const aiBody = appendMessage('assistant', '...', activeModel);
 
-        // Fetch streaming from 9Router
         const apiPayload = cur.messages
           .filter(m => m.role === 'user' || (m.role === 'assistant' && m.content && m.content !== '...'))
           .map(m => ({ role: m.role, content: m.content }));
 
         aiMsg.content = '';
+
+        // Unified Router endpoint with auto-fallback
+        const completionUrl = `${config.serverUrl.replace(/\/+$/, '')}/v1/chat/completions`;
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': config.apiKey.startsWith('Bearer ') ? config.apiKey : `Bearer ${config.apiKey}`
+        };
+
         try {
-          const res = await fetch(ROUTER_URL, {
+          let res = await fetch(completionUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': ROUTER_KEY },
+            headers: headers,
             body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
           });
+
+          // Auto-fallback if unified mode is active and primary failed
+          if (!res.ok && config.routerMode === 'unified' && config.serverUrl.includes('20128')) {
+            try {
+              res = await fetch('http://127.0.0.1:20129/v1/chat/completions', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
+              });
+            } catch (fallbackErr) {}
+          }
+
           if (!res.ok) throw new Error('HTTP ' + res.status);
 
           const reader = res.body.getReader();
@@ -783,7 +1060,7 @@
             }
           }
         } catch (err) {
-          aiMsg.content = '[Error: ' + err.message + ']';
+          aiMsg.content = '[Router Notice: ' + err.message + ']. Verifikasi IP server & password di tombol Settings.';
           aiBody.innerHTML = formatMarkdown(aiMsg.content);
         }
       }
@@ -805,18 +1082,17 @@
         }
       });
 
-      // Sync Models from 9Router
+      // Sync Models from Router
       async function syncModels() {
+        const modelsUrl = `${config.serverUrl.replace(/\/+$/, '')}/v1/models`;
+        const auth = config.apiKey.startsWith('Bearer ') ? config.apiKey : `Bearer ${config.apiKey}`;
         try {
-          const res = await fetch('http://127.0.0.1:20128/v1/models', {
-            headers: { 'Authorization': ROUTER_KEY }
-          });
+          const res = await fetch(modelsUrl, { headers: { 'Authorization': auth } });
           if (res.ok) {
             const data = await res.json();
             const list = data.data?.map(m => m.id);
             if (list && list.length > 0) {
               allModels = list;
-              document.getElementById('routerStatus').textContent = `• 9Router :20128 (${allModels.length} Models)`;
             }
           }
         } catch (e) {}
@@ -825,7 +1101,7 @@
       function formatMarkdown(text) {
         if (!text) return '';
         let s = escapeHtml(text);
-        s = s.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>');
+        s = s.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]+?)```/g, '<pre class="code-block"><code>$2</code></pre>');
         s = s.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
         s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         s = s.replace(/\n/g, '<br/>');
