@@ -21,6 +21,7 @@ Oh-My-Works/
 │   ├── omw-sync/         # Automated GitHub backup & workspace state snapshot engine
 │   ├── omw-clone/        # App Cloner (REA) & Security Pentester (Strix) analyzer
 │   ├── omw-browser/      # Dual-Engine Browser Use (Lightpanda Zig <10MB vs Full Browser)
+│   ├── omw-emulator/     # Containerized Android Emulator (Waydroid / ADB) & Maestro E2E test runner
 │   └── omw-cli/          # Fast CLI entrypoint for telemetry and daemon control
 ├── apps/
 │   ├── desktop/          # Desktop UI application & interactive workspace (Tauri v2)
@@ -50,6 +51,7 @@ cargo run -p omw-cli -- memory
 cargo run -p omw-cli -- sync [--backup]
 cargo run -p omw-cli -- clone <target-url-or-name>
 cargo run -p omw-cli -- browse <url> [--full]
+cargo run -p omw-cli -- emulator [app-id]
 ```
 
 ### Run Server Telemetry Daemon

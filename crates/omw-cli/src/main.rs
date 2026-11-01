@@ -6,6 +6,7 @@ use omw_memory::{GraphMemory, MemoryLayer};
 use omw_sync::WorkspaceSync;
 use omw_clone::CloneInspector;
 use omw_browser::{BrowserRunner, BrowserEngine};
+use omw_emulator::EmulatorManager;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -129,11 +130,25 @@ fn main() {
                 Err(e) => eprintln!("Browser navigation failed: {}", e),
             }
         }
+        "emulator" => {
+            let state = EmulatorManager::probe_runtime();
+            println!("Containerized Android Emulator Runtime:");
+            println!("  Driver: {:?}", state.driver);
+            println!("  Device ID: {}", state.device_id);
+            println!("  Available: {}", state.is_available);
+
+            let app_id = args.get(2).map(|s| s.as_str()).unwrap_or("com.example.app");
+            println!("  Declarative Maestro E2E Flow for '{}':", app_id);
+            let flow = EmulatorManager::generate_maestro_flow(app_id);
+            for line in flow.lines() {
+                println!("    {}", line);
+            }
+        }
         "version" | "--version" | "-v" => {
             println!("Oh My Works (OMW) CLI v0.1.0");
         }
         other => {
-            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, clone, browse, version", other);
+            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, clone, browse, emulator, version", other);
             std::process::exit(1);
         }
     }

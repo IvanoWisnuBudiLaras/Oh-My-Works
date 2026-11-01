@@ -2128,6 +2128,7 @@ dependencies = [
  "omw-browser",
  "omw-clone",
  "omw-core",
+ "omw-emulator",
  "omw-guardian",
  "omw-harness",
  "omw-memory",
@@ -2159,6 +2160,10 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-log",
 ]
+
+[[package]]
+name = "omw-emulator"
+version = "0.1.0"
 
 [[package]]
 name = "omw-guardian"

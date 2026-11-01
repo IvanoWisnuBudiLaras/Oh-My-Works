@@ -9,6 +9,7 @@ members = [
     "crates/omw-sync",
     "crates/omw-clone",
     "crates/omw-browser",
+    "crates/omw-emulator",
     "crates/omw-cli",
     "apps/server-daemon",
     "apps/desktop/src-tauri",
