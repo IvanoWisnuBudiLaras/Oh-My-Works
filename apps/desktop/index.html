@@ -57,8 +57,8 @@
       background: var(--bg);
       background-image: var(--bg-gradient);
       color: var(--text);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 13px;
+      font-family: var(--font-family, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+      font-size: var(--font-size-base, 13px);
       line-height: 1.5;
       height: 100vh;
       overflow: hidden;
@@ -378,6 +378,86 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       box-shadow: var(--shadow);
+    }
+
+    
+    /* Appearance Controls (Color & Font) */
+    .appearance-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+    }
+
+    .appearance-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .color-presets {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .color-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      transition: transform 0.15s;
+    }
+
+    .color-dot:hover {
+      transform: scale(1.25);
+    }
+
+    .color-dot.active {
+      box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent);
+    }
+
+    .color-picker-input {
+      width: 18px;
+      height: 18px;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background: transparent;
+      border-radius: 3px;
+    }
+
+    .appearance-select {
+      background: var(--bg);
+      color: var(--text-bright);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 11px;
+      padding: 2px 4px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .appearance-select:focus {
+      border-color: var(--border-focus);
+    }
+
+    .canvas-footer {
+      height: 38px;
+      padding: 0 14px;
+      background: var(--sidebar);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
     }
 
     /* Multi-View Side Canvas */
@@ -1083,6 +1163,38 @@
         <span>System RAM</span>
         <span id="ramVal">5,901 MB Free</span>
       </div>
+      <div class="appearance-controls">
+        <div class="appearance-row">
+          <span>Accent</span>
+          <div class="color-presets">
+            <span class="color-dot active" data-color="#3574f0" style="background:#3574f0;" title="Default Blue"></span>
+            <span class="color-dot" data-color="#10b981" style="background:#10b981;" title="Emerald Green"></span>
+            <span class="color-dot" data-color="#8b5cf6" style="background:#8b5cf6;" title="Purple"></span>
+            <span class="color-dot" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></span>
+            <span class="color-dot" data-color="#ec4899" style="background:#ec4899;" title="Pink"></span>
+            <input type="color" id="customColorPicker" class="color-picker-input" value="#3574f0" title="Custom Accent" />
+          </div>
+        </div>
+        <div class="appearance-row">
+          <span>Font</span>
+          <div style="display:flex;gap:4px;">
+            <select id="fontFamilySelect" class="appearance-select font-family-shared">
+              <option value="'Inter', -apple-system, sans-serif">Inter</option>
+              <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+              <option value="'Fira Code', monospace">Fira Code</option>
+              <option value="monospace">Monospace</option>
+              <option value="sans-serif">System Sans</option>
+            </select>
+            <select id="fontSizeSelect" class="appearance-select font-size-shared" style="width:48px;">
+              <option value="12px">12</option>
+              <option value="13px" selected>13</option>
+              <option value="14px">14</option>
+              <option value="15px">15</option>
+              <option value="16px">16</option>
+            </select>
+          </div>
+        </div>
+      </div>
       <button type="button" class="btn-secondary" id="btnOpenSettingsSide" style="margin-top:4px;width:100%;text-align:center;">
         IDE Settings
       </button>
@@ -1132,7 +1244,6 @@
         <div class="canvas-header">
           <div class="canvas-tab-bar">
             <button type="button" class="canvas-tab-btn active" data-canvas="terminal">Terminal</button>
-            <button type="button" class="canvas-tab-btn" data-canvas="web">Web Preview</button>
             <button type="button" class="canvas-tab-btn" data-canvas="harness">Harnesses</button>
             <button type="button" class="canvas-tab-btn" data-canvas="editor">Editor</button>
           </div>
@@ -1152,19 +1263,43 @@ $ </div>
             </div>
           </div>
 
-          <!-- Pane 2: Web Preview -->
-          <div class="canvas-view-pane" id="paneWeb">
-            <iframe class="preview-view" id="webPreviewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
-          </div>
-
-          <!-- Pane 3: Harness Observer -->
+          <!-- Pane 2: Harness Observer -->
           <div class="canvas-view-pane" id="paneHarness">
             <div class="observer-view" id="harnessObserverContainer"></div>
           </div>
 
-          <!-- Pane 4: Editor / File Viewer -->
+          <!-- Pane 3: Editor / File Viewer -->
           <div class="canvas-view-pane" id="paneEditor">
             <div class="editor-view" id="editorContent">Select a file from Worktree &amp; Files to view or edit.</div>
+          </div>
+        </div>
+
+        <!-- Canvas Footer: Color & Font Customization -->
+        <div class="canvas-footer">
+          <span>Side Styling</span>
+          <div class="appearance-row" style="gap:8px;">
+            <div class="color-presets">
+              <span class="color-dot active" data-color="#3574f0" style="background:#3574f0;" title="Default Blue"></span>
+              <span class="color-dot" data-color="#10b981" style="background:#10b981;" title="Emerald Green"></span>
+              <span class="color-dot" data-color="#8b5cf6" style="background:#8b5cf6;" title="Purple"></span>
+              <span class="color-dot" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></span>
+              <span class="color-dot" data-color="#ec4899" style="background:#ec4899;" title="Pink"></span>
+              <input type="color" class="color-picker-input customColorPickerShared" value="#3574f0" title="Custom Accent" />
+            </div>
+            <select class="appearance-select font-family-shared">
+              <option value="'Inter', -apple-system, sans-serif">Inter</option>
+              <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+              <option value="'Fira Code', monospace">Fira Code</option>
+              <option value="monospace">Monospace</option>
+              <option value="sans-serif">System Sans</option>
+            </select>
+            <select class="appearance-select font-size-shared" style="width:48px;">
+              <option value="12px">12</option>
+              <option value="13px" selected>13</option>
+              <option value="14px">14</option>
+              <option value="15px">15</option>
+              <option value="16px">16</option>
+            </select>
           </div>
         </div>
       </section>
@@ -1478,7 +1613,6 @@ $ </div>
 
         canvasViewPanes.forEach(p => p.classList.remove('active'));
         if (tabName === 'terminal') document.getElementById('paneTerminal').classList.add('active');
-        if (tabName === 'web') document.getElementById('paneWeb').classList.add('active');
         if (tabName === 'harness') {
           document.getElementById('paneHarness').classList.add('active');
           loadHarnessObserver();
@@ -1928,14 +2062,6 @@ $ </div>
 
       function checkAiAutoSplit(fullText) {
         if (!config.permAutoSplit) return;
-
-        // Web Preview trigger: HTML/CSS code
-        const htmlMatch = fullText.match(/```html\n([\s\S]+?)```/i);
-        if (htmlMatch) {
-          webPreviewFrame.srcdoc = htmlMatch[1];
-          switchCanvasTab('web');
-          return;
-        }
 
         // Terminal trigger: Rust, Bash, or Shell code
         const codeMatch = fullText.match(/```(rust|bash|sh|python)\n([\s\S]+?)```/i);
@@ -2443,7 +2569,65 @@ $ </div>
         } catch (e) {}
       }, 1000);
 
+      // Appearance Engine: Color & Font Customization
+      function applyAppearance(accent, fontFam, fontSize) {
+        if (accent) {
+          document.documentElement.style.setProperty('--accent', accent);
+          document.documentElement.style.setProperty('--border-focus', accent);
+          document.documentElement.style.setProperty('--accent-hover', accent);
+          localStorage.setItem('omw_accent_color', accent);
+          document.querySelectorAll('.color-dot').forEach(d => {
+            if (d.getAttribute('data-color') === accent) d.classList.add('active');
+            else d.classList.remove('active');
+          });
+          document.querySelectorAll('#customColorPicker, .customColorPickerShared').forEach(p => {
+            p.value = accent;
+          });
+        }
+        if (fontFam) {
+          document.documentElement.style.setProperty('--font-family', fontFam);
+          document.body.style.fontFamily = fontFam;
+          localStorage.setItem('omw_font_family', fontFam);
+          document.querySelectorAll('.font-family-shared').forEach(s => {
+            s.value = fontFam;
+          });
+        }
+        if (fontSize) {
+          document.documentElement.style.setProperty('--font-size-base', fontSize);
+          document.body.style.fontSize = fontSize;
+          localStorage.setItem('omw_font_size', fontSize);
+          document.querySelectorAll('.font-size-shared').forEach(s => {
+            s.value = fontSize;
+          });
+        }
+      }
+
+      document.addEventListener('click', (e) => {
+        const dot = e.target.closest('.color-dot');
+        if (dot) {
+          const color = dot.getAttribute('data-color');
+          if (color) applyAppearance(color, null, null);
+        }
+      });
+
+      document.querySelectorAll('#customColorPicker, .customColorPickerShared').forEach(p => {
+        p.addEventListener('input', (e) => applyAppearance(e.target.value, null, null));
+      });
+
+      document.querySelectorAll('.font-family-shared').forEach(s => {
+        s.addEventListener('change', (e) => applyAppearance(null, e.target.value, null));
+      });
+
+      document.querySelectorAll('.font-size-shared').forEach(s => {
+        s.addEventListener('change', (e) => applyAppearance(null, null, e.target.value));
+      });
+
       // Init Load
+      const savedAccent = localStorage.getItem('omw_accent_color') || '#3574f0';
+      const savedFont = localStorage.getItem('omw_font_family') || "'Inter', -apple-system, sans-serif";
+      const savedSize = localStorage.getItem('omw_font_size') || '13px';
+      applyAppearance(savedAccent, savedFont, savedSize);
+
       loadHierarchicalSessions();
       syncModels();
     })();
