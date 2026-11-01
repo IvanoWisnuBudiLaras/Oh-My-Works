@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use omw_guardian::{Guardian, HealthLevel};
 use omw_terminal::TerminalMultiplexer;
 use omw_harness::HarnessOrchestrator;
-use omw_memory::{GraphMemory, MemoryLayer};
+use omw_memory::CodeGraphStore;
 use omw_sync::WorkspaceSync;
 use omw_clone::CloneInspector;
 use omw_browser::{BrowserRunner, BrowserEngine};
@@ -66,13 +66,23 @@ fn main() {
             }
         }
         "memory" => {
-            let mut mem = GraphMemory::new();
-            mem.insert_node("core", MemoryLayer::Semantic, "Architecture", "Rust Monorepo");
-            mem.insert_node("guard", MemoryLayer::Procedural, "PSI Monitor", "Zero-alloc kernel watcher");
-            mem.link("core", "guard", "protected_by");
-            println!("Graph Memory nodes: {}, edges: {}", mem.nodes.len(), mem.edges.len());
-            for edge in &mem.edges {
-                println!("  ({}: {}) --[{}]--> ({})", edge.from, mem.nodes[0].title, edge.relation, edge.to);
+            let home = env::var("HOME").unwrap_or_else(|_| ".".to_string());
+            let db_path = PathBuf::from(home).join(".omw").join("codegraph.db");
+            match CodeGraphStore::open(&db_path) {
+                Ok(store) => {
+                    let roots = store.list_all_roots().unwrap_or_default();
+                    let reflections = store.list_active_reflections().unwrap_or_default();
+                    println!("CodeGraph Store (~/.omw/codegraph.db):");
+                    println!("  Root Sessions: {}", roots.len());
+                    for r in &roots {
+                        println!("    - [{}] {} (Turns: {})", r.id, r.title, r.turn_count);
+                    }
+                    println!("  Learned Reflections: {}", reflections.len());
+                    for ref_item in &reflections {
+                        println!("    * [{}] {}", ref_item.category, ref_item.rule);
+                    }
+                }
+                Err(e) => eprintln!("Error opening CodeGraph database: {}", e),
             }
         }
         "sync" => match WorkspaceSync::check_status(".") {

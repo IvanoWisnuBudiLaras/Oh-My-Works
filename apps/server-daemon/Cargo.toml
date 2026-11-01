@@ -10,4 +10,6 @@ omw-core = { path = "../../crates/omw-core" }
 omw-guardian = { path = "../../crates/omw-guardian" }
 omw-session = { path = "../../crates/omw-session" }
 omw-harness = { path = "../../crates/omw-harness" }
-serde_json = "1.0" 
+omw-memory = { path = "../../crates/omw-memory" }
+omw-terminal = { path = "../../crates/omw-terminal" }
+serde_json = "1.0"

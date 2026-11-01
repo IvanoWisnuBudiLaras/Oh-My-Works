@@ -69,7 +69,7 @@
 
     /* Sidebar */
     .sidebar {
-      width: 250px;
+      width: 280px;
       background: var(--sidebar);
       border-right: 1px solid var(--border);
       display: flex;
@@ -77,32 +77,64 @@
       flex-shrink: 0;
     }
 
-    .sidebar-header {
-      padding: 12px 14px;
+    .sidebar-tab-bar {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--sidebar);
+    }
+
+    .sidebar-tab-btn {
+      flex: 1;
+      padding: 9px 4px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+      cursor: pointer;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.12s ease;
+    }
+
+    .sidebar-tab-btn:hover { color: var(--text-bright); }
+    .sidebar-tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: var(--panel);
+    }
+
+    .sidebar-content-view {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sidebar-btn-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
     }
 
     .btn-new {
-      margin: 4px 12px 10px;
-      padding: 7px 12px;
+      flex: 1;
+      padding: 6px 10px;
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 6px;
       color: var(--text-bright);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 500;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
+      font-family: 'JetBrains Mono', monospace;
       transition: all 0.15s ease;
     }
 
@@ -111,33 +143,104 @@
       border-color: var(--border-focus);
     }
 
-    .history-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 8px;
+    /* Hierarchical Sessions */
+    .root-session-group {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel);
+      overflow: hidden;
+      margin-bottom: 4px;
     }
 
-    .history-item {
+    .root-session-header {
       padding: 7px 10px;
-      border-radius: 6px;
-      font-size: 12.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-bright);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .root-session-header:hover { background: var(--panel-hover); }
+
+    .branch-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .branch-item {
+      padding: 5px 10px 5px 20px;
+      font-size: 11.5px;
+      font-family: 'JetBrains Mono', monospace;
       color: var(--text);
       cursor: pointer;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: all 0.12s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
     }
 
-    .history-item:hover { background: var(--panel-hover); color: var(--text-bright); }
-    .history-item.active {
+    .branch-item:hover { background: var(--panel-hover); color: var(--text-bright); }
+    .branch-item.active {
       background: var(--panel-active);
       color: var(--accent);
       font-weight: 600;
     }
+
+    .badge-branch {
+      font-size: 9.5px;
+      background: rgba(53, 116, 240, 0.15);
+      color: var(--accent);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Worktree & File Tree */
+    .worktree-select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: var(--text-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      outline: none;
+      margin-bottom: 6px;
+    }
+
+    .file-tree-container {
+      flex: 1;
+      overflow-y: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .file-node {
+      padding: 4px 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-node:hover { background: var(--panel-hover); color: var(--text-bright); }
+    .file-node.dir { font-weight: 600; color: var(--text-muted); }
+    .file-node.file { color: var(--text); }
 
     .sidebar-footer {
       padding: 10px 14px;
@@ -277,7 +380,7 @@
       box-shadow: var(--shadow);
     }
 
-    /* AI-Controlled Side Canvas */
+    /* Multi-View Side Canvas */
     .side-canvas {
       width: 0;
       border-left: 0 solid var(--border);
@@ -290,22 +393,48 @@
     }
 
     .side-canvas.open {
-      width: 480px;
+      width: 540px;
       border-left: 1px solid var(--border);
     }
 
     .canvas-header {
-      height: 38px;
+      height: 40px;
       background: var(--sidebar);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 14px;
+      padding: 0 10px;
       font-size: 11.5px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--text-muted);
       flex-shrink: 0;
+    }
+
+    .canvas-tab-bar {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+    }
+
+    .canvas-tab-btn {
+      padding: 4px 8px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .canvas-tab-btn:hover { color: var(--text-bright); }
+    .canvas-tab-btn.active {
+      background: var(--panel);
+      border-color: var(--border);
+      color: var(--accent);
+      font-weight: 600;
     }
 
     .btn-close-canvas {
@@ -315,22 +444,151 @@
       cursor: pointer;
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
+      padding: 4px 6px;
     }
 
     .btn-close-canvas:hover { color: var(--text-bright); }
 
-    .canvas-body {
+    .canvas-viewport-container {
       flex: 1;
-      padding: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .canvas-view-pane {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .canvas-view-pane.active { display: flex; }
+
+    /* Terminal View */
+    .terminal-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0d0e11;
+    }
+
+    .terminal-screen {
+      flex: 1;
       overflow-y: auto;
+      padding: 12px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
-      line-height: 1.5;
-      background: var(--code-bg);
+      line-height: 1.45;
+      color: #4ec9b0;
+      white-space: pre-wrap;
       user-select: text;
     }
 
-    /* Rounded Floating Prompt Bar */
+    .terminal-input-bar {
+      display: flex;
+      padding: 8px 10px;
+      border-top: 1px solid var(--border);
+      gap: 6px;
+      background: var(--panel);
+    }
+
+    .terminal-cmd-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      outline: none;
+    }
+
+    .terminal-cmd-input:focus { border-color: var(--border-focus); }
+
+    /* Web / Design Preview */
+    .preview-view {
+      flex: 1;
+      border: none;
+      background: #ffffff;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Multi-Harness Observer View */
+    .observer-view {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .harness-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.15s ease;
+    }
+
+    .harness-card.running { border-color: var(--green); }
+
+    .harness-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .harness-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-bright);
+    }
+
+    .harness-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .harness-badge.active { background: rgba(78, 201, 176, 0.2); color: var(--green); }
+    .harness-badge.idle { background: rgba(112, 114, 120, 0.2); color: var(--text-muted); }
+
+    .harness-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .harness-pids {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--accent);
+    }
+
+    /* Code View / Artifact Editor */
+    .editor-view {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      background: var(--code-bg);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      user-select: text;
+      white-space: pre-wrap;
+    }
+
+    /* Prompt Bar */
     .prompt-container {
       position: absolute;
       bottom: 16px;
@@ -497,9 +755,7 @@
       gap: 16px;
     }
 
-    .settings-tab-content.active {
-      display: flex;
-    }
+    .settings-tab-content.active { display: flex; }
 
     .setting-group {
       display: flex;
@@ -655,7 +911,7 @@
     .modal-item:hover { background: var(--panel-hover); color: var(--text-bright); }
     .modal-item.active { background: var(--panel-active); color: var(--accent); }
 
-    /* Skills Marketplace & Management */
+    /* Skills Marketplace */
     .skills-filter-bar {
       display: flex;
       gap: 8px;
@@ -758,7 +1014,6 @@
     .btn-skill-action.delete { color: var(--red); }
     .btn-skill-action.delete:hover { border-color: var(--red); }
 
-    /* Custom Item List (Servers, Combos) */
     .item-list-container {
       display: flex;
       flex-direction: column;
@@ -795,11 +1050,30 @@
 
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="sidebar-header">
-      <span>Project / Sessions</span>
+    <div class="sidebar-tab-bar">
+      <button type="button" class="sidebar-tab-btn active" id="tabBtnSessions">Sessions</button>
+      <button type="button" class="sidebar-tab-btn" id="tabBtnFiles">Worktree &amp; Files</button>
     </div>
-    <button type="button" class="btn-new" id="btnNewSession">+ New Thread</button>
-    <div class="history-list" id="historyList"></div>
+
+    <!-- View 1: Hierarchical Sessions -->
+    <div class="sidebar-content-view" id="viewSessions">
+      <div class="sidebar-btn-row">
+        <button type="button" class="btn-new" id="btnNewRootSession">+ New Project</button>
+        <button type="button" class="btn-new" id="btnNewBranchThread">+ Branch</button>
+      </div>
+      <div id="hierarchicalSessionsList" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
+    <!-- View 2: Worktree & File Explorer -->
+    <div class="sidebar-content-view" id="viewFiles" style="display:none;">
+      <select class="worktree-select" id="worktreeSelect"></select>
+      <div class="sidebar-btn-row">
+        <button type="button" class="btn-new" id="btnCreateWorktree">+ Worktree</button>
+        <button type="button" class="btn-new" id="btnRefreshFiles">Refresh</button>
+      </div>
+      <div class="file-tree-container" id="fileTreeContainer"></div>
+    </div>
+
     <div class="sidebar-footer">
       <div class="telemetry-line">
         <span>Kernel PSI</span>
@@ -853,13 +1127,46 @@
         </div>
       </section>
 
-      <!-- AI-Controlled Side Canvas -->
+      <!-- Multi-View Side Canvas -->
       <section class="side-canvas" id="sideCanvas">
         <div class="canvas-header">
-          <span id="tabTitle">Artifact / Output</span>
+          <div class="canvas-tab-bar">
+            <button type="button" class="canvas-tab-btn active" data-canvas="terminal">Terminal</button>
+            <button type="button" class="canvas-tab-btn" data-canvas="web">Web Preview</button>
+            <button type="button" class="canvas-tab-btn" data-canvas="harness">Harnesses</button>
+            <button type="button" class="canvas-tab-btn" data-canvas="editor">Editor</button>
+          </div>
           <button type="button" class="btn-close-canvas" id="btnCloseCanvas">[Close]</button>
         </div>
-        <div class="canvas-body" id="canvasContent"></div>
+
+        <div class="canvas-viewport-container">
+          <!-- Pane 1: Terminal -->
+          <div class="canvas-view-pane active" id="paneTerminal">
+            <div class="terminal-view">
+              <div class="terminal-screen" id="terminalScreen">[Oh My Works Interactive PTY Terminal Ready]
+$ </div>
+              <div class="terminal-input-bar">
+                <input type="text" class="terminal-cmd-input" id="terminalInput" placeholder="Run command in workspace (cargo test, git, bash)..." />
+                <button type="button" class="btn-submit" id="btnRunTermCmd">Run</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pane 2: Web Preview -->
+          <div class="canvas-view-pane" id="paneWeb">
+            <iframe class="preview-view" id="webPreviewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+          </div>
+
+          <!-- Pane 3: Harness Observer -->
+          <div class="canvas-view-pane" id="paneHarness">
+            <div class="observer-view" id="harnessObserverContainer"></div>
+          </div>
+
+          <!-- Pane 4: Editor / File Viewer -->
+          <div class="canvas-view-pane" id="paneEditor">
+            <div class="editor-view" id="editorContent">Select a file from Worktree &amp; Files to view or edit.</div>
+          </div>
+        </div>
       </section>
     </div>
   </main>
@@ -933,9 +1240,7 @@
             </div>
             <button type="button" class="btn-secondary" id="btnAddServer">+ Add Server</button>
           </div>
-          <div class="item-list-container" id="serverListContainer">
-            <!-- Server items rendered dynamically -->
-          </div>
+          <div class="item-list-container" id="serverListContainer"></div>
 
           <div class="setting-group">
             <label class="setting-label">Primary API Key / Bearer Password</label>
@@ -958,9 +1263,7 @@
             </div>
             <button type="button" class="btn-secondary" id="btnAddCombo">+ Add Combo</button>
           </div>
-          <div class="item-list-container" id="combosListContainer">
-            <!-- Combo items rendered dynamically -->
-          </div>
+          <div class="item-list-container" id="combosListContainer"></div>
 
           <div class="setting-group" style="margin-top:8px;">
             <label class="setting-label">Algoritma Pembagian Token (OmniRoute Combo Algorithm)</label>
@@ -1004,9 +1307,7 @@
             <button type="button" class="btn-secondary" id="btnAddCustomSkill" style="font-size:11px;">+ Add Skill</button>
           </div>
 
-          <div class="skills-grid" id="skillsGridContainer">
-            <!-- Dynamically populated skills -->
-          </div>
+          <div class="skills-grid" id="skillsGridContainer"></div>
         </div>
       </div>
 
@@ -1039,20 +1340,17 @@
         permAutoSplit: true
       };
 
-      // Dynamic Servers List
       let serversList = JSON.parse(localStorage.getItem('omw_servers_list') || JSON.stringify([
         { id: 'srv-1', name: '9Router Primary', url: 'http://127.0.0.1:20128', enabled: true },
         { id: 'srv-2', name: 'OmniRoute Fallback', url: 'http://127.0.0.1:20129', enabled: true }
       ]));
 
-      // Dynamic Combos List
       let combosList = JSON.parse(localStorage.getItem('omw_combos_list') || JSON.stringify([
         { id: 'cmb-1', name: 'Auto Ensemble (Gemini + DeepSeek)', lead: 'ag/gemini-4-argon-high', spec: 'cbcn/deepseek-v4-pro', algo: 'reasoning-split', enabled: true },
         { id: 'cmb-2', name: 'Haltech Autonomous Router', lead: 'Haltech', spec: 'cbcn/deepseek-v4.1-flash', algo: 'dynamic', enabled: true },
         { id: 'cmb-3', name: 'Code Review Specialist', lead: 'ag/claude-opus-5-5-high', spec: 'cbcn/deepseek-v4-pro', algo: 'cascade', enabled: false }
       ]));
 
-      // Web Skills Catalog (skills.sh & MCP Directory)
       const WEB_SKILLS_CATALOG = [
         { name: 'vercel-labs/agent-skills', source: 'skills.sh', desc: 'React, Next.js, and Vercel fullstack tooling', installed: false },
         { name: 'modelcontextprotocol/postgres', source: 'mcp-catalog', desc: 'PostgreSQL database query, inspect, and schema manager', installed: false },
@@ -1081,24 +1379,65 @@
       let installedSkills = [];
       let currentSkillScope = 'installed';
 
-      let sessions = [
-        { id: 'sess-1', title: 'Workspace Init', messages: [] }
-      ];
-      let activeSessionId = 'sess-1';
+      // Hierarchical Sessions State
+      let rootSessions = [];
+      let currentRootId = 'sess-root-1';
+      let currentSessionId = 'sess-root-1';
+      let currentMessages = [];
+
+      // Worktree State
+      let currentWorktreePath = '';
 
       // Elements
-      const historyList = document.getElementById('historyList');
+      const tabBtnSessions = document.getElementById('tabBtnSessions');
+      const tabBtnFiles = document.getElementById('tabBtnFiles');
+      const viewSessions = document.getElementById('viewSessions');
+      const viewFiles = document.getElementById('viewFiles');
+      const hierarchicalSessionsList = document.getElementById('hierarchicalSessionsList');
+      const worktreeSelect = document.getElementById('worktreeSelect');
+      const fileTreeContainer = document.getElementById('fileTreeContainer');
       const messagesList = document.getElementById('messagesList');
       const messagesScroll = document.getElementById('messagesScroll');
       const promptInput = document.getElementById('promptInput');
       const btnSubmit = document.getElementById('btnSubmit');
-      const sideCanvas = document.getElementById('sideCanvas');
-      const canvasContent = document.getElementById('canvasContent');
-      const tabTitle = document.getElementById('tabTitle');
-      const btnCloseCanvas = document.getElementById('btnCloseCanvas');
-      const btnThemeToggle = document.getElementById('btnThemeToggle');
-      const activeRouterBadge = document.getElementById('activeRouterBadge');
 
+      // Side Canvas Elements
+      const sideCanvas = document.getElementById('sideCanvas');
+      const btnCloseCanvas = document.getElementById('btnCloseCanvas');
+      const canvasTabBtns = document.querySelectorAll('.canvas-tab-btn');
+      const canvasViewPanes = document.querySelectorAll('.canvas-view-pane');
+      const terminalScreen = document.getElementById('terminalScreen');
+      const terminalInput = document.getElementById('terminalInput');
+      const btnRunTermCmd = document.getElementById('btnRunTermCmd');
+      const webPreviewFrame = document.getElementById('webPreviewFrame');
+      const harnessObserverContainer = document.getElementById('harnessObserverContainer');
+      const editorContent = document.getElementById('editorContent');
+
+      // Topbar & Modals
+      const btnThemeToggle = document.getElementById('btnThemeToggle');
+      const btnSettingsTop = document.getElementById('btnSettingsTop');
+      const btnOpenSettingsSide = document.getElementById('btnOpenSettingsSide');
+      const settingsModal = document.getElementById('settingsModal');
+      const btnHideSettings = document.getElementById('btnHideSettings');
+      const btnCancelSettings = document.getElementById('btnCancelSettings');
+      const btnSaveSettings = document.getElementById('btnSaveSettings');
+      const soulEditor = document.getElementById('soulEditor');
+      const btnSummonSoul = document.getElementById('btnSummonSoul');
+      const skillsGridContainer = document.getElementById('skillsGridContainer');
+      const skillSearchInput = document.getElementById('skillSearchInput');
+      const btnScopeInstalled = document.getElementById('btnScopeInstalled');
+      const btnScopeWeb = document.getElementById('btnScopeWeb');
+      const installedCount = document.getElementById('installedCount');
+
+      // Model picker
+      const btnModelPicker = document.getElementById('btnModelPicker');
+      const currentModelLabel = document.getElementById('currentModelLabel');
+      const modelModal = document.getElementById('modelModal');
+      const btnHideModal = document.getElementById('btnHideModal');
+      const modelSearchInput = document.getElementById('modelSearchInput');
+      const modalModelList = document.getElementById('modalModelList');
+
+      // Theme toggle
       btnThemeToggle.textContent = 'Theme: ' + (currentTheme === 'dark' ? 'Dark' : 'Light');
       btnThemeToggle.addEventListener('click', () => {
         currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -1107,23 +1446,547 @@
         btnThemeToggle.textContent = 'Theme: ' + (currentTheme === 'dark' ? 'Dark' : 'Light');
       });
 
-      // Antigravity Settings Modal Tabs
-      const settingsModal = document.getElementById('settingsModal');
-      const btnSettingsTop = document.getElementById('btnSettingsTop');
-      const btnOpenSettingsSide = document.getElementById('btnOpenSettingsSide');
-      const btnHideSettings = document.getElementById('btnHideSettings');
-      const btnCancelSettings = document.getElementById('btnCancelSettings');
-      const btnSaveSettings = document.getElementById('btnSaveSettings');
+      // Sidebar Tab Switching
+      tabBtnSessions.addEventListener('click', () => {
+        tabBtnSessions.classList.add('active');
+        tabBtnFiles.classList.remove('active');
+        viewSessions.style.display = 'flex';
+        viewFiles.style.display = 'none';
+      });
+
+      tabBtnFiles.addEventListener('click', () => {
+        tabBtnFiles.classList.add('active');
+        tabBtnSessions.classList.remove('active');
+        viewFiles.style.display = 'flex';
+        viewSessions.style.display = 'none';
+        loadWorktreesAndFiles();
+      });
+
+      // Side Canvas Tab Switching
+      canvasTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-canvas');
+          switchCanvasTab(target);
+        });
+      });
+
+      function switchCanvasTab(tabName) {
+        canvasTabBtns.forEach(b => {
+          if (b.getAttribute('data-canvas') === tabName) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+
+        canvasViewPanes.forEach(p => p.classList.remove('active'));
+        if (tabName === 'terminal') document.getElementById('paneTerminal').classList.add('active');
+        if (tabName === 'web') document.getElementById('paneWeb').classList.add('active');
+        if (tabName === 'harness') {
+          document.getElementById('paneHarness').classList.add('active');
+          loadHarnessObserver();
+        }
+        if (tabName === 'editor') document.getElementById('paneEditor').classList.add('active');
+
+        sideCanvas.classList.add('open');
+      }
+
+      btnCloseCanvas.addEventListener('click', () => sideCanvas.classList.remove('open'));
+
+      // Terminal Execution
+      async function runTerminalCmd(cmd) {
+        if (!cmd) cmd = terminalInput.value.trim();
+        if (!cmd) return;
+
+        terminalScreen.textContent += `\n$ ${cmd}\n`;
+        terminalInput.value = '';
+        terminalScreen.scrollTop = terminalScreen.scrollHeight;
+
+        try {
+          const res = await fetch(`${config.daemonUrl}/terminal/exec`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command: cmd, cwd: currentWorktreePath || null })
+          });
+          const data = await res.json();
+          terminalScreen.textContent += `${data.output || '(No output)'}\n[Exit code: ${data.exit_code}]\n$ `;
+        } catch (e) {
+          terminalScreen.textContent += `[Execution failed: ${e.message}]\n$ `;
+        }
+        terminalScreen.scrollTop = terminalScreen.scrollHeight;
+      }
+
+      btnRunTermCmd.addEventListener('click', () => runTerminalCmd());
+      terminalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          runTerminalCmd();
+        }
+      });
+
+      // Harness Observer
+      async function loadHarnessObserver() {
+        harnessObserverContainer.innerHTML = '<div style="color:var(--text-muted);font-family:monospace;">Scanning active AI harnesses...</div>';
+        try {
+          const res = await fetch(`${config.daemonUrl}/harness/observer`);
+          if (res.ok) {
+            const data = await res.json();
+            harnessObserverContainer.innerHTML = '';
+            (data.harnesses || []).forEach(h => {
+              const card = document.createElement('div');
+              card.className = `harness-card ${h.running ? 'running' : ''}`;
+              card.innerHTML = `
+                <div class="harness-card-top">
+                  <span class="harness-name">${escapeHtml(h.name)}</span>
+                  <span class="harness-badge ${h.running ? 'active' : 'idle'}">${escapeHtml(h.status)}</span>
+                </div>
+                <div class="harness-desc">${escapeHtml(h.description)}</div>
+                <div class="harness-pids">Binary: ${escapeHtml(h.binary)} ${h.pids && h.pids.length ? '&bull; PIDs: ' + h.pids.join(', ') : ''}</div>
+              `;
+              harnessObserverContainer.appendChild(card);
+            });
+          }
+        } catch (e) {
+          harnessObserverContainer.innerHTML = `<div style="color:var(--red);">Failed to load observer: ${e.message}</div>`;
+        }
+      }
+
+      // Hierarchical Sessions Logic
+      async function loadHierarchicalSessions() {
+        try {
+          const res = await fetch(`${config.daemonUrl}/sessions/roots`);
+          if (res.ok) {
+            const data = await res.json();
+            rootSessions = data.roots || [];
+            if (rootSessions.length === 0) {
+              // Create default root
+              await fetch(`${config.daemonUrl}/sessions/branch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  id: 'sess-root-1',
+                  root_id: 'sess-root-1',
+                  title: 'Oh My Works Core Workspace',
+                  branch_label: 'main'
+                })
+              });
+              const r2 = await fetch(`${config.daemonUrl}/sessions/roots`);
+              const d2 = await r2.json();
+              rootSessions = d2.roots || [];
+            }
+            renderHierarchicalSessions();
+            loadSessionTurns(currentSessionId);
+          }
+        } catch (e) {}
+      }
+
+      async function renderHierarchicalSessions() {
+        hierarchicalSessionsList.innerHTML = '';
+        for (const root of rootSessions) {
+          const group = document.createElement('div');
+          group.className = 'root-session-group';
+
+          const header = document.createElement('div');
+          header.className = 'root-session-header';
+          header.innerHTML = `
+            <span>${escapeHtml(root.title)}</span>
+            <span class="badge-branch">Root</span>
+          `;
+          header.addEventListener('click', () => {
+            currentRootId = root.id;
+            currentSessionId = root.id;
+            loadSessionTurns(root.id);
+            renderHierarchicalSessions();
+          });
+          group.appendChild(header);
+
+          // Fetch tree branches for this root
+          try {
+            const bRes = await fetch(`${config.daemonUrl}/sessions/tree?root_id=${encodeURIComponent(root.id)}`);
+            if (bRes.ok) {
+              const bData = await bRes.json();
+              const branchList = document.createElement('div');
+              branchList.className = 'branch-list';
+
+              (bData.tree || []).forEach(b => {
+                const bItem = document.createElement('div');
+                bItem.className = `branch-item ${b.id === currentSessionId ? 'active' : ''}`;
+                bItem.innerHTML = `
+                  <span>${escapeHtml(b.title)}</span>
+                  <span class="badge-branch">${escapeHtml(b.branch_label)} (${b.turn_count || 0})</span>
+                `;
+                bItem.addEventListener('click', (ev) => {
+                  ev.stopPropagation();
+                  currentRootId = b.root_id;
+                  currentSessionId = b.id;
+                  loadSessionTurns(b.id);
+                  renderHierarchicalSessions();
+                });
+                branchList.appendChild(bItem);
+              });
+              group.appendChild(branchList);
+            }
+          } catch (e) {}
+
+          hierarchicalSessionsList.appendChild(group);
+        }
+      }
+
+      // New Root Project
+      document.getElementById('btnNewRootSession').addEventListener('click', async () => {
+        const title = prompt('Nama Project / Root Workspace:', 'New Workspace Project');
+        if (!title) return;
+        const newRootId = 'sess-root-' + Date.now();
+        await fetch(`${config.daemonUrl}/sessions/branch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: newRootId,
+            root_id: newRootId,
+            title: title.trim(),
+            branch_label: 'main'
+          })
+        });
+        currentRootId = newRootId;
+        currentSessionId = newRootId;
+        await loadHierarchicalSessions();
+      });
+
+      // New Branch Thread under active root
+      document.getElementById('btnNewBranchThread').addEventListener('click', async () => {
+        const title = prompt('Nama Sub-session / Branch Thread:', 'Feature Thread');
+        if (!title) return;
+        const branchLabel = prompt('Label Branch (contoh: feat/terminal, bugfix, test):', 'thread') || 'thread';
+        const newBranchId = 'branch-' + Date.now();
+        await fetch(`${config.daemonUrl}/sessions/branch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: newBranchId,
+            root_id: currentRootId,
+            parent_id: currentSessionId,
+            title: title.trim(),
+            branch_label: branchLabel.trim()
+          })
+        });
+        currentSessionId = newBranchId;
+        await loadHierarchicalSessions();
+      });
+
+      // Load session turns from SQLite
+      async function loadSessionTurns(sessionId) {
+        messagesList.innerHTML = '';
+        currentMessages = [];
+        try {
+          const res = await fetch(`${config.daemonUrl}/sessions/turns?session_id=${encodeURIComponent(sessionId)}`);
+          if (res.ok) {
+            const data = await res.json();
+            const turns = data.turns || [];
+            turns.forEach(t => {
+              currentMessages.push({ role: t.role, content: t.content, author: t.author });
+              appendMessage(t.role, t.content, t.author);
+            });
+          }
+        } catch (e) {}
+      }
+
+      // Worktree & File Tree Logic
+      async function loadWorktreesAndFiles() {
+        try {
+          const res = await fetch(`${config.daemonUrl}/worktrees`);
+          if (res.ok) {
+            const data = await res.json();
+            worktreeSelect.innerHTML = '';
+            (data.worktrees || []).forEach(wt => {
+              const opt = document.createElement('option');
+              opt.value = wt.path;
+              opt.textContent = wt.name;
+              worktreeSelect.appendChild(opt);
+            });
+            if (data.worktrees && data.worktrees[0]) {
+              currentWorktreePath = data.worktrees[0].path;
+              loadFiles(currentWorktreePath);
+            }
+          }
+        } catch (e) {}
+      }
+
+      worktreeSelect.addEventListener('change', () => {
+        currentWorktreePath = worktreeSelect.value;
+        loadFiles(currentWorktreePath);
+      });
+
+      document.getElementById('btnRefreshFiles').addEventListener('click', () => {
+        loadFiles(currentWorktreePath);
+      });
+
+      document.getElementById('btnCreateWorktree').addEventListener('click', async () => {
+        const name = prompt('Nama Worktree / Resource Folder baru:');
+        if (!name) return;
+        const res = await fetch(`${config.daemonUrl}/worktrees/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name.trim() })
+        });
+        if (res.ok) {
+          loadWorktreesAndFiles();
+        }
+      });
+
+      async function loadFiles(dirPath) {
+        fileTreeContainer.innerHTML = '<div style="color:var(--text-muted);padding:8px;">Indexing files...</div>';
+        try {
+          const res = await fetch(`${config.daemonUrl}/workspace/files?path=${encodeURIComponent(dirPath || '')}`);
+          if (res.ok) {
+            const data = await res.json();
+            fileTreeContainer.innerHTML = '';
+            renderFileNodes(data.files || [], fileTreeContainer, 0);
+          }
+        } catch (e) {
+          fileTreeContainer.innerHTML = `<div style="color:var(--red);padding:8px;">Error: ${e.message}</div>`;
+        }
+      }
+
+      function renderFileNodes(nodes, container, depth) {
+        nodes.forEach(node => {
+          const div = document.createElement('div');
+          div.className = `file-node ${node.is_dir ? 'dir' : 'file'}`;
+          div.style.paddingLeft = (depth * 14 + 6) + 'px';
+          div.innerHTML = `<span>${node.is_dir ? '📁' : '📄'}</span><span>${escapeHtml(node.name)}</span>`;
+
+          div.addEventListener('click', async () => {
+            if (!node.is_dir) {
+              // Open file in Editor view
+              try {
+                const res = await fetch(`${config.daemonUrl}/workspace/file_read`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ path: node.path })
+                });
+                const d = await res.json();
+                editorContent.textContent = d.content || '(Empty)';
+                switchCanvasTab('editor');
+              } catch (e) {}
+            }
+          });
+
+          container.appendChild(div);
+          if (node.is_dir && node.children && node.children.length) {
+            renderFileNodes(node.children, container, depth + 1);
+          }
+        });
+      }
+
+      // Prompt Submit with CodeGraph Context & Multi-Model Pipeline
+      async function handleSend() {
+        const text = promptInput.value.trim();
+        if (!text) return;
+
+        currentMessages.push({ role: 'user', content: text, author: 'USER' });
+        appendMessage('user', text, 'USER');
+        promptInput.value = '';
+
+        // Save user turn to SQLite
+        try {
+          await fetch(`${config.daemonUrl}/sessions/save_turn`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: 't-' + Date.now(),
+              session_id: currentSessionId,
+              role: 'user',
+              content: text,
+              author: 'USER'
+            })
+          });
+        } catch (e) {}
+
+        const aiMsg = { role: 'assistant', content: '', author: activeModel };
+        currentMessages.push(aiMsg);
+        const aiBody = appendMessage('assistant', '...', activeModel);
+
+        // Fetch Live CodeGraph Reflections & Telemetry
+        let sysPrompt = 'You are Oh My Works (OMW), an AI workspace orchestrator with terminal, anti-OOM guardian, and multi-harness sessions.';
+        try {
+          const [telem, refl] = await Promise.all([
+            fetch(`${config.daemonUrl}`).then(r => r.json()).catch(() => null),
+            fetch(`${config.daemonUrl}/memory/reflections`).then(r => r.json()).catch(() => null)
+          ]);
+          if (telem) {
+            sysPrompt += `\n[DAEMON KERNEL GUARDIAN] PSI Stall: ${telem.full_avg10}%, RAM Available: ${telem.available_percent}%, Health: ${telem.status}.`;
+          }
+          if (refl && refl.reflections && refl.reflections.length > 0) {
+            sysPrompt += `\n[CODEGRAPH AUTO-REFINED PATTERNS]\n` + refl.reflections.slice(0, 3).map(r => `* [${r.category}] ${r.rule}`).join('\n');
+          }
+        } catch (e) {}
+
+        const userMsgs = currentMessages
+          .filter(m => m.role === 'user' || (m.role === 'assistant' && m.content && m.content !== '...'))
+          .map(m => ({ role: m.role, content: m.content }));
+
+        const apiPayload = [{ role: 'system', content: sysPrompt }, ...userMsgs];
+        aiMsg.content = '';
+
+        const activeServers = serversList.filter(s => s.enabled);
+        const primaryServer = activeServers[0]?.url || 'http://127.0.0.1:20128';
+        const completionUrl = `${primaryServer.replace(/\/+$/, '')}/v1/chat/completions`;
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': config.apiKey.startsWith('Bearer ') ? config.apiKey : `Bearer ${config.apiKey}`
+        };
+
+        try {
+          let res = await fetch(completionUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
+          });
+
+          if (!res.ok && activeServers.length > 1) {
+            try {
+              const fallbackUrl = `${activeServers[1].url.replace(/\/+$/, '')}/v1/chat/completions`;
+              res = await fetch(fallbackUrl, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
+              });
+            } catch (fallbackErr) {}
+          }
+
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop();
+
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed || trimmed === 'data: [DONE]') continue;
+              if (trimmed.startsWith('data: ')) {
+                try {
+                  const json = JSON.parse(trimmed.slice(6));
+                  const delta = json.choices?.[0]?.delta?.content;
+                  if (delta) {
+                    aiMsg.content += delta;
+                    aiBody.innerHTML = formatMarkdown(aiMsg.content);
+                    messagesScroll.scrollTop = messagesScroll.scrollHeight;
+                    checkAiAutoSplit(aiMsg.content);
+                  }
+                } catch (e) {}
+              }
+            }
+          }
+
+          // Save assistant turn to SQLite
+          try {
+            await fetch(`${config.daemonUrl}/sessions/save_turn`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                id: 't-' + Date.now(),
+                session_id: currentSessionId,
+                role: 'assistant',
+                content: aiMsg.content,
+                author: activeModel
+              })
+            });
+          } catch (e) {}
+
+        } catch (err) {
+          aiMsg.content = '[Router Notice: ' + err.message + ']. Verifikasi konfigurasi di IDE Settings.';
+          aiBody.innerHTML = formatMarkdown(aiMsg.content);
+        }
+      }
+
+      function checkAiAutoSplit(fullText) {
+        if (!config.permAutoSplit) return;
+
+        // Web Preview trigger: HTML/CSS code
+        const htmlMatch = fullText.match(/```html\n([\s\S]+?)```/i);
+        if (htmlMatch) {
+          webPreviewFrame.srcdoc = htmlMatch[1];
+          switchCanvasTab('web');
+          return;
+        }
+
+        // Terminal trigger: Rust, Bash, or Shell code
+        const codeMatch = fullText.match(/```(rust|bash|sh|python)\n([\s\S]+?)```/i);
+        if (codeMatch) {
+          const lang = codeMatch[1].toLowerCase();
+          const code = codeMatch[2];
+          editorContent.textContent = code;
+          if (lang === 'bash' || lang === 'sh') {
+            terminalInput.value = code.trim().split('\n')[0];
+          }
+          switchCanvasTab('terminal');
+        }
+      }
+
+      function appendMessage(role, content, author) {
+        const row = document.createElement('div');
+        row.className = `msg-row ${role === 'user' ? 'msg-user' : 'msg-ai'}`;
+
+        const auth = document.createElement('div');
+        auth.className = `msg-author ${role === 'user' ? 'user' : 'ai'}`;
+        auth.textContent = author || (role === 'user' ? 'USER' : activeModel);
+
+        const body = document.createElement('div');
+        body.className = 'msg-content';
+        body.innerHTML = formatMarkdown(content);
+
+        row.appendChild(auth);
+        row.appendChild(body);
+        messagesList.appendChild(row);
+        messagesScroll.scrollTop = messagesScroll.scrollHeight;
+        return body;
+      }
+
+      function formatMarkdown(text) {
+        if (!text) return '';
+        let s = escapeHtml(text);
+        s = s.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>');
+        s = s.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
+        s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        s = s.replace(/\n/g, '<br/>');
+        return s;
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      // Chip Buttons
+      document.querySelectorAll('.chip-btn').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const tag = chip.getAttribute('data-agent');
+          if (!promptInput.value.includes(tag)) {
+            promptInput.value = (tag + ' ' + promptInput.value).trim() + ' ';
+            promptInput.focus();
+          }
+        });
+      });
+
+      btnSubmit.addEventListener('click', handleSend);
+      promptInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleSend();
+        }
+      });
+
+      // Settings Modal
       const navTabBtns = document.querySelectorAll('.nav-tab-btn');
       const tabContents = document.querySelectorAll('.settings-tab-content');
-      const soulEditor = document.getElementById('soulEditor');
-      const btnSummonSoul = document.getElementById('btnSummonSoul');
-      const skillsGridContainer = document.getElementById('skillsGridContainer');
-      const syncStatusLabel = document.getElementById('syncStatusLabel');
-      const skillSearchInput = document.getElementById('skillSearchInput');
-      const btnScopeInstalled = document.getElementById('btnScopeInstalled');
-      const btnScopeWeb = document.getElementById('btnScopeWeb');
-      const installedCount = document.getElementById('installedCount');
 
       navTabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1144,7 +2007,6 @@
         renderServers();
         renderCombos();
 
-        // Fetch SOUL.md from daemon
         try {
           const res = await fetch(`${config.daemonUrl}/soul`);
           if (res.ok) {
@@ -1153,7 +2015,6 @@
           }
         } catch (e) {}
 
-        // Fetch Skills from daemon
         await loadSkills();
         settingsModal.classList.add('show');
       }
@@ -1172,7 +2033,6 @@
         }
       }
 
-      // Render Servers
       function renderServers() {
         const container = document.getElementById('serverListContainer');
         container.innerHTML = '';
@@ -1226,7 +2086,6 @@
         }
       });
 
-      // Render Combos
       function renderCombos() {
         const container = document.getElementById('combosListContainer');
         container.innerHTML = '';
@@ -1282,7 +2141,6 @@
         }
       });
 
-      // Render Skills (Installed vs Web Skills Directory with instant search)
       function renderSkills() {
         skillsGridContainer.innerHTML = '';
         const q = skillSearchInput.value.toLowerCase().trim();
@@ -1290,7 +2148,7 @@
         if (currentSkillScope === 'installed') {
           const filtered = installedSkills.filter(s => s.name.toLowerCase().includes(q) || (s.source && s.source.toLowerCase().includes(q)));
           if (filtered.length === 0) {
-            skillsGridContainer.innerHTML = '<div style="color:var(--text-muted);font-family:monospace;padding:12px;">No matching installed skills. Coba beralih ke tab [Web Skills.sh].</div>';
+            skillsGridContainer.innerHTML = '<div style="color:var(--text-muted);font-family:monospace;padding:12px;">No matching installed skills. Coba tab [Web Skills.sh].</div>';
             return;
           }
 
@@ -1313,7 +2171,6 @@
             skillsGridContainer.appendChild(card);
           });
         } else {
-          // Web Skills Marketplace view
           const filtered = WEB_SKILLS_CATALOG.filter(w => w.name.toLowerCase().includes(q) || w.desc.toLowerCase().includes(q));
           filtered.forEach(w => {
             const isInstalled = installedSkills.some(x => x.name.toLowerCase() === w.name.toLowerCase() || x.name.toLowerCase().includes(w.name.split('/').pop().toLowerCase()));
@@ -1337,7 +2194,6 @@
         }
       }
 
-      // Scope Switcher
       btnScopeInstalled.addEventListener('click', () => {
         currentSkillScope = 'installed';
         btnScopeInstalled.classList.add('active');
@@ -1354,7 +2210,6 @@
 
       skillSearchInput.addEventListener('input', renderSkills);
 
-      // Skill Actions (Toggle, Delete, Install)
       skillsGridContainer.addEventListener('click', async (e) => {
         const btn = e.target.closest('button');
         if (!btn) return;
@@ -1396,7 +2251,6 @@
           btn.textContent = 'Installing...';
           btn.disabled = true;
 
-          // Add to local installed skills
           const shortName = pkg.includes('/') ? pkg.split('/').pop() : pkg;
           installedSkills.push({
             name: shortName,
@@ -1423,7 +2277,6 @@
         }
       });
 
-      // Add Custom Skill / Tool manually
       document.getElementById('btnAddCustomSkill').addEventListener('click', async () => {
         const name = prompt('Nama skill atau package (contoh: my-tool atau owner/repo):');
         if (!name) return;
@@ -1457,7 +2310,6 @@
         if (e.target === settingsModal) closeSettings();
       });
 
-      // Save and Broadcast across all harnesses
       btnSaveSettings.addEventListener('click', async () => {
         config.apiKey = document.getElementById('cfgApiKey').value.trim();
         config.comboAlgo = document.getElementById('cfgComboAlgo').value;
@@ -1473,7 +2325,6 @@
         localStorage.setItem('omw_combo_algo', config.comboAlgo);
         localStorage.setItem('omw_traits', config.userTraits);
 
-        // Save SOUL.md to daemon
         try {
           await fetch(`${config.daemonUrl}/soul`, {
             method: 'POST',
@@ -1481,7 +2332,6 @@
           });
         } catch (e) {}
 
-        // Broadcast config to daemon
         try {
           await fetch(`${config.daemonUrl}/settings`, {
             method: 'POST',
@@ -1490,50 +2340,23 @@
           });
         } catch (e) {}
 
-        syncStatusLabel.textContent = '• Unified Harness Synced Across All Agents';
         closeSettings();
         syncModels();
       });
 
-      // Summon SOUL.md into current workspace
       btnSummonSoul.addEventListener('click', () => {
         const soulText = soulEditor.value.trim();
         if (!soulText) return;
-        const cur = sessions.find(s => s.id === activeSessionId);
-        if (cur) {
-          cur.messages.push({
-            role: 'system',
-            content: `[SOUL INVOCATION ACTIVATED]\n` + soulText,
-            author: 'SYSTEM'
-          });
-          appendMessage('system', `[SOUL INVOCATION ACTIVATED]\n` + soulText, 'SYSTEM');
-        }
+        currentMessages.push({
+          role: 'system',
+          content: `[SOUL INVOCATION ACTIVATED]\n` + soulText,
+          author: 'SYSTEM'
+        });
+        appendMessage('system', `[SOUL INVOCATION ACTIVATED]\n` + soulText, 'SYSTEM');
         closeSettings();
       });
 
-      // AI Split Canvas Control
-      // ponytail: AI triggers split on code block detection. Upgrade to DAG streaming events when omw-harness stream is wired.
-      function aiOpenSideCanvas(title, html) {
-        if (!config.permAutoSplit) return;
-        tabTitle.textContent = title;
-        canvasContent.innerHTML = html;
-        sideCanvas.classList.add('open');
-      }
-
-      function aiCloseSideCanvas() {
-        sideCanvas.classList.remove('open');
-      }
-
-      btnCloseCanvas.addEventListener('click', aiCloseSideCanvas);
-
       // Model Selector Modal
-      const btnModelPicker = document.getElementById('btnModelPicker');
-      const currentModelLabel = document.getElementById('currentModelLabel');
-      const modelModal = document.getElementById('modelModal');
-      const btnHideModal = document.getElementById('btnHideModal');
-      const modelSearchInput = document.getElementById('modelSearchInput');
-      const modalModelList = document.getElementById('modalModelList');
-
       btnModelPicker.addEventListener('click', () => {
         modelSearchInput.value = '';
         renderModalModels(allModels);
@@ -1566,195 +2389,6 @@
         renderModalModels(allModels.filter(m => m.toLowerCase().includes(q)));
       });
 
-      // Sessions
-      function renderSessions() {
-        historyList.innerHTML = '';
-        sessions.forEach(s => {
-          const item = document.createElement('div');
-          item.className = `history-item ${s.id === activeSessionId ? 'active' : ''}`;
-          item.textContent = s.title;
-          item.addEventListener('click', () => {
-            activeSessionId = s.id;
-            renderSessions();
-            renderChat();
-          });
-          historyList.appendChild(item);
-        });
-      }
-
-      document.getElementById('btnNewSession').addEventListener('click', () => {
-        const id = 'sess-' + Date.now();
-        sessions.unshift({ id, title: 'New Thread', messages: [] });
-        activeSessionId = id;
-        renderSessions();
-        renderChat();
-        aiCloseSideCanvas();
-      });
-
-      // Chat Render
-      function renderChat() {
-        messagesList.innerHTML = '';
-        const cur = sessions.find(s => s.id === activeSessionId);
-        if (!cur) return;
-        cur.messages.forEach(m => appendMessage(m.role, m.content, m.author));
-        messagesScroll.scrollTop = messagesScroll.scrollHeight;
-      }
-
-      function appendMessage(role, content, author) {
-        const row = document.createElement('div');
-        row.className = `msg-row ${role === 'user' ? 'msg-user' : 'msg-ai'}`;
-
-        const auth = document.createElement('div');
-        auth.className = `msg-author ${role === 'user' ? 'user' : 'ai'}`;
-        auth.textContent = author || (role === 'user' ? 'USER' : activeModel);
-
-        const body = document.createElement('div');
-        body.className = 'msg-content';
-        body.innerHTML = formatMarkdown(content);
-
-        row.appendChild(auth);
-        row.appendChild(body);
-        messagesList.appendChild(row);
-        messagesScroll.scrollTop = messagesScroll.scrollHeight;
-        return body;
-      }
-
-      // Prompt Submit & AI Response with Dynamic Server Failover
-      async function handleSend() {
-        const text = promptInput.value.trim();
-        if (!text) return;
-        const cur = sessions.find(s => s.id === activeSessionId);
-        if (!cur) return;
-
-        if (cur.messages.length === 0) {
-          cur.title = text.slice(0, 24);
-          renderSessions();
-        }
-
-        cur.messages.push({ role: 'user', content: text, author: 'USER' });
-        appendMessage('user', text, 'USER');
-        promptInput.value = '';
-
-        const aiMsg = { role: 'assistant', content: '', author: activeModel };
-        cur.messages.push(aiMsg);
-        const aiBody = appendMessage('assistant', '...', activeModel);
-
-        let sysPrompt = 'You are Oh My Works (OMW), an AI workspace orchestrator with integrated terminal, anti-OOM guardian, and multi-harness sessions.';
-        try {
-          if (text.includes('@') || text.toLowerCase().includes('harness') || text.toLowerCase().includes('psi') || text.toLowerCase().includes('status')) {
-            const [telem, sess] = await Promise.all([
-              fetch(`${config.daemonUrl}`).then(r => r.json()).catch(() => null),
-              fetch(`${config.daemonUrl}/sessions`).then(r => r.json()).catch(() => null)
-            ]);
-            let extra = '';
-            if (telem) extra += `\n[DAEMON KERNEL GUARDIAN] PSI Stall: ${telem.full_avg10}%, RAM Available: ${telem.available_percent}%, Health: ${telem.status}.`;
-            if (sess) extra += `\n[DAEMON HARVESTED SESSIONS] Total Indexed Sessions: ${sess.length} sessions harvested from ~/.prime, ~/.codex, ~/.claude.`;
-            if (extra) sysPrompt += extra;
-          }
-        } catch (e) {}
-
-        const userMsgs = cur.messages
-          .filter(m => m.role === 'user' || (m.role === 'assistant' && m.content && m.content !== '...'))
-          .map(m => ({ role: m.role, content: m.content }));
-
-        const apiPayload = [{ role: 'system', content: sysPrompt }, ...userMsgs];
-
-        aiMsg.content = '';
-
-        // Pick enabled servers
-        const activeServers = serversList.filter(s => s.enabled);
-        const primaryServer = activeServers[0]?.url || 'http://127.0.0.1:20128';
-        const completionUrl = `${primaryServer.replace(/\/+$/, '')}/v1/chat/completions`;
-        const headers = {
-          'Content-Type': 'application/json',
-          'Authorization': config.apiKey.startsWith('Bearer ') ? config.apiKey : `Bearer ${config.apiKey}`
-        };
-
-        try {
-          let res = await fetch(completionUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
-          });
-
-          // Auto-fallback to next active server
-          if (!res.ok && activeServers.length > 1) {
-            try {
-              const fallbackUrl = `${activeServers[1].url.replace(/\/+$/, '')}/v1/chat/completions`;
-              res = await fetch(fallbackUrl, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
-              });
-            } catch (fallbackErr) {}
-          }
-
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-
-          const reader = res.body.getReader();
-          const decoder = new TextDecoder();
-          let buffer = '';
-
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop();
-
-            for (const line of lines) {
-              const trimmed = line.trim();
-              if (!trimmed || trimmed === 'data: [DONE]') continue;
-              if (trimmed.startsWith('data: ')) {
-                try {
-                  const json = JSON.parse(trimmed.slice(6));
-                  const delta = json.choices?.[0]?.delta?.content;
-                  if (delta) {
-                    aiMsg.content += delta;
-                    aiBody.innerHTML = formatMarkdown(aiMsg.content);
-                    messagesScroll.scrollTop = messagesScroll.scrollHeight;
-
-                    // AI DECISION: Open Side Canvas when code/tool detected
-                    checkAiAutoSplit(aiMsg.content);
-                  }
-                } catch (e) {}
-              }
-            }
-          }
-        } catch (err) {
-          aiMsg.content = '[Router Notice: ' + err.message + ']. Verifikasi konfigurasi di IDE Settings.';
-          aiBody.innerHTML = formatMarkdown(aiMsg.content);
-        }
-      }
-
-      function checkAiAutoSplit(fullText) {
-        const codeBlockMatch = fullText.match(/```([a-zA-Z0-9_-]*)\n([\s\S]+?)```/);
-        if (codeBlockMatch) {
-          const lang = codeBlockMatch[1] || 'code';
-          const code = codeBlockMatch[2];
-          aiOpenSideCanvas(`Artifact (${lang})`, `<pre class="code-block"><code>${escapeHtml(code)}</code></pre>`);
-        }
-      }
-
-      document.querySelectorAll('.chip-btn').forEach(chip => {
-        chip.addEventListener('click', () => {
-          const tag = chip.getAttribute('data-agent');
-          if (!promptInput.value.includes(tag)) {
-            promptInput.value = (tag + ' ' + promptInput.value).trim() + ' ';
-            promptInput.focus();
-          }
-        });
-      });
-
-      btnSubmit.addEventListener('click', handleSend);
-      promptInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          handleSend();
-        }
-      });
-
-      // Sync Models from Router
       async function syncModels() {
         const primaryServer = serversList.find(s => s.enabled)?.url || 'http://127.0.0.1:20128';
         const modelsUrl = `${primaryServer.replace(/\/+$/, '')}/v1/models`;
@@ -1771,28 +2405,8 @@
         } catch (e) {}
       }
 
-      function formatMarkdown(text) {
-        if (!text) return '';
-        let s = escapeHtml(text);
-        s = s.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>');
-        s = s.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
-        s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        s = s.replace(/\n/g, '<br/>');
-        return s;
-      }
-
-      function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
-      }
-
-      renderSessions();
-      renderChat();
+      // Init Load
+      loadHierarchicalSessions();
       syncModels();
     })();
   </script>
