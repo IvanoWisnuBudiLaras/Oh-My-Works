@@ -1,4 +1,5 @@
 use std::env;
+use std::path::PathBuf;
 use omw_guardian::{Guardian, HealthLevel};
 use omw_terminal::TerminalMultiplexer;
 use omw_harness::HarnessOrchestrator;
@@ -7,6 +8,7 @@ use omw_sync::WorkspaceSync;
 use omw_clone::CloneInspector;
 use omw_browser::{BrowserRunner, BrowserEngine};
 use omw_emulator::EmulatorManager;
+use omw_session::SessionHarvester;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -144,11 +146,29 @@ fn main() {
                 println!("    {}", line);
             }
         }
+        "sessions" => {
+            let home = env::var("HOME").map(PathBuf::from).unwrap_or_else(|_| PathBuf::from("."));
+            let sessions = SessionHarvester::scan_all(&home);
+            println!("Discovered Agent Sessions on Laptop (Cindy session-import model): {} sessions", sessions.len());
+            for (idx, sess) in sessions.iter().take(15).enumerate() {
+                println!(
+                    "  [{:02}] [{:?}] {} ({} messages) | cwd: {}",
+                    idx + 1,
+                    sess.source,
+                    sess.title,
+                    sess.message_count,
+                    sess.cwd
+                );
+            }
+            if sessions.len() > 15 {
+                println!("  ... and {} more sessions unified under OMW.", sessions.len() - 15);
+            }
+        }
         "version" | "--version" | "-v" => {
             println!("Oh My Works (OMW) CLI v0.1.0");
         }
         other => {
-            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, clone, browse, emulator, version", other);
+            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, clone, browse, emulator, sessions, version", other);
             std::process::exit(1);
         }
     }

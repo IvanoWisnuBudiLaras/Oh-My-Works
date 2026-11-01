@@ -15,3 +15,4 @@ omw-sync = { path = "../omw-sync" }
 omw-clone = { path = "../omw-clone" }
 omw-browser = { path = "../omw-browser" }
 omw-emulator = { path = "../omw-emulator" }
+omw-session = { path = "../omw-session" }

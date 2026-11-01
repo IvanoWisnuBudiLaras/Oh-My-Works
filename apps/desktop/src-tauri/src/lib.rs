@@ -1,5 +1,7 @@
 use serde::Serialize;
+use std::path::PathBuf;
 use omw_guardian::{Guardian, HealthLevel};
+use omw_session::{SessionHarvester, UnifiedSession};
 
 #[derive(Serialize)]
 pub struct MemoryMetricResponse {
@@ -33,11 +35,17 @@ fn get_memory_telemetry() -> Result<MemoryMetricResponse, String> {
     }
 }
 
+#[tauri::command]
+fn get_unified_sessions() -> Result<Vec<UnifiedSession>, String> {
+    let home = std::env::var("HOME").map(PathBuf::from).unwrap_or_else(|_| PathBuf::from("."));
+    Ok(SessionHarvester::scan_all(&home))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::default().build())
-        .invoke_handler(tauri::generate_handler![get_memory_telemetry])
+        .invoke_handler(tauri::generate_handler![get_memory_telemetry, get_unified_sessions])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

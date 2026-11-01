@@ -2132,6 +2132,7 @@ dependencies = [
  "omw-guardian",
  "omw-harness",
  "omw-memory",
+ "omw-session",
  "omw-sync",
  "omw-terminal",
 ]
@@ -2153,6 +2154,7 @@ dependencies = [
  "omw-guardian",
  "omw-harness",
  "omw-memory",
+ "omw-session",
  "omw-terminal",
  "serde",
  "serde_json",
@@ -2189,6 +2191,14 @@ version = "0.1.0"
 dependencies = [
  "omw-core",
  "omw-guardian",
+]
+
+[[package]]
+name = "omw-session"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
