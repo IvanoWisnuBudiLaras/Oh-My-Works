@@ -1,0 +1,11 @@
+[package]
+name = "omw-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+omw-core = { path = "../omw-core" }
+omw-guardian = { path = "../omw-guardian" }
+omw-terminal = { path = "../omw-terminal" }
