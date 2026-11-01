@@ -3,36 +3,54 @@
 
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
+use std::path::PathBuf;
 use omw_guardian::{Guardian, HealthLevel};
+use omw_session::SessionHarvester;
 
 fn handle_client(mut stream: TcpStream) {
-    let mut buffer = [0; 512];
-    if stream.read(&mut buffer).is_err() {
-        return;
-    }
-
-    let (status_str, pressure) = match Guardian::assess() {
-        Ok((level, p)) => {
-            let l_str = match level {
-                HealthLevel::Safe => "SAFE",
-                HealthLevel::Warning => "WARNING",
-                HealthLevel::Critical => "CRITICAL",
-            };
-            (l_str, p)
-        }
-        Err(_) => ("UNKNOWN", omw_core::MemoryPressure::default()),
+    let mut buffer = [0; 1024];
+    let n = match stream.read(&mut buffer) {
+        Ok(n) if n > 0 => n,
+        _ => return,
     };
 
-    let json_body = format!(
-        r#"{{"status":"{}","available_percent":{:.2},"some_avg10":{:.2},"full_avg10":{:.2}}}"#,
-        status_str,
-        pressure.available_percent(),
-        pressure.some_avg10,
-        pressure.full_avg10
-    );
+    let req_str = String::from_utf8_lossy(&buffer[..n]);
+    let req_line = req_str.lines().next().unwrap_or("");
+
+    let json_body = if req_line.contains("/sessions") {
+        let home = std::env::var("HOME").map(PathBuf::from).unwrap_or_else(|_| PathBuf::from("."));
+        let sessions = SessionHarvester::scan_all(&home);
+        serde_json::to_string(&sessions).unwrap_or_else(|_| "[]".to_string())
+    } else {
+        let (status_str, pressure) = match Guardian::assess() {
+            Ok((level, p)) => {
+                let l_str = match level {
+                    HealthLevel::Safe => "SAFE",
+                    HealthLevel::Warning => "WARNING",
+                    HealthLevel::Critical => "CRITICAL",
+                };
+                (l_str, p)
+            }
+            Err(_) => ("UNKNOWN", omw_core::MemoryPressure::default()),
+        };
+
+        format!(
+            r#"{{"status":"{}","available_percent":{:.2},"some_avg10":{:.2},"full_avg10":{:.2}}}"#,
+            status_str,
+            pressure.available_percent(),
+            pressure.some_avg10,
+            pressure.full_avg10
+        )
+    };
 
     let response = format!(
-        "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+        "HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Content-Type: application/json
+Content-Length: {}
+Connection: close
+
+{}",
         json_body.len(),
         json_body
     );
@@ -48,10 +66,8 @@ fn main() {
 
     // ponytail: single-threaded blocking listener. Upgrade to multi-threaded worker pool when remote concurrency > 50 req/s.
     if let Ok(listener) = TcpListener::bind(&addr) {
-        for stream in listener.incoming() {
-            if let Ok(stream) = stream {
-                handle_client(stream);
-            }
+        for stream in listener.incoming().flatten() {
+            handle_client(stream);
         }
     } else {
         eprintln!("Failed to bind daemon to {}", addr);

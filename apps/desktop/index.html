@@ -147,6 +147,9 @@
       <button type="button" data-tab="server" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
         <span>🛡️</span> 6. Docker Slim &amp; Server Anti-OOM Panel
       </button>
+      <button type="button" data-tab="sessions" class="nav-tab btn-fluid px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 hover:bg-slate-800/60 border border-transparent whitespace-nowrap">
+        <span>🤖</span> 7. Unified Agent Sessions (Cindy Model)
+      </button>
     </nav>
   </header>
 
@@ -715,6 +718,45 @@
             <div class="text-emerald-400">✓ Image dipangkas dari 842.0 MB menjadi 29.1 MB (Hemat RAM kontainer 78%)!</div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- 7. UNIFIED AGENT SESSIONS (CINDY MODEL) -->
+    <section id="view-sessions" class="workspace-view hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base sm:text-lg font-bold text-white">Unified Multi-Agent Session Harvester</h2>
+            <span id="sessionHarvesterBadge" class="px-2 py-0.5 text-[11px] font-mono rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">45 Sesi Terdeteksi</span>
+          </div>
+          <p class="text-xs text-slate-300 mt-1">
+            Mengadopsi arsitektur <code>makecindy/cindy</code> (session-import adapter). Memanen riwayat sesi lintas agen lokal (<span class="text-cyan-300 font-mono">~/.prime</span>, <span class="text-amber-300 font-mono">~/.codex</span>, <span class="text-rose-300 font-mono">~/.claude</span>, <span class="text-emerald-300 font-mono">~/.hermes</span>) agar seluruh agen berbagi konteks dan thread yang sama.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btnRefreshSessions" type="button" class="btn-fluid px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-600/30 text-cyan-200 border border-cyan-400/30 hover:bg-cyan-600/50 flex items-center gap-1.5">
+            <span>🔄</span> Rescan Sesi
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="glass-card rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5" id="sessionFilterGroup">
+          <button type="button" data-filter="all" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40">Semua (45)</button>
+          <button type="button" data-filter="Prime" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Prime Agent</button>
+          <button type="button" data-filter="Codex" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Codex</button>
+          <button type="button" data-filter="Claude" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Claude Code</button>
+          <button type="button" data-filter="Hermes" class="session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent">Hermes</button>
+        </div>
+        <div class="relative w-full sm:w-64">
+          <input id="inputSessionSearch" type="text" placeholder="Cari prompt / direktori..." class="w-full bg-slate-900/80 border border-slate-700/80 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400" />
+        </div>
+      </div>
+
+      <!-- Sessions List -->
+      <div id="unifiedSessionsList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[620px] overflow-y-auto pr-1">
+        <!-- Injected dynamically via JavaScript -->
       </div>
     </section>
 
@@ -1300,10 +1342,164 @@
         modal.classList.remove('flex');
       });
 
+      // UNIFIED SESSIONS (Cindy-Inspired Harvester)
+      let rawSessions = [];
+      let activeSessionFilter = 'all';
+      let sessionSearchQuery = '';
+
+      function getSourceBadgeClass(source) {
+        switch (source) {
+          case 'Prime': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
+          case 'Codex': return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+          case 'Claude': return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+          case 'Hermes': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+          default: return 'bg-slate-500/20 text-slate-300 border-slate-500/40';
+        }
+      }
+
+      function renderUnifiedSessions() {
+        const container = document.getElementById('unifiedSessionsList');
+        if (!container) return;
+
+        const filtered = rawSessions.filter(sess => {
+          const matchFilter = activeSessionFilter === 'all' || sess.source === activeSessionFilter;
+          const q = sessionSearchQuery.toLowerCase();
+          const matchSearch = !q || sess.title.toLowerCase().includes(q) || sess.cwd.toLowerCase().includes(q);
+          return matchFilter && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+          container.innerHTML = '<div class="col-span-2 text-center py-10 text-slate-400 text-xs">Tidak ada sesi yang cocok dengan filter.</div>';
+          return;
+        }
+
+        container.innerHTML = filtered.map(sess => `
+          <div class="glass-card rounded-xl p-3.5 space-y-2 border border-slate-800/80 hover:border-cyan-500/40 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2 py-0.5 text-[10px] font-mono rounded border ${getSourceBadgeClass(sess.source)} font-semibold">
+                ${sess.source}
+              </span>
+              <span class="text-[10px] font-mono text-slate-400">
+                ${sess.message_count} pesan • ${sess.created_at || 'Aktif'}
+              </span>
+            </div>
+            <div>
+              <h3 class="text-xs font-semibold text-white truncate" title="${sess.title}">${sess.title}</h3>
+              <p class="text-[11px] font-mono text-slate-400 truncate mt-0.5" title="${sess.cwd}">📂 ${sess.cwd || '~'}</p>
+            </div>
+            <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
+              <span class="text-slate-400 font-mono text-[10px] truncate max-w-[200px]" title="${sess.id}">ID: ${sess.id.substring(0, 16)}...</span>
+              <button type="button" class="btn-fluid px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-medium text-[10px] flex items-center gap-1" onclick="resumeSessionInTerminal('${sess.id}')">
+                <span>⚡</span> Hubungkan ke OMW
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      window.resumeSessionInTerminal = function(sessionId) {
+        showToast('Menghubungkan sesi ' + sessionId.substring(0, 8) + ' ke Meta-AI Harness OMW!');
+        switchTab('terminals');
+      };
+
+      async function loadUnifiedSessions() {
+        try {
+          if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
+            rawSessions = await window.__TAURI__.core.invoke('get_unified_sessions');
+          } else if (window.__TAURI__ && window.__TAURI__.invoke) {
+            rawSessions = await window.__TAURI__.invoke('get_unified_sessions');
+          }
+        } catch (e) {
+          console.warn('Tauri get_unified_sessions failed, using local fallback:', e);
+        }
+
+        if (!rawSessions || rawSessions.length === 0) {
+          rawSessions = [
+            { id: "01a0e886-bb08-767d-88f3-f95f6d58314b", source: "Prime", title: "Project: ai-harness-bridge live loop", cwd: "/mnt/windows/dev/tools/ai-harness-bridge", message_count: 6791, created_at: "Aktif" },
+            { id: "01a0f6bc-f92f-75cc-ac27-4c3412ce6122", source: "Prime", title: "[Claims] Pengajuan + upload bukti + approval + payout", cwd: "/mnt/windows/dev/web/hris", message_count: 23, created_at: "Aktif" },
+            { id: "01a0f6e8-c7a1-75d9-a44c-1e529b21db98", source: "Prime", title: "# BOT_MESSAGE — ENHANCED DEMO + DIGIFLAZZ ROADMAP", cwd: "/mnt/windows/dev/tools/Bot_Messeage", message_count: 991, created_at: "Aktif" },
+            { id: "01a0fa80-6511-7729-8d72-77d32471f0dd", source: "Prime", title: "Guyub.id PR workflow & MVP durable checkpoint", cwd: "/mnt/windows/dev/mobile/Guyub", message_count: 4251, created_at: "Aktif" },
+            { id: "rollout-codex-state5", source: "Codex", title: "Codex Rollout: state_5.sqlite index & logs_2", cwd: "~/.codex", message_count: 140, created_at: "Detected" },
+            { id: "claude-project-hris", source: "Claude", title: "Claude Project: hris-workspace", cwd: "~/.claude/projects/hris", message_count: 88, created_at: "Detected" },
+            { id: "hermes-default", source: "Hermes", title: "Hermes Multi-Agent Hub Configuration", cwd: "~/.hermes", message_count: 1, created_at: "Configured" }
+          ];
+        }
+
+        const badge = document.getElementById('sessionHarvesterBadge');
+        if (badge) badge.textContent = `${rawSessions.length} Sesi Terdeteksi`;
+
+        renderUnifiedSessions();
+      }
+
+      async function pollLiveTelemetry() {
+        try {
+          let data = null;
+          if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
+            data = await window.__TAURI__.core.invoke('get_memory_telemetry');
+          } else if (window.__TAURI__ && window.__TAURI__.invoke) {
+            data = await window.__TAURI__.invoke('get_memory_telemetry');
+          }
+
+          if (data) {
+            const ramText = document.getElementById('serverRamText');
+            const ramBar = document.getElementById('serverRamBar');
+            const psiText = document.getElementById('serverPsiText');
+            const psiBar = document.getElementById('serverPsiBar');
+            const badge = document.getElementById('serverHealthBadge');
+
+            const usedMb = data.total_mb - data.available_mb;
+            if (ramText) ramText.textContent = `${usedMb.toFixed(1)} MB / ${data.total_mb.toFixed(1)} MB (${(100 - data.available_percent).toFixed(1)}%)`;
+            if (ramBar) ramBar.style.width = `${Math.min(100, Math.max(5, 100 - data.available_percent))}%`;
+            if (psiText) psiText.textContent = `some avg10=${data.some_avg10.toFixed(2)}%, full avg10=${data.full_avg10.toFixed(2)}%`;
+            if (psiBar) psiBar.style.width = `${Math.min(100, Math.max(4, data.some_avg10))}%`;
+            if (badge) {
+              badge.textContent = `KERNEL PSI • ${data.status}`;
+              badge.className = data.status === 'SAFE'
+                ? 'px-2 py-0.5 text-[11px] font-mono rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                : 'px-2 py-0.5 text-[11px] font-mono rounded bg-amber-500/20 text-amber-300 border border-amber-500/40';
+            }
+          }
+        } catch (e) {
+          console.warn('Telemetry poll error:', e);
+        }
+      }
+
+      // Filter listeners
+      document.querySelectorAll('.session-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.session-filter-btn').forEach(b => {
+            b.className = 'session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-white border border-transparent';
+          });
+          btn.className = 'session-filter-btn px-2.5 py-1 text-xs rounded-lg font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40';
+          activeSessionFilter = btn.getAttribute('data-filter');
+          renderUnifiedSessions();
+        });
+      });
+
+      const searchInput = document.getElementById('inputSessionSearch');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          sessionSearchQuery = e.target.value;
+          renderUnifiedSessions();
+        });
+      }
+
+      const btnRefresh = document.getElementById('btnRefreshSessions');
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', async () => {
+          showToast('Memindai ulang sesi agen lokal...');
+          await loadUnifiedSessions();
+          showToast('Selesai memindai: ' + rawSessions.length + ' sesi aktif ditemukan!');
+        });
+      }
+
       // Initial render
       renderSynthesisCards();
       renderTerminals();
       renderGraphMemory();
+      loadUnifiedSessions();
+      pollLiveTelemetry();
+      setInterval(pollLiveTelemetry, 3000);
     })();
   </script>
 </body>

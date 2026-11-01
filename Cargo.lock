@@ -2191,6 +2191,8 @@ version = "0.1.0"
 dependencies = [
  "omw-core",
  "omw-guardian",
+ "omw-session",
+ "serde_json",
 ]
 
 [[package]]
