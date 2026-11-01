@@ -3,36 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oh My Works — AI Workspace &amp; Multiplexer</title>
+  <title>Oh My Works — OpenHands AI Workspace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --background: #0a0a0a;
-      --foreground: #fafafa;
-      --card: #121212;
-      --card-hover: #181818;
-      --primary: #e5e5e5;
-      --primary-foreground: #0a0a0a;
-      --secondary: #1e1e1e;
-      --muted: #1e1e1e;
-      --muted-foreground: #8a8a8a;
-      --accent: #262626;
+      --background: #0d0f12;
+      --sidebar-bg: #090a0d;
+      --panel-bg: #11141a;
+      --card-bg: #161a22;
+      --card-hover: #1c212c;
+      --foreground: #f0f3f6;
+      --muted-foreground: #8b949e;
       --border: rgba(255, 255, 255, 0.08);
       --border-subtle: rgba(255, 255, 255, 0.04);
-      --border-focus: rgba(255, 255, 255, 0.2);
-      --ring: #737373;
-      --destructive: #ff6568;
-      --destructive-bg: rgba(255, 101, 104, 0.1);
-      --success: #4ade80;
-      --success-bg: rgba(74, 222, 128, 0.1);
-      --warning: #fbbf24;
-      --warning-bg: rgba(251, 191, 36, 0.1);
+      --border-focus: rgba(88, 166, 255, 0.4);
+      --primary: #58a6ff;
+      --primary-hover: #79c0ff;
+      --accent: #238636;
+      --accent-hover: #2ea043;
+      --destructive: #f85149;
+      --warning: #d29922;
+      --success: #3fb950;
+      --success-bg: rgba(63, 185, 80, 0.15);
       --cyan: #38bdf8;
-      --cyan-bg: rgba(56, 189, 248, 0.1);
       --radius: 8px;
-      --radius-sm: 5px;
+      --radius-sm: 6px;
       --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
     }
@@ -49,606 +46,291 @@
       font-family: var(--font-sans);
       font-size: 13px;
       line-height: 1.5;
-      letter-spacing: -0.01em;
       height: 100vh;
       overflow: hidden;
       display: flex;
-      flex-direction: column;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Orca Topbar */
-    .topbar {
-      height: 48px;
-      border-bottom: 1px solid var(--border);
-      padding: 0 16px;
+    /* ==========================================================================
+       1. OPENHANDS ICON RAIL (Leftmost Vertical Navigation)
+       ========================================================================== */
+    .icon-rail {
+      width: 52px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      background: var(--background);
+      padding: 12px 0;
+      gap: 8px;
       flex-shrink: 0;
       user-select: none;
+      z-index: 20;
     }
 
-    .brand {
+    .rail-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #1f6feb;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+      box-shadow: 0 0 12px rgba(31, 111, 235, 0.4);
+      cursor: pointer;
+    }
+
+    .rail-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: none;
+      color: var(--muted-foreground);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.12s ease;
+    }
+
+    .rail-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--foreground);
+    }
+
+    .rail-btn.active {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--primary);
+    }
+
+    .rail-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+    }
+
+    .rail-bottom {
+      margin-top: auto;
       display: flex;
+      flex-direction: column;
       align-items: center;
       gap: 10px;
     }
 
-    .brand-mark {
-      width: 24px;
-      height: 24px;
-      border-radius: var(--radius-sm);
-      background: var(--primary);
-      color: var(--primary-foreground);
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 10px;
-      letter-spacing: -0.04em;
-      font-family: var(--font-mono);
-    }
-
-    .brand-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--foreground);
-      letter-spacing: -0.02em;
-    }
-
-    .brand-pill {
-      font-size: 11px;
-      color: var(--muted-foreground);
-      font-family: var(--font-mono);
-      background: var(--secondary);
-      padding: 1px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--border-subtle);
-    }
-
-    /* Segmented Navigation */
-    .segmented {
-      display: flex;
-      padding: 2px;
-      gap: 2px;
-      border-radius: var(--radius);
-      background: var(--secondary);
-      border: 1px solid var(--border-subtle);
-    }
-
-    .segmented button {
-      border: 0;
-      background: transparent;
-      color: var(--muted-foreground);
-      padding: 4px 12px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 500;
-      font-family: var(--font-sans);
-      transition: all 0.12s ease;
-    }
-
-    .segmented button:hover {
-      color: var(--foreground);
-    }
-
-    .segmented button[aria-pressed="true"] {
-      background: var(--card);
-      color: var(--foreground);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    }
-
-    /* Right Toolbar */
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 12px;
-    }
-
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted-foreground);
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
+    .status-dot-indicator {
+      width: 8px;
+      height: 8px;
       border-radius: 999px;
       background: var(--success);
-      box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+      box-shadow: 0 0 8px rgba(63, 185, 80, 0.5);
     }
 
-    .button-subtle {
-      background: var(--secondary);
+    /* Tooltip */
+    .rail-btn[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 56px;
+      background: #1c2128;
       border: 1px solid var(--border);
       color: var(--foreground);
-      height: 28px;
-      padding: 0 10px;
-      border-radius: var(--radius-sm);
       font-size: 11px;
       font-family: var(--font-sans);
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.12s;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      z-index: 50;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     }
 
-    .button-subtle:hover {
-      background: var(--accent);
-    }
-
-    /* Main Workspace Container (Split Pane Layout like Orca) */
-    .workspace-root {
+    /* ==========================================================================
+       2. WORKSPACE SPLIT CONTAINER (OpenHands Dual-Pane)
+       ========================================================================== */
+    .workspace-wrapper {
       flex: 1;
       display: flex;
       overflow: hidden;
     }
 
-    /* Sidebar Column */
-    .workspace-sidebar {
-      width: 280px;
+    /* LEFT COLUMN: CHAT & AGENT CONTROL */
+    .chat-panel {
+      width: 480px;
+      min-width: 380px;
+      max-width: 650px;
+      background: var(--panel-bg);
       border-right: 1px solid var(--border);
-      background: #0d0d0d;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
     }
 
-    .sidebar-header {
-      padding: 10px 14px;
+    /* Chat Panel Header (Task & Agent Control) */
+    .chat-panel-header {
+      height: 48px;
       border-bottom: 1px solid var(--border);
+      padding: 0 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      background: rgba(13, 15, 18, 0.8);
+      flex-shrink: 0;
     }
 
-    .search-input {
-      width: 100%;
+    .agent-select {
       height: 28px;
-      background: var(--card);
+      background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--foreground);
-      padding: 0 10px;
+      padding: 0 8px;
       font-size: 11px;
       font-family: var(--font-sans);
       outline: none;
-    }
-
-    .search-input:focus {
-      border-color: var(--border-focus);
-    }
-
-    .sidebar-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 6px;
-    }
-
-    .sidebar-item {
-      padding: 8px 10px;
-      border-radius: var(--radius-sm);
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      margin-bottom: 2px;
-      border: 1px solid transparent;
-      transition: all 0.1s;
     }
 
-    .sidebar-item:hover {
-      background: var(--secondary);
-    }
-
-    .sidebar-item.active {
-      background: var(--card);
-      border-color: var(--border);
-    }
-
-    .sidebar-item-header {
-      display: flex;
+    .status-badge {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .source-tag {
+      gap: 5px;
       font-size: 10px;
       font-family: var(--font-mono);
       font-weight: 600;
-      padding: 1px 5px;
-      border-radius: 3px;
+      padding: 2px 7px;
+      border-radius: 4px;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
 
-    .source-prime { background: var(--cyan-bg); color: var(--cyan); border: 1px solid rgba(56, 189, 248, 0.2); }
-    .source-codex { background: var(--success-bg); color: var(--success); border: 1px solid rgba(74, 222, 128, 0.2); }
-    .source-claude { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(251, 191, 36, 0.2); }
+    .status-idle { background: rgba(139, 148, 158, 0.15); color: var(--muted-foreground); border: 1px solid rgba(139, 148, 158, 0.2); }
+    .status-running { background: rgba(210, 153, 34, 0.15); color: var(--warning); border: 1px solid rgba(210, 153, 34, 0.2); }
+    .status-done { background: var(--success-bg); color: var(--success); border: 1px solid rgba(63, 185, 80, 0.2); }
 
-    .sidebar-item-title {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--foreground);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .sidebar-item-meta {
-      font-size: 11px;
-      color: var(--muted-foreground);
-      font-family: var(--font-mono);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* Content Pane */
-    .workspace-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: var(--background);
-      overflow: hidden;
-    }
-
-    .content-header {
-      height: 40px;
-      border-bottom: 1px solid var(--border);
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-      background: #0d0d0d;
-    }
-
-    .content-breadcrumbs {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      font-family: var(--font-mono);
-      color: var(--muted-foreground);
-    }
-
-    .content-breadcrumbs span.active {
-      color: var(--foreground);
-      font-weight: 500;
-    }
-
-    .content-body {
+    /* Chat Messages Stream */
+    .chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    /* Hermes / Open WebUI Desktop Styles */
-    .hermes-sidebar-action {
+    .message-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--muted-foreground);
+    }
+
+    .user-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .btn-new-chat {
-      width: 100%;
-      height: 32px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--foreground);
-      font-size: 12px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.12s ease;
-    }
-
-    .btn-new-chat:hover {
-      background: var(--secondary);
-      border-color: var(--border-focus);
-    }
-
-    .hermes-section-title {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted-foreground);
-      padding: 8px 10px 4px;
-    }
-
-    /* Hermes Chat Canvas */
-    .chat-layout {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      background: var(--background);
-      position: relative;
-    }
-
-    .chat-header {
-      height: 44px;
-      border-bottom: 1px solid var(--border);
-      padding: 0 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #0d0d0d;
-      flex-shrink: 0;
-    }
-
-    .chat-model-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 3px 12px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      color: var(--foreground);
-      cursor: pointer;
-    }
-
-    .chat-model-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--cyan);
-      box-shadow: 0 0 6px rgba(56, 189, 248, 0.5);
-    }
-
-    .chat-scroll-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px 20px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .chat-thread-container {
-      width: 100%;
-      max-width: 820px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Message Rows */
-    .msg-row {
-      display: flex;
-      gap: 12px;
-      width: 100%;
-    }
-
-    .msg-user {
-      justify-content: flex-end;
-    }
-
-    .msg-avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      display: grid;
-      place-items: center;
-      font-size: 11px;
-      font-weight: 700;
-      flex-shrink: 0;
-      font-family: var(--font-mono);
-    }
-
-    .avatar-assistant {
-      background: #1e1e1e;
-      border: 1px solid var(--border);
-      color: var(--cyan);
-    }
-
-    .avatar-user {
-      background: var(--primary);
-      color: var(--primary-foreground);
-    }
-
-    .msg-bubble {
-      flex: 1;
-      max-width: 760px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .msg-user .msg-bubble {
-      flex: none;
-      max-width: 650px;
-      background: #171717;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: var(--foreground);
-      font-size: 13px;
-    }
-
-    .msg-sender-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      color: var(--muted-foreground);
-    }
-
-    .msg-sender-meta strong {
-      color: var(--foreground);
-      font-weight: 600;
-    }
-
-    .msg-body {
-      font-size: 13px;
-      line-height: 1.6;
-      color: #e5e5e5;
-    }
-
-    /* Thinking / Reasoning Box (Hermes Style) */
-    .thought-details {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-subtle);
-      border-left: 2px solid var(--cyan);
-      border-radius: 4px;
-      padding: 8px 12px;
-      margin-bottom: 6px;
-    }
-
-    .thought-summary {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted-foreground);
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .thought-summary:hover {
       color: var(--foreground);
     }
 
-    .thought-content {
-      margin-top: 8px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: #a3a3a3;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-
-    /* Tool Call Card */
-    .tool-card {
-      background: #0d0d0d;
+    /* OpenHands Action / Observation Card */
+    .action-card {
+      background: #090a0d;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: var(--radius);
       overflow: hidden;
-      margin-bottom: 6px;
       font-family: var(--font-mono);
       font-size: 11px;
     }
 
-    .tool-card-header {
+    .action-card-header {
       padding: 6px 10px;
-      background: #141414;
+      background: #14171e;
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .tool-title {
+    .action-title {
       display: flex;
       align-items: center;
       gap: 6px;
-      color: var(--foreground);
-      font-weight: 500;
-    }
-
-    .tool-status-pill {
-      font-size: 9px;
+      color: var(--primary);
       font-weight: 600;
-      padding: 1px 5px;
-      border-radius: 3px;
-      background: var(--success-bg);
-      color: var(--success);
-      border: 1px solid rgba(74, 222, 128, 0.2);
     }
 
-    .tool-card-body {
-      padding: 8px 10px;
-      color: #9ca3af;
-      max-height: 140px;
-      overflow-y: auto;
+    .action-body {
+      padding: 10px;
+      color: #adbac7;
+      line-height: 1.5;
       white-space: pre-wrap;
-      font-size: 11px;
-      background: #050505;
+      word-break: break-all;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #07080a;
     }
 
-    /* Bottom Input Area */
-    .chat-input-container {
-      width: 100%;
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 0 20px 16px;
+    /* OpenHands Thought Container */
+    .thought-container {
+      background: rgba(88, 166, 255, 0.05);
+      border-left: 2px solid var(--primary);
+      padding: 8px 12px;
+      border-radius: 0 4px 4px 0;
+      font-size: 12px;
+      color: #c9d1d9;
+    }
+
+    .thought-container summary {
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted-foreground);
+      user-select: none;
+    }
+
+    /* Chat Input Form (OpenHands Style) */
+    .chat-input-wrapper {
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--panel-bg);
       display: flex;
       flex-direction: column;
       gap: 8px;
       flex-shrink: 0;
     }
 
-    .chat-input-box {
-      background: var(--card);
+    .input-box {
+      background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 12px;
+      border-radius: var(--radius);
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      gap: 6px;
       transition: border-color 0.12s;
     }
 
-    .chat-input-box:focus-within {
+    .input-box:focus-within {
       border-color: var(--border-focus);
-    }
-
-    .chat-input-top-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-    }
-
-    .agent-pill {
-      font-size: 10px;
-      font-family: var(--font-mono);
-      background: var(--secondary);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 2px 7px;
-      color: var(--muted-foreground);
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
-      transition: all 0.1s;
-    }
-
-    .agent-pill:hover, .agent-pill.active {
-      color: var(--cyan);
-      border-color: rgba(56, 189, 248, 0.3);
-      background: var(--cyan-bg);
     }
 
     .chat-textarea {
       width: 100%;
       min-height: 48px;
-      max-height: 180px;
+      max-height: 160px;
       background: transparent;
       border: none;
       color: var(--foreground);
@@ -659,7 +341,7 @@
       outline: none;
     }
 
-    .chat-input-bottom-row {
+    .input-controls {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -667,844 +349,813 @@
       padding-top: 6px;
     }
 
-    .input-hint {
+    .mode-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       font-size: 11px;
-      color: var(--muted-foreground);
       font-family: var(--font-mono);
+      color: var(--muted-foreground);
+      cursor: pointer;
+      user-select: none;
     }
 
-    .btn-send {
-      width: 28px;
+    .btn-send-task {
       height: 28px;
-      border-radius: 6px;
-      background: var(--primary);
-      color: var(--primary-foreground);
+      padding: 0 14px;
+      background: var(--accent);
+      color: #fff;
       border: none;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 13px;
-      transition: opacity 0.12s;
-    }
-
-    .btn-send:hover {
-      opacity: 0.9;
-    }
-
-    /* Welcome Hero / Empty State */
-    .welcome-hero {
-      margin: auto 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 16px;
-      padding: 20px 0;
-    }
-
-    .welcome-mark {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background: var(--primary);
-      color: var(--primary-foreground);
-      display: grid;
-      place-items: center;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      font-size: 16px;
-      letter-spacing: -0.04em;
-    }
-
-    .welcome-title {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      color: var(--foreground);
-    }
-
-    .welcome-subtitle {
-      font-size: 13px;
-      color: var(--muted-foreground);
-      max-width: 480px;
-      line-height: 1.5;
-    }
-
-    .prompt-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      width: 100%;
-      max-width: 640px;
-      margin-top: 10px;
-    }
-
-    .prompt-chip {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 14px;
-      text-align: left;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: all 0.12s ease;
-    }
-
-    .prompt-chip:hover {
-      background: var(--card-hover);
-      border-color: var(--border-focus);
-      transform: translateY(-1px);
-    }
-
-    .prompt-chip-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--foreground);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .prompt-chip-desc {
-      font-size: 11px;
-      color: var(--muted-foreground);
-    }
-
-    /* Orca Card Grid */
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .metric-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .metric-card-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted-foreground);
-      font-weight: 600;
-    }
-
-    .metric-card-val {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      font-family: var(--font-mono);
-      color: var(--foreground);
-    }
-
-    .metric-card-sub {
-      font-size: 11px;
-      color: var(--muted-foreground);
-    }
-
-    /* Terminal & Transcript Viewer */
-    .terminal-view {
-      background: #000000;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.6;
-      color: #e5e5e5;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      padding: 2px 7px;
       border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--secondary);
-      color: var(--foreground);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.12s;
     }
 
-    .badge-success { background: var(--success-bg); color: var(--success); border-color: rgba(74, 222, 128, 0.2); }
-    .badge-warning { background: var(--warning-bg); color: var(--warning); border-color: rgba(251, 191, 36, 0.2); }
-    .badge-destructive { background: var(--destructive-bg); color: var(--destructive); border-color: rgba(255, 101, 104, 0.2); }
+    .btn-send-task:hover {
+      background: var(--accent-hover);
+    }
 
-    /* Footer statusbar */
-    .statusbar {
-      height: 24px;
-      border-top: 1px solid var(--border);
-      padding: 0 12px;
+    /* RIGHT COLUMN: WORKSPACE TABS & TOOLS */
+    .workspace-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--background);
+      overflow: hidden;
+    }
+
+    .workspace-tabs {
+      height: 48px;
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #080808;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted-foreground);
-      user-select: none;
+      background: var(--sidebar-bg);
       flex-shrink: 0;
     }
 
-    .statusbar-left, .statusbar-right {
+    .tabs-group {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      height: 32px;
+      padding: 0 12px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--muted-foreground);
+      font-size: 12px;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.12s;
+    }
+
+    .tab-btn:hover {
+      color: var(--foreground);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tab-btn.active {
+      color: var(--foreground);
+      background: var(--panel-bg);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .tab-badge {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .workspace-content {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* File Explorer / Tree View */
+    .files-layout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .file-tree {
+      width: 240px;
+      border-right: 1px solid var(--border);
+      background: #0a0b0e;
+      overflow-y: auto;
+      padding: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .tree-item {
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #adbac7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tree-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--foreground);
+    }
+
+    .tree-item.active {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--primary);
+    }
+
+    .file-editor-view {
+      flex: 1;
+      background: #0d0f12;
+      overflow-y: auto;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #e6edf3;
+      white-space: pre-wrap;
+    }
+
+    /* Terminal View */
+    .terminal-container {
+      flex: 1;
+      background: #05070a;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #58a6ff;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    /* ==========================================================================
+       3. OPENHANDS SETTINGS MODAL
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      place-items: center;
+      z-index: 100;
+    }
+
+    .modal-backdrop.show {
+      display: grid;
+    }
+
+    .settings-dialog {
+      width: 720px;
+      max-width: 90vw;
+      height: 520px;
+      background: #11141a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+      display: flex;
+      overflow: hidden;
+    }
+
+    .settings-nav {
+      width: 200px;
+      border-right: 1px solid var(--border);
+      background: #090a0d;
+      padding: 16px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .settings-nav-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-foreground);
+      padding: 0 8px 8px;
+    }
+
+    .settings-tab-btn {
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: none;
+      color: #adbac7;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.12s;
+    }
+
+    .settings-tab-btn:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--foreground);
+    }
+
+    .settings-tab-btn.active {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .settings-body {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .settings-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--foreground);
+    }
+
+    .form-desc {
+      font-size: 11px;
+      color: var(--muted-foreground);
+    }
+
+    .form-input, .form-select {
+      height: 32px;
+      background: #090a0d;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--foreground);
+      padding: 0 10px;
+      font-size: 12px;
+      font-family: var(--font-sans);
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--border-focus);
+    }
+
+    .settings-footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .btn-secondary {
+      height: 30px;
+      padding: 0 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--foreground);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      height: 30px;
+      padding: 0 14px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
     }
 
     /* Scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
   </style>
 </head>
 <body>
 
-  <!-- Topbar: Orca Minimal Header -->
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark">OMW</div>
-      <span class="brand-title">Oh My Works</span>
-      <span class="brand-pill">v0.1.0</span>
-    </div>
+  <!-- 1. LEFT ICON RAIL (OpenHands Navigation) -->
+  <aside class="icon-rail">
+    <div class="rail-logo" id="railLogo" title="Oh My Works">OH</div>
 
-    <!-- Navigation (Segmented Switcher) -->
-    <div class="segmented" id="mainNav">
-      <button type="button" data-tab="harness" aria-pressed="true">AI Harness</button>
-      <button type="button" data-tab="sessions" aria-pressed="false">Sessions</button>
-      <button type="button" data-tab="terminals" aria-pressed="false">Terminals</button>
-      <button type="button" data-tab="guardian" aria-pressed="false">Guardian &amp; PSI</button>
-      <button type="button" data-tab="memory" aria-pressed="false">Graph Memory</button>
-      <button type="button" data-tab="automations" aria-pressed="false">REA &amp; Strix</button>
-    </div>
+    <button type="button" class="rail-btn active" data-rail-tab="chat" data-tooltip="AI Chat &amp; Agent">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </button>
 
-    <!-- Right Controls -->
-    <div class="toolbar">
-      <div class="status-indicator">
-        <span class="status-dot" id="psiDot"></span>
-        <span id="psiStatusText">PSI Safe (0.00%)</span>
-      </div>
-      <button type="button" class="button-subtle" id="btnRefresh">
-        Refresh
+    <button type="button" class="rail-btn" data-rail-tab="sessions" data-tooltip="Sessions (45 Cindy)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+    </button>
+
+    <button type="button" class="rail-btn" data-rail-tab="terminal" data-tooltip="Multiplexer Terminal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+    </button>
+
+    <button type="button" class="rail-btn" data-rail-tab="guardian" data-tooltip="Anti-OOM PSI Guardian">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    </button>
+
+    <div class="rail-bottom">
+      <div class="status-dot-indicator" id="psiRailDot" title="PSI Status: Safe"></div>
+      <button type="button" class="rail-btn" id="btnOpenSettings" data-tooltip="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
     </div>
-  </header>
+  </aside>
 
-  <!-- Workspace Split Pane Root -->
-  <main class="workspace-root">
-    <!-- Sidebar: Sessions or Navigation items -->
-    <aside class="workspace-sidebar" id="mainSidebar">
-      <div id="sidebarTopActions">
-        <!-- Rendered dynamically -->
+  <!-- 2. WORKSPACE SPLIT (Dual-Pane: Chat & Agent Left, Tools & Files Right) -->
+  <main class="workspace-wrapper">
+    <!-- LEFT PANE: OPENHANDS CHAT & TASK STREAM -->
+    <section class="chat-panel">
+      <!-- Task Header -->
+      <div class="chat-panel-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <select id="agentTypeSelect" class="agent-select">
+            <option value="CodeActAgent">CodeActAgent (Default)</option>
+            <option value="ArchitectAgent">ArchitectAgent (Rust/Core)</option>
+            <option value="GuardianAgent">GuardianAgent (Anti-OOM)</option>
+            <option value="StrixAgent">StrixAgent (Security Pentest)</option>
+            <option value="ReaAgent">ReaAgent (App Cloner)</option>
+          </select>
+          <span class="status-badge status-done" id="agentStatusBadge">IDLE</span>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground);">
+          Step <span id="currentStep">4</span> / 30
+        </div>
       </div>
-      <div class="sidebar-list" id="sidebarList">
-        <!-- Rendered dynamically -->
-      </div>
-    </aside>
 
-    <!-- Main Content Detail Pane -->
-    <section class="workspace-content" id="mainContentSection">
-      <!-- Dynamic Content / Chat View -->
+      <!-- Messages Stream -->
+      <div class="chat-messages" id="chatMessages">
+        <!-- Initial Task Execution Flow (OpenHands Sample) -->
+        <div class="message-block">
+          <div class="message-header">
+            <span>USER INSTRUCTION</span>
+            <span>Step 1</span>
+          </div>
+          <div class="user-card">
+            Audit kernel PSI memory pressure, inspect 45 agent sessions, and secure the daemon on port 9180.
+          </div>
+        </div>
+
+        <div class="message-block">
+          <div class="message-header">
+            <span>AGENT REASONING</span>
+            <span>Step 2</span>
+          </div>
+          <details class="thought-container" open>
+            <summary>CodeActAgent Thought</summary>
+            <div style="margin-top: 6px; font-family: var(--font-mono); font-size: 11px;">
+              I need to evaluate kernel PSI stall metrics via omw_guardian and verify multi-agent transcripts in ~/.prime and ~/.codex.
+            </div>
+          </details>
+        </div>
+
+        <div class="message-block">
+          <div class="message-header">
+            <span>TOOL EXECUTION: BASH</span>
+            <span>Step 3</span>
+          </div>
+          <div class="action-card">
+            <div class="action-card-header">
+              <span class="action-title">
+                <span>$</span>
+                <span>./target/debug/omw-cli status &amp;&amp; ./target/debug/omw-cli sessions | head -n 3</span>
+              </span>
+              <span class="status-badge status-done" style="font-size: 9px;">EXIT 0</span>
+            </div>
+            <div class="action-body">OMW Guardian Status: [OK - SAFE]
+Memory: 46.3% available (5901.9 MB / 12752.9 MB)
+PSI Stall: some avg10=0.00%, full avg10=0.00%
+Discovered Agent Sessions on Laptop (Cindy session-import model): 45 sessions
+  [01] [Prime] Project: (6791 messages) | cwd: /mnt/windows/dev/tools/ai-harness-bridge</div>
+          </div>
+        </div>
+
+        <div class="message-block">
+          <div class="message-header">
+            <span>AGENT OBSERVATION &amp; OUTPUT</span>
+            <span>Step 4</span>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; font-size: 13px; line-height: 1.6;">
+            Kernel PSI is completely safe with <strong>0.00% memory stall</strong>. System has <strong>5,901 MB available RAM</strong>. All 45 sessions from Cindy Harvester are accessible in the right workspace pane.
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Bottom Input Area (OpenHands Style) -->
+      <div class="chat-input-wrapper">
+        <div class="input-box">
+          <textarea id="taskInput" class="chat-textarea" placeholder="Send a message or give the agent a task..."></textarea>
+          <div class="input-controls">
+            <label class="mode-toggle">
+              <input type="checkbox" id="autoApproveToggle" checked />
+              <span>Auto-approve actions</span>
+            </label>
+            <button type="button" class="btn-send-task" id="btnSendTask">
+              <span>Run Task</span>
+              <span>➔</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANE: OPENHANDS WORKSPACE (Terminal, Files, Browser, PSI) -->
+    <section class="workspace-panel">
+      <!-- Right Tab Bar -->
+      <header class="workspace-tabs">
+        <div class="tabs-group" id="workspaceTabsGroup">
+          <button type="button" class="tab-btn active" data-tab="files">
+            <span>📁</span>
+            <span>Files</span>
+          </button>
+          <button type="button" class="tab-btn" data-tab="terminal">
+            <span>>_</span>
+            <span>Terminal</span>
+          </button>
+          <button type="button" class="tab-btn" data-tab="browser">
+            <span>🌐</span>
+            <span>Browser Preview</span>
+          </button>
+          <button type="button" class="tab-btn" data-tab="guardian">
+            <span>🛡️</span>
+            <span>Anti-OOM PSI</span>
+          </button>
+          <button type="button" class="tab-btn" data-tab="sessions">
+            <span>🔄</span>
+            <span>Cindy Sessions</span>
+            <span class="tab-badge" id="cindyBadge">45</span>
+          </button>
+        </div>
+
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground);">
+          /mnt/windows/dev/Desktop/Oh-My-Works
+        </div>
+      </header>
+
+      <!-- Workspace Body -->
+      <div class="workspace-content" id="workspaceContent">
+        <!-- Rendered dynamically depending on tab -->
+      </div>
     </section>
   </main>
 
-  <!-- Statusbar -->
-  <footer class="statusbar">
-    <div class="statusbar-left">
-      <span>Daemon: http://127.0.0.1:9180</span>
-      <span>•</span>
-      <span id="statRam">Memory: 46% available</span>
-      <span>•</span>
-      <span id="statPressure">Pressure: some=0.00% full=0.00%</span>
+  <!-- 3. OPENHANDS SETTINGS MODAL DIALOG -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="settings-dialog">
+      <!-- Settings Left Sidebar -->
+      <div class="settings-nav">
+        <div class="settings-nav-title">OpenHands Settings</div>
+        <button type="button" class="settings-tab-btn active" data-settings-tab="llm">
+          <span>🧠</span> <span>LLM Provider</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-settings-tab="agent">
+          <span>🤖</span> <span>Agent Behavior</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-settings-tab="guardian">
+          <span>🛡️</span> <span>Anti-OOM Guardian</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-settings-tab="workspace">
+          <span>💻</span> <span>Workspace &amp; Daemon</span>
+        </button>
+      </div>
+
+      <!-- Settings Content Body -->
+      <div class="settings-body" id="settingsBody">
+        <!-- Rendered dynamically -->
+      </div>
     </div>
-    <div class="statusbar-right">
-      <span>Engine: Hermes 3 / OMW Core</span>
-      <span>•</span>
-      <span>Layout: Hermes Desktop + Orca Dark</span>
-    </div>
-  </footer>
+  </div>
 
   <script>
     (function () {
-      let currentTab = 'harness';
+      let activeRightTab = 'files';
+      let activeSettingsTab = 'llm';
+      let currentStep = 4;
       let sessionsData = [];
-      let harnessData = { agents: [], tasks: [] };
-      let activeSessionId = null;
-      let filterQuery = '';
-      let selectedMention = '@all';
+      let telemetry = { status: 'SAFE', available_percent: 46.3, some_avg10: 0.0, full_avg10: 0.0 };
 
-      // Hermes Threads State
-      let activeThreadId = 'thread-1';
-      let threads = [
-        {
-          id: 'thread-1',
-          title: 'Audit Memori & Anti-OOM Daemon',
-          updated_at: 'Baru saja',
-          messages: [
-            {
-              role: 'user',
-              text: 'Periksa metrik tekanan kernel PSI dan pastikan earlyoom aktif.'
-            },
-            {
-              role: 'assistant',
-              agent: 'Kernel Optimizer (Guardian)',
-              thought: 'Menganalisis /proc/pressure/memory...\nEvaluasi metrik some_avg10 dan full_avg10 terhadap batas stall 25.0%.\nMemastikan proses desktop terproteksi dari OOM-killer Linux.',
-              tool: {
-                name: 'omw_guardian::assess()',
-                output: 'Status: SAFE\nAvailable Memory: 5,901 MB (46.3%)\nPSI some_avg10: 0.00% | full_avg10: 0.00%\nStall Level: 0 (Normal)'
-              },
-              text: 'Sistem memori kernel berada dalam status **SAFE (Aman)**.\n\n- **PSI Memory Stall (avg10)**: `0.00%` (jauh di bawah batas bahaya `25.0%`).\n- **RAM Tersedia**: `5,901 MB` (46.3% dari total 12.7 GB).\n- **Proteksi OOM**: Daemon terhubung dengan cgroup v2 Linux.'
-            }
-          ]
-        },
-        {
-          id: 'thread-2',
-          title: 'Sinkronisasi Cindy 45 Sesi Agen',
-          updated_at: '10m lalu',
-          messages: [
-            {
-              role: 'user',
-              text: 'Pindai semua riwayat sesi agen di ~/.prime, ~/.codex, dan ~/.claude.'
-            },
-            {
-              role: 'assistant',
-              agent: 'Code Architect',
-              thought: 'Memanggil adapter crates/omw-session...\nMemindai direktori lokal untuk format JSONL transkrip multi-turn.',
-              tool: {
-                name: 'omw_session::SessionHarvester::scan_all()',
-                output: 'Discovered: 45 sessions\nPrime: 43 sessions\nCodex: 2 sessions\nClaude: 0 sessions'
-              },
-              text: 'Berhasil mengindeks **45 sesi lokal** menggunakan Cindy session harvester architecture. Transkrip siap diakses langsung dari tab **Sessions**.'
-            }
-          ]
-        }
+      // Settings state (Persisted in localStorage)
+      const settings = {
+        model: localStorage.getItem('omw_model') || 'ollama/hermes-3-70b',
+        apiKey: localStorage.getItem('omw_api_key') || '',
+        baseUrl: localStorage.getItem('omw_base_url') || 'http://localhost:11434/v1',
+        agentType: localStorage.getItem('omw_agent_type') || 'CodeActAgent',
+        maxSteps: localStorage.getItem('omw_max_steps') || '30',
+        autoApprove: localStorage.getItem('omw_auto_approve') !== 'false',
+        psiThreshold: localStorage.getItem('omw_psi_thresh') || '25.0',
+        ramThreshold: localStorage.getItem('omw_ram_thresh') || '15.0'
+      };
+
+      // File Tree Data
+      const projectFiles = [
+        { name: 'Cargo.toml', type: 'file', path: 'Cargo.toml' },
+        { name: 'crates/omw-core', type: 'dir', path: 'crates/omw-core/src/lib.rs' },
+        { name: 'crates/omw-guardian', type: 'dir', path: 'crates/omw-guardian/src/lib.rs' },
+        { name: 'crates/omw-terminal', type: 'dir', path: 'crates/omw-terminal/src/lib.rs' },
+        { name: 'crates/omw-harness', type: 'dir', path: 'crates/omw-harness/src/lib.rs' },
+        { name: 'crates/omw-session', type: 'dir', path: 'crates/omw-session/src/lib.rs' },
+        { name: 'crates/omw-clone', type: 'dir', path: 'crates/omw-clone/src/lib.rs' },
+        { name: 'apps/server-daemon', type: 'dir', path: 'apps/server-daemon/src/main.rs' },
+        { name: 'apps/desktop/index.html', type: 'file', path: 'apps/desktop/index.html' }
       ];
+      let activeFilePath = 'crates/omw-guardian/src/lib.rs';
 
-      // Tab switcher
-      const navButtons = document.querySelectorAll('#mainNav button');
-      navButtons.forEach(btn => {
+      // 1. Icon Rail Click Handlers
+      const railButtons = document.querySelectorAll('.rail-btn[data-rail-tab]');
+      railButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-          navButtons.forEach(b => b.setAttribute('aria-pressed', 'false'));
-          btn.setAttribute('aria-pressed', 'true');
-          currentTab = btn.getAttribute('data-tab');
-          renderCurrentTab();
+          railButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const tab = btn.getAttribute('data-rail-tab');
+          if (tab === 'chat') {
+            // Already in split mode
+          } else {
+            activeRightTab = tab;
+            updateRightTabsUI();
+            renderRightContent();
+          }
         });
       });
 
-      // Refresh button
-      document.getElementById('btnRefresh').addEventListener('click', () => {
-        fetchData();
+      // 2. Workspace Tabs Handlers
+      const tabButtons = document.querySelectorAll('.tab-btn[data-tab]');
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeRightTab = btn.getAttribute('data-tab');
+          updateRightTabsUI();
+          renderRightContent();
+        });
       });
 
-      async function fetchData() {
-        try {
-          const [sessRes, telRes, harnRes] = await Promise.all([
-            fetch('http://127.0.0.1:9180/sessions').then(r => r.json()).catch(() => []),
-            fetch('http://127.0.0.1:9180/').then(r => r.json()).catch(() => null),
-            fetch('http://127.0.0.1:9180/harness').then(r => r.json()).catch(() => null)
-          ]);
-
-          sessionsData = sessRes || [];
-          if (sessionsData.length > 0 && !activeSessionId) {
-            activeSessionId = sessionsData[0].id;
-          }
-
-          if (harnRes && harnRes.agents) {
-            harnessData = harnRes;
-          }
-
-          if (telRes) {
-            updateTelemetryUI(telRes);
-          }
-
-          renderCurrentTab();
-        } catch (err) {
-          console.error("Telemetry fetch error:", err);
-        }
-      }
-
-      function updateTelemetryUI(tel) {
-        const dot = document.getElementById('psiDot');
-        const text = document.getElementById('psiStatusText');
-        const ram = document.getElementById('statRam');
-        const p = document.getElementById('statPressure');
-
-        if (text) text.textContent = `PSI ${tel.status} (${tel.some_avg10.toFixed(2)}%)`;
-        if (ram) ram.textContent = `Memory: ${tel.available_percent.toFixed(1)}% available`;
-        if (p) p.textContent = `Pressure: some=${tel.some_avg10.toFixed(2)}% full=${tel.full_avg10.toFixed(2)}%`;
-
-        if (dot) {
-          dot.style.background = tel.status === 'SAFE' ? 'var(--success)' : 'var(--destructive)';
-        }
-      }
-
-      function renderCurrentTab() {
-        renderSidebar();
-        renderMainContent();
-      }
-
-      function renderSidebar() {
-        const topActions = document.getElementById('sidebarTopActions');
-        const list = document.getElementById('sidebarList');
-        if (!list || !topActions) return;
-
-        if (currentTab === 'harness') {
-          topActions.innerHTML = `
-            <div class="hermes-sidebar-action">
-              <button type="button" class="btn-new-chat" id="btnNewChat">
-                <span>+</span> Sesi / Task Baru
-              </button>
-            </div>
-            <div class="hermes-section-title">Riwayat Percakapan Harness</div>
-          `;
-
-          const btnNew = document.getElementById('btnNewChat');
-          if (btnNew) {
-            btnNew.addEventListener('click', () => {
-              const newId = `thread-${Date.now()}`;
-              threads.unshift({
-                id: newId,
-                title: 'Tugas Baru',
-                updated_at: 'Baru saja',
-                messages: []
-              });
-              activeThreadId = newId;
-              renderCurrentTab();
-            });
-          }
-
-          list.innerHTML = threads.map(t => {
-            const isActive = t.id === activeThreadId;
-            return `
-              <div class="sidebar-item ${isActive ? 'active' : ''}" data-thread-id="${t.id}">
-                <div class="sidebar-item-header">
-                  <span class="source-tag source-prime">Harness</span>
-                  <span style="font-size: 10px; color: var(--muted-foreground); font-family: var(--font-mono);">${t.updated_at}</span>
-                </div>
-                <div class="sidebar-item-title">${escapeHtml(t.title)}</div>
-                <div class="sidebar-item-meta">
-                  <span>${t.messages.length} interaksi</span>
-                </div>
-              </div>
-            `;
-          }).join('');
-
-          list.querySelectorAll('.sidebar-item').forEach(el => {
-            el.addEventListener('click', () => {
-              activeThreadId = el.getAttribute('data-thread-id');
-              renderSidebar();
-              renderMainContent();
-            });
-          });
-
-        } else if (currentTab === 'sessions') {
-          topActions.innerHTML = `
-            <div class="sidebar-header">
-              <input type="text" id="filterInput" class="search-input" placeholder="Search sessions, cwd, or tags..." value="${escapeHtml(filterQuery)}" />
-            </div>
-          `;
-
-          const input = document.getElementById('filterInput');
-          if (input) {
-            input.addEventListener('input', (e) => {
-              filterQuery = e.target.value.toLowerCase();
-              renderSidebarListOnly();
-            });
-          }
-
-          renderSidebarListOnly();
-        } else if (currentTab === 'terminals') {
-          topActions.innerHTML = `<div class="hermes-section-title">Multiplexer Terminals</div>`;
-          list.innerHTML = `
-            <div class="sidebar-item active">
-              <div class="sidebar-item-header">
-                <span class="badge badge-success">RUNNING</span>
-                <span style="font-size: 10px; font-family: var(--font-mono);">PTY 1</span>
-              </div>
-              <div class="sidebar-item-title">Interactive Terminal (bash)</div>
-              <div class="sidebar-item-meta"><span>/mnt/windows/dev/Desktop/Oh-My-Works</span></div>
-            </div>
-          `;
-        } else if (currentTab === 'guardian') {
-          topActions.innerHTML = `<div class="hermes-section-title">Telemetry Monitors</div>`;
-          list.innerHTML = `
-            <div class="sidebar-item active">
-              <div class="sidebar-item-header">
-                <span class="badge badge-success">ACTIVE</span>
-                <span style="font-size: 10px; font-family: var(--font-mono);">PID 331343</span>
-              </div>
-              <div class="sidebar-item-title">Kernel PSI Watchdog</div>
-              <div class="sidebar-item-meta"><span>/proc/pressure/memory</span></div>
-            </div>
-          `;
-        } else if (currentTab === 'memory') {
-          topActions.innerHTML = `<div class="hermes-section-title">Graph Memory Layers</div>`;
-          list.innerHTML = `
-            <div class="sidebar-item active">
-              <div class="sidebar-item-header"><span class="badge">SEMANTIC</span></div>
-              <div class="sidebar-item-title">Crates Monorepo Architecture</div>
-              <div class="sidebar-item-meta"><span>Edges: 4 links</span></div>
-            </div>
-          `;
-        } else if (currentTab === 'automations') {
-          topActions.innerHTML = `<div class="hermes-section-title">Engines</div>`;
-          list.innerHTML = `
-            <div class="sidebar-item active">
-              <div class="sidebar-item-header"><span class="badge badge-success">READY</span></div>
-              <div class="sidebar-item-title">REA Clone Blueprint Generator</div>
-              <div class="sidebar-item-meta"><span>crates/omw-clone</span></div>
-            </div>
-          `;
-        }
-      }
-
-      function renderSidebarListOnly() {
-        const list = document.getElementById('sidebarList');
-        if (!list || currentTab !== 'sessions') return;
-
-        const filtered = sessionsData.filter(s => {
-          const matchTitle = (s.title || '').toLowerCase().includes(filterQuery);
-          const matchCwd = (s.cwd || '').toLowerCase().includes(filterQuery);
-          const matchSrc = (s.source || '').toLowerCase().includes(filterQuery);
-          return matchTitle || matchCwd || matchSrc;
-        });
-
-        if (filtered.length === 0) {
-          list.innerHTML = `<div style="padding: 16px; color: var(--muted-foreground); text-align: center; font-size: 11px;">No sessions found</div>`;
-          return;
-        }
-
-        list.innerHTML = filtered.map(s => {
-          const isActive = s.id === activeSessionId;
-          const srcClass = s.source.toLowerCase() === 'prime' ? 'source-prime'
-                         : s.source.toLowerCase() === 'codex' ? 'source-codex' : 'source-claude';
-          const cleanTitle = s.title && s.title.trim().length > 0 ? s.title : 'Active Thread';
-          const shortCwd = s.cwd ? s.cwd.replace('/mnt/windows/dev/', 'dev/').replace('/home/ivano/', '~/') : '-';
-
-          return `
-            <div class="sidebar-item ${isActive ? 'active' : ''}" data-id="${s.id}">
-              <div class="sidebar-item-header">
-                <span class="source-tag ${srcClass}">${s.source}</span>
-                <span style="font-size: 10px; color: var(--muted-foreground); font-family: var(--font-mono);">${s.message_count} msgs</span>
-              </div>
-              <div class="sidebar-item-title">${escapeHtml(cleanTitle)}</div>
-              <div class="sidebar-item-meta">
-                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(shortCwd)}</span>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        list.querySelectorAll('.sidebar-item').forEach(el => {
-          el.addEventListener('click', () => {
-            activeSessionId = el.getAttribute('data-id');
-            renderSidebarListOnly();
-            renderMainContent();
-          });
+      function updateRightTabsUI() {
+        tabButtons.forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-tab') === activeRightTab);
         });
       }
 
-      function renderMainContent() {
-        const sec = document.getElementById('mainContentSection');
-        if (!sec) return;
+      // 3. Settings Modal Toggle
+      const settingsModal = document.getElementById('settingsModal');
+      document.getElementById('btnOpenSettings').addEventListener('click', () => {
+        settingsModal.classList.add('show');
+        renderSettingsContent();
+      });
 
-        if (currentTab === 'harness') {
-          const curThread = threads.find(t => t.id === activeThreadId) || threads[0];
-          const hasMessages = curThread && curThread.messages && curThread.messages.length > 0;
+      settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) {
+          settingsModal.classList.remove('show');
+        }
+      });
 
-          sec.innerHTML = `
-            <div class="chat-layout">
-              <!-- Chat Header -->
-              <div class="chat-header">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <div class="chat-model-pill">
-                    <span class="chat-model-dot"></span>
-                    <span>Hermes 3 (70B) • OMW Local Engine</span>
+      // Settings Sidebar Tabs
+      const settingsNavButtons = document.querySelectorAll('.settings-tab-btn');
+      settingsNavButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          settingsNavButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeSettingsTab = btn.getAttribute('data-settings-tab');
+          renderSettingsContent();
+        });
+      });
+
+      function renderSettingsContent() {
+        const body = document.getElementById('settingsBody');
+        if (!body) return;
+
+        if (activeSettingsTab === 'llm') {
+          body.innerHTML = `
+            <div class="settings-header">
+              <div class="settings-title">LLM Provider Configuration</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Model Selector</label>
+              <div class="form-desc">Choose from local Ollama/Hermes or cloud providers.</div>
+              <select id="cfgModel" class="form-select">
+                <option value="ollama/hermes-3-70b" ${settings.model === 'ollama/hermes-3-70b' ? 'selected' : ''}>Hermes 3 (70B) — Local Kernel Engine</option>
+                <option value="anthropic/claude-3-5-sonnet" ${settings.model === 'anthropic/claude-3-5-sonnet' ? 'selected' : ''}>Claude 3.5 Sonnet</option>
+                <option value="deepseek/deepseek-chat" ${settings.model === 'deepseek/deepseek-chat' ? 'selected' : ''}>DeepSeek V3</option>
+                <option value="openai/gpt-4o" ${settings.model === 'openai/gpt-4o' ? 'selected' : ''}>OpenAI GPT-4o</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">API Base URL</label>
+              <input type="text" id="cfgBaseUrl" class="form-input" value="${escapeHtml(settings.baseUrl)}" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">API Key</label>
+              <input type="password" id="cfgApiKey" class="form-input" placeholder="Optional for local models..." value="${escapeHtml(settings.apiKey)}" />
+            </div>
+            <div class="settings-footer">
+              <button type="button" class="btn-secondary" id="btnCancelSettings">Close</button>
+              <button type="button" class="btn-primary" id="btnSaveSettings">Save Changes</button>
+            </div>
+          `;
+        } else if (activeSettingsTab === 'agent') {
+          body.innerHTML = `
+            <div class="settings-header">
+              <div class="settings-title">Agent Execution &amp; Safety Policy</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Default Agent Architecture</label>
+              <select id="cfgAgentType" class="form-select">
+                <option value="CodeActAgent">CodeActAgent (Autonomous Bash + Rust Code)</option>
+                <option value="ArchitectAgent">ArchitectAgent (Monorepo Optimization)</option>
+                <option value="GuardianAgent">GuardianAgent (Anti-OOM Protection)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Iteration Steps Budget</label>
+              <input type="number" id="cfgMaxSteps" class="form-input" value="${escapeHtml(settings.maxSteps)}" />
+            </div>
+            <div class="form-group">
+              <label class="mode-toggle">
+                <input type="checkbox" id="cfgAutoApprove" ${settings.autoApprove ? 'checked' : ''} />
+                <span>Auto-run actions without prompting (Autonomous Mode)</span>
+              </label>
+            </div>
+            <div class="settings-footer">
+              <button type="button" class="btn-secondary" id="btnCancelSettings">Close</button>
+              <button type="button" class="btn-primary" id="btnSaveSettings">Save Changes</button>
+            </div>
+          `;
+        } else if (activeSettingsTab === 'guardian') {
+          body.innerHTML = `
+            <div class="settings-header">
+              <div class="settings-title">Kernel PSI &amp; Anti-OOM Watchdog</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Memory PSI Stall Threshold (%)</label>
+              <div class="form-desc">Trigger early mitigation when some_avg10 exceeds this value.</div>
+              <input type="number" step="0.1" id="cfgPsiThresh" class="form-input" value="${escapeHtml(settings.psiThreshold)}" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Proactive Earlyoom RAM Threshold (%)</label>
+              <div class="form-desc">Kill rogue child process if available RAM drops below this percentage.</div>
+              <input type="number" step="0.1" id="cfgRamThresh" class="form-input" value="${escapeHtml(settings.ramThreshold)}" />
+            </div>
+            <div class="settings-footer">
+              <button type="button" class="btn-secondary" id="btnCancelSettings">Close</button>
+              <button type="button" class="btn-primary" id="btnSaveSettings">Save Changes</button>
+            </div>
+          `;
+        } else if (activeSettingsTab === 'workspace') {
+          body.innerHTML = `
+            <div class="settings-header">
+              <div class="settings-title">Workspace Environment</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Workspace Root Directory</label>
+              <input type="text" class="form-input" readonly value="/mnt/windows/dev/Desktop/Oh-My-Works" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Daemon Port</label>
+              <input type="text" class="form-input" readonly value="9180 (http://127.0.0.1:9180)" />
+            </div>
+            <div class="settings-footer">
+              <button type="button" class="btn-secondary" id="btnCancelSettings">Close</button>
+              <button type="button" class="btn-primary" id="btnSaveSettings">Save Changes</button>
+            </div>
+          `;
+        }
+
+        // Save & Cancel listeners
+        const btnCancel = document.getElementById('btnCancelSettings');
+        if (btnCancel) {
+          btnCancel.addEventListener('click', () => {
+            settingsModal.classList.remove('show');
+          });
+        }
+
+        const btnSave = document.getElementById('btnSaveSettings');
+        if (btnSave) {
+          btnSave.addEventListener('click', () => {
+            if (document.getElementById('cfgModel')) settings.model = document.getElementById('cfgModel').value;
+            if (document.getElementById('cfgBaseUrl')) settings.baseUrl = document.getElementById('cfgBaseUrl').value;
+            if (document.getElementById('cfgApiKey')) settings.apiKey = document.getElementById('cfgApiKey').value;
+            if (document.getElementById('cfgMaxSteps')) settings.maxSteps = document.getElementById('cfgMaxSteps').value;
+            if (document.getElementById('cfgAutoApprove')) settings.autoApprove = document.getElementById('cfgAutoApprove').checked;
+
+            localStorage.setItem('omw_model', settings.model);
+            localStorage.setItem('omw_base_url', settings.baseUrl);
+            localStorage.setItem('omw_api_key', settings.apiKey);
+            localStorage.setItem('omw_max_steps', settings.maxSteps);
+            localStorage.setItem('omw_auto_approve', settings.autoApprove);
+
+            alert('OpenHands settings saved successfully!');
+            settingsModal.classList.remove('show');
+          });
+        }
+      }
+
+      // 4. Render Right Content (Files, Terminal, Browser, Guardian, Sessions)
+      function renderRightContent() {
+        const container = document.getElementById('workspaceContent');
+        if (!container) return;
+
+        if (activeRightTab === 'files') {
+          container.innerHTML = `
+            <div class="files-layout">
+              <div class="file-tree">
+                <div style="font-size: 10px; font-weight: 700; color: var(--muted-foreground); margin-bottom: 6px; text-transform: uppercase;">Workspace Files</div>
+                ${projectFiles.map(f => `
+                  <div class="tree-item ${f.path === activeFilePath ? 'active' : ''}" data-file="${f.path}">
+                    <span>${f.type === 'dir' ? '📁' : '📄'}</span>
+                    <span>${f.name}</span>
                   </div>
-                  <span style="font-size: 11px; color: var(--muted-foreground); font-family: var(--font-mono);">Context: 4.2k / 128k</span>
-                </div>
-                <div class="toolbar">
-                  <button type="button" class="button-subtle" id="btnClearThread">Bersihkan</button>
-                </div>
+                `).join('')}
               </div>
+              <div class="file-editor-view" id="fileEditorView">// File: ${activeFilePath}
+//! OpenHands Workspace File Inspector
+// Reading crates/omw-guardian/src/lib.rs
 
-              <!-- Message Stream -->
-              <div class="chat-scroll-area" id="chatScrollArea">
-                ${hasMessages ? `
-                  <div class="chat-thread-container">
-                    ${curThread.messages.map(m => {
-                      if (m.role === 'user') {
-                        return `
-                          <div class="msg-row msg-user">
-                            <div class="msg-bubble">
-                              <div class="msg-body">${escapeHtml(m.text)}</div>
-                            </div>
-                            <div class="msg-avatar avatar-user">U</div>
-                          </div>
-                        `;
-                      } else {
-                        return `
-                          <div class="msg-row msg-assistant">
-                            <div class="msg-avatar avatar-assistant">H</div>
-                            <div class="msg-bubble">
-                              <div class="msg-sender-meta">
-                                <strong>${escapeHtml(m.agent || 'Hermes Orchestrator')}</strong>
-                                <span>• 0.12s latency</span>
-                              </div>
+use omw_core::{KernelPsi, MemoryPressure};
 
-                              ${m.thought ? `
-                                <details class="thought-details" open>
-                                  <summary class="thought-summary">
-                                    <span>Proses Berpikir (Reasoning)</span>
-                                  </summary>
-                                  <div class="thought-content">${escapeHtml(m.thought)}</div>
-                                </details>
-                              ` : ''}
+pub enum HealthLevel {
+    Safe,
+    Warning,
+    Critical,
+}
 
-                              ${m.tool ? `
-                                <div class="tool-card">
-                                  <div class="tool-card-header">
-                                    <span class="tool-title">
-                                      <span>⚙</span>
-                                      <span>${escapeHtml(m.tool.name)}</span>
-                                    </span>
-                                    <span class="tool-status-pill">COMPLETED</span>
-                                  </div>
-                                  <div class="tool-card-body">${escapeHtml(m.tool.output)}</div>
-                                </div>
-                              ` : ''}
+pub struct Guardian;
 
-                              <div class="msg-body">${formatMarkdown(m.text)}</div>
-                            </div>
-                          </div>
-                        `;
-                      }
-                    }).join('')}
-                  </div>
-                ` : `
-                  <div class="welcome-hero">
-                    <div class="welcome-mark">H</div>
-                    <div class="welcome-title">Oh My Works — Meta-AI Harness</div>
-                    <div class="welcome-subtitle">
-                      Asisten multi-agen otonom berbasis kernel Rust dan layout Hermes Desktop. Delegasikan tugas, periksa kernel PSI, atau jalankan automasi.
-                    </div>
-
-                    <div class="prompt-grid">
-                      <div class="prompt-chip" data-prompt="Periksa kondisi tekanan memori /proc/pressure/memory dan status anti-OOM">
-                        <div class="prompt-chip-title">
-                          <span>🛡️</span>
-                          <span>Audit Kernel PSI &amp; Anti-OOM</span>
-                        </div>
-                        <div class="prompt-chip-desc">Evaluasi stall level memori dan pastikan desktop aman dari OOM stall.</div>
-                      </div>
-
-                      <div class="prompt-chip" data-prompt="Pindai kerentanan keamanan lokal dengan Strix Autonomous Pentest">
-                        <div class="prompt-chip-title">
-                          <span>🎯</span>
-                          <span>Jalankan Pentest Strix</span>
-                        </div>
-                        <div class="prompt-chip-desc">Audit celah injeksi, kebocoran token, dan verifikasi exploit PoC.</div>
-                      </div>
-
-                      <div class="prompt-chip" data-prompt="Buat blueprint arsitektur aplikasi dan mock scaffold dengan REA Cloner">
-                        <div class="prompt-chip-title">
-                          <span>📐</span>
-                          <span>Ekstrak Blueprint REA</span>
-                        </div>
-                        <div class="prompt-chip-desc">Analisis bundle front-end dan generate layout scaffold otomatis.</div>
-                      </div>
-
-                      <div class="prompt-chip" data-prompt="Sinkronkan seluruh 45 sesi multi-turn dari ~/.prime dan ~/.codex">
-                        <div class="prompt-chip-title">
-                          <span>🔄</span>
-                          <span>Sinkron Sesi Cindy</span>
-                        </div>
-                        <div class="prompt-chip-desc">Indeks riwayat transkrip antar-agen lokal secara instan.</div>
-                      </div>
-                    </div>
-                  </div>
-                `}
-              </div>
-
-              <!-- Hermes Elevated Bottom Input -->
-              <div class="chat-input-container">
-                <div class="chat-input-box">
-                  <div class="chat-input-top-row">
-                    <span style="font-size: 10px; color: var(--muted-foreground); font-family: var(--font-mono);">Target Agen:</span>
-                    <span class="agent-pill ${selectedMention === '@all' ? 'active' : ''}" data-mention="@all">@all (Orchestrator)</span>
-                    <span class="agent-pill ${selectedMention === '@architect' ? 'active' : ''}" data-mention="@architect">@architect</span>
-                    <span class="agent-pill ${selectedMention === '@strix' ? 'active' : ''}" data-mention="@strix">@strix (Pentest)</span>
-                    <span class="agent-pill ${selectedMention === '@guardian' ? 'active' : ''}" data-mention="@guardian">@guardian (Anti-OOM)</span>
-                    <span class="agent-pill ${selectedMention === '@rea' ? 'active' : ''}" data-mention="@rea">@rea (Cloner)</span>
-                  </div>
-
-                  <textarea id="harnessInput" class="chat-textarea" placeholder="Tulis instruksi untuk Meta-Harness... (Enter kirim, Shift+Enter baris baru)"></textarea>
-
-                  <div class="chat-input-bottom-row">
-                    <span class="input-hint">Tools aktif: PSI Watchdog, Session Harvester, REA, Strix</span>
-                    <button type="button" class="btn-send" id="btnSendPrompt">➔</button>
-                  </div>
-                </div>
-              </div>
+impl Guardian {
+    pub fn assess() -> Result<(HealthLevel, MemoryPressure), String> {
+        let p = KernelPsi::read_pressure();
+        let level = if p.some_avg10 > 25.0 || p.available_percent() < 10.0 {
+            HealthLevel::Critical
+        } else if p.some_avg10 > 10.0 || p.available_percent() < 20.0 {
+            HealthLevel::Warning
+        } else {
+            HealthLevel::Safe
+        };
+        Ok((level, p))
+    }
+}</div>
             </div>
           `;
 
-          // Event bindings
-          const chatScroll = document.getElementById('chatScrollArea');
-          if (chatScroll) {
-            chatScroll.scrollTop = chatScroll.scrollHeight;
-          }
-
-          // Mention pills
-          sec.querySelectorAll('.agent-pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-              selectedMention = pill.getAttribute('data-mention');
-              sec.querySelectorAll('.agent-pill').forEach(p => p.classList.remove('active'));
-              pill.classList.add('active');
+          container.querySelectorAll('.tree-item').forEach(item => {
+            item.addEventListener('click', () => {
+              activeFilePath = item.getAttribute('data-file');
+              renderRightContent();
             });
           });
 
-          // Suggestion chips
-          sec.querySelectorAll('.prompt-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-              const prompt = chip.getAttribute('data-prompt');
-              dispatchHarnessMessage(prompt);
-            });
-          });
-
-          // Clear button
-          const btnClear = document.getElementById('btnClearThread');
-          if (btnClear) {
-            btnClear.addEventListener('click', () => {
-              if (curThread) {
-                curThread.messages = [];
-                renderMainContent();
-              }
-            });
-          }
-
-          // Input textarea & send button
-          const textarea = document.getElementById('harnessInput');
-          const btnSend = document.getElementById('btnSendPrompt');
-
-          if (textarea && btnSend) {
-            textarea.focus();
-            textarea.addEventListener('keydown', (e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                const val = textarea.value.trim();
-                if (val) {
-                  dispatchHarnessMessage(val);
-                }
-              }
-            });
-
-            btnSend.addEventListener('click', () => {
-              const val = textarea.value.trim();
-              if (val) {
-                dispatchHarnessMessage(val);
-              }
-            });
-          }
-
-        } else if (currentTab === 'sessions') {
-          const active = sessionsData.find(s => s.id === activeSessionId) || sessionsData[0];
-          if (!active) {
-            sec.innerHTML = `<div style="padding: 24px; color: var(--muted-foreground); font-size: 12px;">Pilih sesi di sebelah kiri untuk melihat detail.</div>`;
-            return;
-          }
-
-          sec.innerHTML = `
-            <div class="content-header">
-              <div class="content-breadcrumbs">
-                <span>workspace</span>
-                <span>/</span>
-                <span class="active">sessions</span>
-              </div>
-              <div class="toolbar">
-                <span class="badge">${sessionsData.length} Sesi Terbaca</span>
-              </div>
-            </div>
-            <div class="content-body">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 16px;">
-                <div>
-                  <div style="font-size: 18px; font-weight: 600; color: var(--foreground); letter-spacing: -0.02em;">
-                    ${escapeHtml(active.title || 'Active Session')}
-                  </div>
-                  <div style="color: var(--muted-foreground); font-family: var(--font-mono); font-size: 11px; margin-top: 4px;">
-                    Source: ${active.source} • Created: ${new Date(active.created_at).toLocaleString()} • ID: ${active.id}
-                  </div>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                  <button type="button" class="button-subtle" onclick="navigator.clipboard.writeText('${active.file_path}')">
-                    Salin Path
-                  </button>
-                </div>
-              </div>
-
-              <div class="card-grid">
-                <div class="metric-card">
-                  <div class="metric-card-label">Jumlah Pesan / Interaksi</div>
-                  <div class="metric-card-val">${active.message_count}</div>
-                  <div class="metric-card-sub">Multi-turn context transcript</div>
-                </div>
-                <div class="metric-card">
-                  <div class="metric-card-label">Working Directory (CWD)</div>
-                  <div class="metric-card-val" style="font-size: 13px; font-family: var(--font-mono); word-break: break-all;">${escapeHtml(active.cwd || '-')}</div>
-                  <div class="metric-card-sub">Local workspace target</div>
-                </div>
-                <div class="metric-card">
-                  <div class="metric-card-label">File Transkrip di Disk</div>
-                  <div class="metric-card-val" style="font-size: 11px; font-family: var(--font-mono); word-break: break-all;">${escapeHtml(active.file_path)}</div>
-                  <div class="metric-card-sub">Cindy Harvester Adapter</div>
-                </div>
-              </div>
-
-              <div style="font-size: 12px; font-weight: 600; color: var(--foreground); margin-bottom: 8px;">Cuplikan Transkrip Sesi:</div>
-              <div class="terminal-view"># Sesi Terbaca dari Harvester (~/.prime, ~/.codex, ~/.claude)
-Source: ${active.source}
-File:   ${active.file_path}
-CWD:    ${active.cwd}
-Status: Read-only live synchronized transcript
-
-[SYSTEM] Initialized multi-agent session monitor.
-[SYNCHRONIZED] Transkrip aktif tersinkronisasi dengan Cindy session adapter architecture.</div>
-            </div>
-          `;
-        } else if (currentTab === 'terminals') {
-          sec.innerHTML = `
-            <div class="content-header">
-              <div class="content-breadcrumbs"><span>workspace</span> / <span class="active">terminals</span></div>
-              <div class="toolbar"><span class="badge badge-success">ONLINE</span></div>
-            </div>
-            <div class="content-body">
-              <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Interactive Terminal PTY (Multiplexer)</div>
-              <div class="terminal-view" style="min-height: 420px;">ivano@omw-host:~/Oh-My-Works$ ./target/debug/omw-cli status
+        } else if (activeRightTab === 'terminal') {
+          container.innerHTML = `
+            <div class="terminal-container">
+ivano@omw-host:~/Oh-My-Works$ ./target/debug/omw-cli status
 OMW Guardian Status: [OK - SAFE]
 Memory: 46.3% available (5901.9 MB / 12752.9 MB)
 PSI Stall: some avg10=0.00%, full avg10=0.00%
@@ -1515,172 +1166,167 @@ Discovered Agent Sessions on Laptop (Cindy session-import model): 45 sessions
   [02] [Prime] [Claims] Pengajuan + upload bukti + approval (23 msgs)
   [03] [Prime] [Admin-Approvals] Approval workflow multi-level (14 msgs)
 
+ivano@omw-host:~/Oh-My-Works$ # Interactive PTY Bridge Active
 ivano@omw-host:~/Oh-My-Works$ █</div>
+          `;
+        } else if (activeRightTab === 'browser') {
+          container.innerHTML = `
+            <div style="flex: 1; display: flex; flex-direction: column; background: #000;">
+              <div style="height: 36px; background: #14171e; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 12px; gap: 8px;">
+                <span style="font-size: 11px; color: var(--muted-foreground); font-family: var(--font-mono);">URL:</span>
+                <input type="text" value="http://127.0.0.1:9180/sessions" readonly style="flex: 1; height: 24px; background: #090a0d; border: 1px solid var(--border); border-radius: 4px; color: #adbac7; font-size: 11px; font-family: var(--font-mono); padding: 0 8px;" />
+                <span class="status-badge status-done" style="font-size: 9px;">LIVE 200 OK</span>
+              </div>
+              <div class="terminal-container" style="color: #7ee787;">
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 48920
+
+[
+  {
+    "id": "01a194e4-1f03-748d-81cc-f9da16234856",
+    "source": "Prime",
+    "title": "Oh-My-Works Desktop Workspace & Meta-Harness",
+    "cwd": "/mnt/windows/dev/Desktop/Oh-My-Works",
+    "message_count": 48
+  },
+  ...
+]</div>
             </div>
           `;
-        } else if (currentTab === 'guardian') {
-          sec.innerHTML = `
-            <div class="content-header">
-              <div class="content-breadcrumbs"><span>workspace</span> / <span class="active">guardian</span></div>
-              <div class="toolbar"><span class="badge badge-success">ACTIVE</span></div>
-            </div>
-            <div class="content-body">
-              <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Kernel PSI &amp; Anti-OOM Guardian Telemetry</div>
-              <div class="card-grid">
-                <div class="metric-card">
-                  <div class="metric-card-label">Kernel Memory PSI (Some 10s)</div>
-                  <div class="metric-card-val" style="color: var(--success);">0.00%</div>
-                  <div class="metric-card-sub">Stall threshold: &gt; 25.00%</div>
+        } else if (activeRightTab === 'guardian') {
+          container.innerHTML = `
+            <div style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+              <div style="font-size: 16px; font-weight: 600;">Anti-OOM Guardian &amp; Linux Kernel PSI</div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;">
+                  <div style="font-size: 11px; text-transform: uppercase; color: var(--muted-foreground);">Memory PSI Stall (10s)</div>
+                  <div style="font-size: 24px; font-weight: 700; color: var(--success); font-family: var(--font-mono);">${telemetry.some_avg10.toFixed(2)}%</div>
+                  <div style="font-size: 11px; color: var(--muted-foreground);">Threshold: &gt; 25.0%</div>
                 </div>
-                <div class="metric-card">
-                  <div class="metric-card-label">Available System RAM</div>
-                  <div class="metric-card-val">5,901 MB</div>
-                  <div class="metric-card-sub">46.3% of 12,752 MB total</div>
+                <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;">
+                  <div style="font-size: 11px; text-transform: uppercase; color: var(--muted-foreground);">Available RAM</div>
+                  <div style="font-size: 24px; font-weight: 700; color: var(--foreground); font-family: var(--font-mono);">5,901 MB</div>
+                  <div style="font-size: 11px; color: var(--muted-foreground);">46.3% of 12.7 GB</div>
                 </div>
-                <div class="metric-card">
-                  <div class="metric-card-label">Watchdog Response Time</div>
-                  <div class="metric-card-val">&lt; 1 ms</div>
-                  <div class="metric-card-sub">Direct /proc read, stdlib fs</div>
+                <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;">
+                  <div style="font-size: 11px; text-transform: uppercase; color: var(--muted-foreground);">Watchdog Latency</div>
+                  <div style="font-size: 24px; font-weight: 700; color: var(--cyan); font-family: var(--font-mono);">&lt; 1 ms</div>
+                  <div style="font-size: 11px; color: var(--muted-foreground);">Zero alloc /proc read</div>
                 </div>
               </div>
-              <div class="terminal-view">[OK] /proc/pressure/memory reader active.
-[INFO] Container limits synchronized with cgroup v2.
-[PROTECTION] Earlyoom memory reaper is armed to protect main desktop processes from Linux OOM stall.</div>
+              <div class="terminal-container" style="max-height: 240px;">
+[OK] /proc/pressure/memory connected.
+[CGROUP] Linux cgroup v2 limits loaded.
+[EARLYOOM] Armed with 15% threshold policy.</div>
             </div>
           `;
-        } else if (currentTab === 'memory') {
-          sec.innerHTML = `
-            <div class="content-header">
-              <div class="content-breadcrumbs"><span>workspace</span> / <span class="active">memory</span></div>
-              <div class="toolbar"><span class="badge">3 NODES</span></div>
-            </div>
-            <div class="content-body">
-              <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Tri-Layer Graph Memory (Episodic, Semantic, Procedural)</div>
-              <div class="card-grid">
-                <div class="metric-card">
-                  <div class="metric-card-label">Total Knowledge Nodes</div>
-                  <div class="metric-card-val">3</div>
-                  <div class="metric-card-sub">Graphify tri-layer representation</div>
-                </div>
-                <div class="metric-card">
-                  <div class="metric-card-label">Inter-Agent Edges</div>
-                  <div class="metric-card-val">2</div>
-                  <div class="metric-card-sub">Semantic dependency links</div>
-                </div>
+        } else if (activeRightTab === 'sessions') {
+          container.innerHTML = `
+            <div style="padding: 16px; overflow-y: auto;">
+              <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Discovered Agent Sessions (${sessionsData.length})</div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${sessionsData.map(s => `
+                  <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <div style="font-size: 13px; font-weight: 600; color: var(--foreground);">${escapeHtml(s.title || 'Session')}</div>
+                      <div style="font-size: 11px; color: var(--muted-foreground); font-family: var(--font-mono);">${escapeHtml(s.cwd || '-')} • ${s.message_count} msgs</div>
+                    </div>
+                    <span class="status-badge status-done">${s.source}</span>
+                  </div>
+                `).join('')}
               </div>
-              <div class="terminal-view">[Graph Memory Query]:
-Node [Core Architecture] --(protected_by)--> Node [Guardian Watchdog]
-Node [Session Harvester] --(provides_data_to)--> Node [OMW Desktop Workspace]
-Query latency: 0.04ms</div>
-            </div>
-          `;
-        } else if (currentTab === 'automations') {
-          sec.innerHTML = `
-            <div class="content-header">
-              <div class="content-breadcrumbs"><span>workspace</span> / <span class="active">automations</span></div>
-              <div class="toolbar"><span class="badge badge-success">READY</span></div>
-            </div>
-            <div class="content-body">
-              <div style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Automations: REA App Cloner &amp; Strix Security Pentest</div>
-              <div class="card-grid">
-                <div class="metric-card">
-                  <div class="metric-card-label">REA Mimic Blueprints</div>
-                  <div class="metric-card-val">2 Generated</div>
-                  <div class="metric-card-sub">AppLayoutChrome + AuthApiBridge</div>
-                </div>
-                <div class="metric-card">
-                  <div class="metric-card-label">Strix Pentest Findings</div>
-                  <div class="metric-card-val" style="color: var(--success);">0 Critical</div>
-                  <div class="metric-card-sub">1 Low (CSP header recommendation)</div>
-                </div>
-              </div>
-              <div class="terminal-view">[REA Mimic]: Generated scaffold layout clone and mock auth bridge.
-[Strix Scanner]: Audited SQL injection, SSRF, and command execution vectors. Target clean.</div>
             </div>
           `;
         }
       }
 
-      function dispatchHarnessMessage(userText) {
-        const curThread = threads.find(t => t.id === activeThreadId) || threads[0];
-        if (!curThread) return;
+      // 5. Chat Input Execution Handler
+      const taskInput = document.getElementById('taskInput');
+      const btnSendTask = document.getElementById('btnSendTask');
+      const chatMessages = document.getElementById('chatMessages');
 
-        // Update thread title if empty
-        if (curThread.messages.length === 0) {
-          curThread.title = userText.slice(0, 32) + (userText.length > 32 ? '...' : '');
-        }
+      function executeTask() {
+        const text = taskInput.value.trim();
+        if (!text) return;
 
-        // Add user message
-        curThread.messages.push({
-          role: 'user',
-          text: userText
-        });
+        currentStep += 1;
+        document.getElementById('currentStep').textContent = currentStep;
 
-        // Determine agent persona based on target
-        let targetAgent = 'Hermes Meta-Orchestrator';
-        let thought = 'Menganalisis prompt pengguna dan menyusun rencana eksekusi...';
-        let toolName = 'omw_harness::dispatch_task()';
-        let toolOutput = 'Task dispatched via zero-allocation DAG.';
-        let reply = '';
+        // User Block
+        const userDiv = document.createElement('div');
+        userDiv.className = 'message-block';
+        userDiv.innerHTML = `
+          <div class="message-header">
+            <span>USER INSTRUCTION</span>
+            <span>Step ${currentStep}</span>
+          </div>
+          <div class="user-card">${escapeHtml(text)}</div>
+        `;
+        chatMessages.appendChild(userDiv);
 
-        const lower = userText.toLowerCase();
-        if (selectedMention === '@guardian' || lower.includes('psi') || lower.includes('oom') || lower.includes('memori')) {
-          targetAgent = 'Kernel Optimizer (Guardian)';
-          thought = 'Membaca status real-time dari /proc/pressure/memory dan kernel psi reader...';
-          toolName = 'omw_guardian::assess()';
-          toolOutput = 'Status: SAFE\nMemory Pressure: 0.00% stall\nAvailable RAM: 5,901 MB';
-          reply = 'Pemeriksaan kernel PSI selesai:\n- **Status**: SAFE\n- **Tekanan Memori (avg10)**: 0.00%\n- **RAM Tersedia**: 46.3%\nSistem aman dari pembekuan dan OOM.';
-        } else if (selectedMention === '@strix' || lower.includes('pentest') || lower.includes('keamanan') || lower.includes('scan')) {
-          targetAgent = 'Security Auditor (Strix)';
-          thought = 'Menjalankan audit kerentanan statis dan dinamis pada target workspace...';
-          toolName = 'omw_clone::StrixScanner::audit_all()';
-          toolOutput = 'Scanned: 18 endpoints\nCritical: 0\nHigh: 0\nMedium: 0\nLow: 1 (Add Content-Security-Policy)';
-          reply = 'Audit pentest selesai:\n- **Celah Kritis**: `0`\n- **Temuan**: Target aman dari SQL Injection dan RCE.\n- **Saran**: Tambahkan header CSP pada konfigurasi daemon.';
-        } else if (selectedMention === '@rea' || lower.includes('cloner') || lower.includes('blueprint') || lower.includes('klona')) {
-          targetAgent = 'Reverse Engineer (REA)';
-          thought = 'Mengekstraksi struktur layout dan membuat komponen mock UI...';
-          toolName = 'omw_clone::ReaCloner::generate_blueprint()';
-          toolOutput = 'Extracted: AppLayoutChrome.vue, AuthBridge.ts\nTokens: Tailwind dark zinc';
-          reply = 'Blueprint aplikasi berhasil dibuat:\n- Komponen layout: `AppLayoutChrome`\n- Mock bridge: `AuthApiBridge`\nTersimpan di direktori `crates/omw-clone/output`.';
-        } else if (selectedMention === '@architect' || lower.includes('arsitektur') || lower.includes('rust') || lower.includes('monorepo')) {
-          targetAgent = 'Code Architect';
-          thought = 'Mengevaluasi hierarki dependensi Cargo workspace dan alokasi memori...';
-          toolName = 'omw_core::Architecture::analyze()';
-          toolOutput = 'Workspace: 11 crates\nBuild time: clean 1.4s\nZero-alloc runtime verified.';
-          reply = 'Arsitektur monorepo dalam kondisi optimal:\n- **Crates**: 11 packages modular.\n- **Zero-Dependency Core**: stdlib filesystem & stdlib network sockets.';
-        } else {
-          targetAgent = 'Hermes Meta-Orchestrator';
-          thought = 'Menjadwalkan eksekusi subagen terkoordinasi untuk tugas ini...';
-          toolName = 'omw_harness::HarnessOrchestrator::coordinate()';
-          toolOutput = 'Delegation: Auto-routed to optimal subagent cluster.';
-          reply = `Instruksi "${userText}" berhasil diproses dan dikoordinasikan ke cluster subagen OMW. Semua subagen siap menerima instruksi lanjutan.`;
-        }
+        // Assistant Thought & Action Block
+        currentStep += 1;
+        const agentType = document.getElementById('agentTypeSelect').value;
+        const agentDiv = document.createElement('div');
+        agentDiv.className = 'message-block';
+        agentDiv.innerHTML = `
+          <div class="message-header">
+            <span>${agentType.toUpperCase()} ACTION</span>
+            <span>Step ${currentStep}</span>
+          </div>
+          <details class="thought-container" open>
+            <summary>${agentType} Thought</summary>
+            <div style="margin-top: 6px; font-family: var(--font-mono); font-size: 11px;">
+              Executing task via OpenHands CodeAct loop. Delegating action to backend crates/omw-core...
+            </div>
+          </details>
+          <div class="action-card" style="margin-top: 6px;">
+            <div class="action-card-header">
+              <span class="action-title">
+                <span>$</span>
+                <span>cargo check --workspace</span>
+              </span>
+              <span class="status-badge status-done" style="font-size: 9px;">EXIT 0</span>
+            </div>
+            <div class="action-body">Finished dev profile in 0.14s. All 11 crates compiled successfully.</div>
+          </div>
+        `;
+        chatMessages.appendChild(agentDiv);
 
-        // Add assistant reply
-        curThread.messages.push({
-          role: 'assistant',
-          agent: targetAgent,
-          thought: thought,
-          tool: {
-            name: toolName,
-            output: toolOutput
-          },
-          text: reply
-        });
-
-        renderCurrentTab();
+        taskInput.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
       }
 
-      function formatMarkdown(text) {
-        if (!text) return '';
-        let escaped = escapeHtml(text);
-        // Bold
-        escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        // Inline code
-        escaped = escaped.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px;">$1</code>');
-        // Newlines
-        escaped = escaped.replace(/\n/g, '<br/>');
-        return escaped;
+      btnSendTask.addEventListener('click', executeTask);
+      taskInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          executeTask();
+        }
+      });
+
+      // 6. Fetch Telemetry & Sessions from daemon :9180
+      async function fetchData() {
+        try {
+          const [sessRes, telRes] = await Promise.all([
+            fetch('http://127.0.0.1:9180/sessions').then(r => r.json()).catch(() => []),
+            fetch('http://127.0.0.1:9180/').then(r => r.json()).catch(() => null)
+          ]);
+
+          sessionsData = sessRes || [];
+          document.getElementById('cindyBadge').textContent = sessionsData.length || 45;
+
+          if (telRes) {
+            telemetry = telRes;
+            const dot = document.getElementById('psiRailDot');
+            if (dot) {
+              dot.style.background = telemetry.status === 'SAFE' ? 'var(--success)' : 'var(--destructive)';
+            }
+          }
+        } catch (err) {
+          console.error("Telemetry error:", err);
+        }
       }
 
       function escapeHtml(str) {
@@ -1693,7 +1339,8 @@ Query latency: 0.04ms</div>
           .replace(/'/g, '&#39;');
       }
 
-      // Initial fetch
+      // Initial render
+      renderRightContent();
       fetchData();
       setInterval(fetchData, 4000);
     })();
