@@ -3,44 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oh My Works — 9Router Live AI Canvas</title>
+  <title>Oh My Works — AI Arena & Multi-Agent Canvas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0d0e10;
-      --sidebar-bg: #131417;
-      --surface: #191b1f;
-      --surface-hover: #22252a;
-      --surface-active: #2b2f36;
+      --bg: #0c0d10;
+      --sidebar-bg: #121317;
+      --surface: #18191f;
+      --surface-hover: #21232b;
+      --surface-active: #2a2d37;
       --border: rgba(255, 255, 255, 0.08);
       --border-hover: rgba(255, 255, 255, 0.16);
-      --border-focus: rgba(138, 180, 248, 0.45);
+      --border-focus: rgba(138, 180, 248, 0.5);
       --text: #f0f2f5;
-      --text-secondary: #c2c6cf;
-      --text-muted: #848995;
+      --text-secondary: #c0c4ce;
+      --text-muted: #808694;
       --blue: #8ab4f8;
       --purple: #c58af9;
       --pink: #f28b82;
       --green: #81c995;
       --amber: #fdd663;
       --gemini-gradient: linear-gradient(135deg, #4285f4 0%, #9b72cf 40%, #d96570 75%, #ff8f73 100%);
+      --arena-gradient: linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #8b5cf6 100%);
       --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: var(--bg);
       color: var(--text);
       font-family: var(--font-main);
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.6;
       height: 100vh;
       overflow: hidden;
@@ -50,28 +47,22 @@
       position: relative;
     }
 
-    /* Ambient Subtle Background */
+    /* Ambient background glow */
     body::before {
       content: '';
       position: absolute;
-      top: -15%;
-      left: 35%;
-      width: 50%;
+      top: -20%;
+      left: 30%;
+      width: 60%;
       height: 50%;
-      background: radial-gradient(circle, rgba(66, 133, 244, 0.07) 0%, rgba(155, 114, 207, 0.04) 40%, transparent 70%);
+      background: radial-gradient(circle, rgba(66, 133, 244, 0.06) 0%, rgba(155, 114, 207, 0.03) 50%, transparent 75%);
       pointer-events: none;
       z-index: 0;
-      filter: blur(80px);
-      animation: ambientDrift 16s ease-in-out infinite alternate;
-    }
-
-    @keyframes ambientDrift {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(-4%, 6%) scale(1.06); }
+      filter: blur(90px);
     }
 
     /* ==========================================================================
-       1. SIDEBAR
+       SIDEBAR (ChatGPT Desktop Style)
        ========================================================================== */
     .sidebar {
       width: 260px;
@@ -80,14 +71,12 @@
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 20;
+      transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 30;
       position: relative;
     }
 
-    .sidebar.collapsed {
-      width: 68px;
-    }
+    .sidebar.collapsed { width: 68px; }
 
     .sidebar-header {
       padding: 16px 14px;
@@ -97,10 +86,33 @@
       gap: 8px;
     }
 
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .brand-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .sidebar.collapsed .brand-title { display: none; }
+
     .icon-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
       background: transparent;
       border: none;
       color: var(--text-secondary);
@@ -116,33 +128,13 @@
       color: var(--text);
     }
 
-    .icon-btn svg {
-      width: 18px;
-      height: 18px;
-      stroke-width: 2;
-    }
-
-    .brand-tag {
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .sidebar.collapsed .brand-tag {
-      display: none;
-    }
-
     .btn-new-chat {
-      height: 42px;
-      margin: 4px 14px 14px;
+      height: 40px;
+      margin: 4px 14px 12px;
       padding: 0 14px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 21px;
+      border-radius: 20px;
       color: var(--text);
       font-family: var(--font-main);
       font-size: 13px;
@@ -160,19 +152,16 @@
       background: var(--surface-hover);
       border-color: var(--border-hover);
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     }
 
     .sidebar.collapsed .btn-new-chat {
       width: 40px;
       padding: 0;
       justify-content: center;
-      margin: 4px auto 14px;
+      margin: 4px auto 12px;
     }
 
-    .sidebar.collapsed .btn-new-chat span {
-      display: none;
-    }
+    .sidebar.collapsed .btn-new-chat span { display: none; }
 
     .sidebar-section-title {
       padding: 0 18px 8px;
@@ -183,9 +172,7 @@
       letter-spacing: 0.06em;
     }
 
-    .sidebar.collapsed .sidebar-section-title {
-      display: none;
-    }
+    .sidebar.collapsed .sidebar-section-title { display: none; }
 
     .history-list {
       flex: 1;
@@ -198,7 +185,7 @@
 
     .history-item {
       padding: 9px 12px;
-      border-radius: 12px;
+      border-radius: 10px;
       color: var(--text-secondary);
       font-size: 13px;
       font-weight: 500;
@@ -236,26 +223,13 @@
       display: none;
       place-items: center;
       cursor: pointer;
-      font-size: 12px;
     }
 
-    .history-item:hover .history-delete-btn {
-      display: grid;
-    }
+    .history-item:hover .history-delete-btn { display: grid; }
+    .history-delete-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--pink); }
 
-    .history-delete-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--pink);
-    }
-
-    .sidebar.collapsed .history-item {
-      padding: 9px 0;
-      justify-content: center;
-    }
-
-    .sidebar.collapsed .history-item span {
-      display: none;
-    }
+    .sidebar.collapsed .history-item { padding: 9px 0; justify-content: center; }
+    .sidebar.collapsed .history-item span { display: none; }
 
     .sidebar-footer {
       padding: 12px 14px;
@@ -275,33 +249,8 @@
       font-family: var(--font-mono);
     }
 
-    .telemetry-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: rgba(129, 201, 149, 0.12);
-      color: var(--green);
-      font-weight: 600;
-    }
-
-    .pulse-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px rgba(129, 201, 149, 0.8);
-      animation: pulseAnim 2s infinite;
-    }
-
-    @keyframes pulseAnim {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
-    }
-
     /* ==========================================================================
-       2. TOP BAR & 9ROUTER LIVE MODEL SELECTOR
+       MAIN VIEWPORT & TOPBAR (AIArena View Switcher)
        ========================================================================== */
     .main-viewport {
       flex: 1;
@@ -314,102 +263,107 @@
 
     .app-topbar {
       height: 56px;
-      padding: 0 20px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(12, 13, 16, 0.8);
+      backdrop-filter: blur(12px);
       flex-shrink: 0;
-      z-index: 10;
+      z-index: 20;
     }
 
-    .model-selector-container {
-      position: relative;
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    .model-pill-btn {
+    /* View Switcher: Single vs Arena */
+    .view-switcher {
+      display: flex;
+      align-items: center;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 6px 14px;
-      font-size: 13px;
+      border-radius: 12px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .view-btn {
+      padding: 5px 12px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .view-btn.active {
+      background: var(--surface-active);
+      color: var(--text);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Topbar Center: Model Selector Pills */
+    .topbar-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .model-picker-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 5px 12px;
+      font-size: 12.5px;
       font-weight: 600;
       color: var(--text);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       cursor: pointer;
       transition: all 0.15s ease;
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .model-pill-btn:hover {
+    .model-picker-pill:hover {
       background: var(--surface-hover);
       border-color: var(--border-hover);
     }
 
-    .model-pill-btn svg.arrow {
-      width: 12px;
-      height: 12px;
-      opacity: 0.6;
-      transition: transform 0.2s ease;
+    .model-picker-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+      flex-shrink: 0;
     }
 
-    .model-pill-btn.open svg.arrow {
-      transform: rotate(180deg);
+    .model-picker-pill.model-b .dot {
+      background: var(--purple);
     }
 
-    .model-dropdown-menu {
-      position: absolute;
-      top: 44px;
-      left: 0;
-      width: 310px;
-      background: var(--surface);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px;
-      padding: 6px;
-      display: none;
-      flex-direction: column;
-      gap: 4px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8);
-      z-index: 100;
-      backdrop-filter: blur(16px);
-      max-height: 380px;
-      overflow-y: auto;
-    }
-
-    .model-dropdown-menu.show {
-      display: flex;
-    }
-
-    .model-item {
-      padding: 9px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: background 0.12s;
-    }
-
-    .model-item:hover {
-      background: var(--surface-hover);
-    }
-
-    .model-item.active {
-      background: rgba(66, 133, 244, 0.12);
-    }
-
-    .model-item-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .model-item-sub {
+    .vs-badge {
       font-size: 11px;
-      color: var(--text-muted);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--amber);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 8px;
+      padding: 2px 7px;
     }
 
     .topbar-right {
@@ -418,13 +372,12 @@
       gap: 10px;
     }
 
-    /* 9Router Status Badge */
     .router-badge {
       display: flex;
       align-items: center;
       gap: 6px;
       padding: 4px 10px;
-      border-radius: 12px;
+      border-radius: 10px;
       background: rgba(129, 201, 149, 0.1);
       border: 1px solid rgba(129, 201, 149, 0.25);
       color: var(--green);
@@ -434,14 +387,14 @@
     }
 
     .btn-terminal-toggle {
-      height: 34px;
-      padding: 0 12px;
-      border-radius: 10px;
+      height: 32px;
+      padding: 0 10px;
+      border-radius: 8px;
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-secondary);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 500;
       display: flex;
       align-items: center;
@@ -456,56 +409,77 @@
       color: var(--blue);
     }
 
-    .avatar-circle {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--gemini-gradient);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
     /* ==========================================================================
-       3. CONVERSATION CANVAS
+       CANVAS CONTAINER (Single View vs Split Arena)
        ========================================================================== */
-    .canvas-scroll-area {
+    .arena-container {
       flex: 1;
-      overflow-y: auto;
       display: flex;
-      flex-direction: column;
+      overflow: hidden;
       position: relative;
     }
 
-    .canvas-inner {
-      width: 100%;
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 16px 20px 180px;
+    /* Left and Right Panes for Arena */
+    .arena-pane {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .arena-pane.pane-b {
+      border-left: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .pane-header {
+      height: 36px;
+      padding: 0 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .pane-header-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pane-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 170px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
       user-select: text;
     }
 
+    /* Welcome Hero (Single View) */
     .welcome-hero {
-      margin-top: 28px;
+      width: 100%;
+      max-width: 800px;
+      margin: 32px auto 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      animation: heroIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 12px;
+      animation: fadeIn 0.3s ease;
     }
 
-    @keyframes heroIn {
-      from { opacity: 0; transform: translateY(14px); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .hero-heading {
-      font-size: 44px;
+      font-size: 42px;
       font-weight: 700;
       letter-spacing: -0.035em;
       line-height: 1.15;
@@ -515,12 +489,12 @@
     }
 
     .hero-subheading {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 500;
       color: #6a6f7d;
       letter-spacing: -0.02em;
       line-height: 1.25;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .cards-grid {
@@ -532,48 +506,29 @@
     .suggestion-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 16px 18px;
-      min-height: 96px;
+      min-height: 90px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .suggestion-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 18px;
-      padding: 1px;
-      background: var(--gemini-gradient);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0;
-      transition: opacity 0.25s ease;
-      pointer-events: none;
+      transition: all 0.18s ease;
     }
 
     .suggestion-card:hover {
       background: var(--surface-hover);
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    }
-
-    .suggestion-card:hover::before {
-      opacity: 1;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      border-color: var(--border-hover);
     }
 
     .card-title {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
       color: var(--text);
-      line-height: 1.4;
     }
 
     .card-footer {
@@ -590,154 +545,90 @@
       font-family: var(--font-mono);
     }
 
-    .card-icon {
-      font-size: 14px;
-    }
-
+    /* Message Bubbles */
     .msg-row {
       display: flex;
-      gap: 14px;
+      gap: 12px;
       width: 100%;
-      animation: msgIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: msgIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     @keyframes msgIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .msg-user {
-      justify-content: flex-end;
-    }
+    .msg-user { justify-content: flex-end; }
 
     .bubble-user {
       background: var(--surface-hover);
       border: 1px solid var(--border);
-      border-radius: 20px 20px 4px 20px;
-      padding: 12px 18px;
+      border-radius: 18px 18px 4px 18px;
+      padding: 10px 16px;
       color: var(--text);
-      font-size: 14.5px;
-      line-height: 1.55;
-      max-width: 82%;
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 85%;
       word-break: break-word;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
     .assistant-body {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       min-width: 0;
     }
 
     .ai-avatar {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.05);
       display: grid;
       place-items: center;
       flex-shrink: 0;
       margin-top: 2px;
     }
 
-    .thinking-accordion {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 12px;
-      font-size: 12px;
-    }
-
-    .thinking-accordion summary {
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      color: var(--blue);
-    }
-
-    .thinking-text {
-      margin-top: 8px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: #9aa1b2;
-      line-height: 1.55;
-      white-space: pre-wrap;
-    }
-
-    .tool-box {
-      background: #000;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      font-family: var(--font-mono);
-      font-size: 12px;
-    }
-
-    .tool-header {
-      padding: 8px 12px;
-      background: #141517;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--text-secondary);
-      font-size: 11.5px;
-    }
-
-    .tool-body {
-      padding: 10px 14px;
-      color: #93c5fd;
-      white-space: pre-wrap;
-      max-height: 160px;
-      overflow-y: auto;
-      line-height: 1.55;
-    }
-
     .markdown-content {
-      font-size: 14.5px;
-      line-height: 1.65;
+      font-size: 14px;
+      line-height: 1.6;
       color: var(--text);
     }
 
     .typing-cursor {
       display: inline-block;
-      width: 7px;
-      height: 15px;
+      width: 6px;
+      height: 14px;
       background: var(--blue);
       margin-left: 3px;
       vertical-align: middle;
       animation: blink 0.8s infinite;
     }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .arena-pane.pane-b .typing-cursor { background: var(--purple); }
 
     .msg-actions {
       display: flex;
       align-items: center;
       gap: 4px;
-      margin-top: 4px;
-      opacity: 0.85;
+      margin-top: 2px;
     }
 
     .action-icon-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
       background: transparent;
       border: none;
       color: var(--text-muted);
       display: grid;
       place-items: center;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12px;
       transition: all 0.12s ease;
     }
 
@@ -746,100 +637,32 @@
       color: var(--text);
     }
 
-    /* Terminal Drawer */
-    .terminal-drawer {
-      position: absolute;
-      top: 56px;
-      right: 0;
-      bottom: 0;
-      width: 500px;
-      background: #090a0c;
-      border-left: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 40;
-      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.6);
-    }
-
-    .terminal-drawer.open {
-      transform: translateX(0);
-    }
-
-    .drawer-header {
-      height: 44px;
-      padding: 0 14px;
-      background: #111215;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-
-    .drawer-body {
-      flex: 1;
-      padding: 14px;
-      overflow-y: auto;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.6;
-      color: #8ab4f8;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .drawer-input-row {
-      height: 42px;
-      padding: 0 12px;
-      border-top: 1px solid var(--border);
-      background: #111215;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-    }
-
-    .drawer-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 12px;
-    }
-
-    /* Floating Prompt Bar */
+    /* ==========================================================================
+       FLOATING PROMPT BAR (Universal Bottom)
+       ========================================================================== */
     .floating-prompt-bar {
       position: absolute;
-      bottom: 20px;
+      bottom: 18px;
       left: 50%;
       transform: translateX(-50%);
-      width: calc(100% - 40px);
-      max-width: 820px;
+      width: calc(100% - 36px);
+      max-width: 860px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 28px;
+      border-radius: 26px;
       padding: 6px 14px 6px 10px;
       display: flex;
       flex-direction: column;
       gap: 4px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 12px 38px rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(12px);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.2s ease;
       z-index: 50;
     }
 
     .floating-prompt-bar:focus-within {
       border-color: var(--border-focus);
-      box-shadow: 0 14px 48px rgba(0, 0, 0, 0.9), 0 0 20px rgba(138, 180, 248, 0.2);
+      box-shadow: 0 14px 46px rgba(0, 0, 0, 0.9), 0 0 18px rgba(138, 180, 248, 0.25);
       transform: translateX(-50%) translateY(-2px);
     }
 
@@ -848,7 +671,7 @@
       align-items: center;
       gap: 6px;
       overflow-x: auto;
-      padding: 4px 6px 2px;
+      padding: 3px 6px 1px;
     }
 
     .mention-chip {
@@ -857,11 +680,11 @@
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 2px 9px;
+      padding: 2px 8px;
       color: var(--text-secondary);
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.15s ease;
+      transition: all 0.12s ease;
     }
 
     .mention-chip:hover, .mention-chip.active {
@@ -878,8 +701,8 @@
     }
 
     .btn-attach {
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       background: transparent;
       border: none;
@@ -889,31 +712,27 @@
       cursor: pointer;
       font-size: 18px;
       flex-shrink: 0;
-      transition: all 0.15s ease;
     }
 
-    .btn-attach:hover {
-      background: var(--surface-hover);
-      color: var(--text);
-    }
+    .btn-attach:hover { background: var(--surface-hover); color: var(--text); }
 
     .main-textarea {
       flex: 1;
       min-height: 26px;
-      max-height: 140px;
+      max-height: 130px;
       background: transparent;
       border: none;
       outline: none;
       color: var(--text);
       font-family: var(--font-main);
-      font-size: 14.5px;
+      font-size: 14px;
       line-height: 1.5;
       resize: none;
     }
 
     .btn-send {
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       background: transparent;
       border: none;
@@ -923,39 +742,277 @@
       cursor: pointer;
       font-size: 15px;
       flex-shrink: 0;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.18s ease;
     }
 
     .btn-send.active {
       background: var(--gemini-gradient);
       color: #fff;
-      box-shadow: 0 0 16px rgba(155, 114, 207, 0.5);
+      box-shadow: 0 0 14px rgba(155, 114, 207, 0.5);
       transform: scale(1.05);
     }
 
     .disclaimer {
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--text-muted);
       text-align: center;
       user-select: none;
-      margin-bottom: 2px;
+    }
+
+    /* ==========================================================================
+       SEARCHABLE MODEL PICKER MODAL (AIArena Style)
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: none;
+      place-items: center;
+      animation: modalFadeIn 0.18s ease;
+    }
+
+    .modal-overlay.show { display: grid; }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .model-modal {
+      width: 680px;
+      max-width: calc(100vw - 32px);
+      max-height: 82vh;
+      background: #14161b;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+      animation: modalZoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalZoomIn {
+      from { transform: scale(0.96) translateY(8px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-search-row {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #101115;
+    }
+
+    .search-input-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 12px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 13.5px;
+      font-family: var(--font-main);
+    }
+
+    .category-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .cat-tab {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.12s ease;
+    }
+
+    .cat-tab:hover, .cat-tab.active {
+      background: var(--surface-active);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .model-catalog-grid {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .model-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .model-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    .model-card.active {
+      border-color: var(--blue);
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .model-card-id {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      font-family: var(--font-mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .model-card-tags {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .model-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary);
+    }
+
+    /* Slide-out Terminal Drawer */
+    .terminal-drawer {
+      position: absolute;
+      top: 56px;
+      right: 0;
+      bottom: 0;
+      width: 480px;
+      background: #090a0c;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 60;
+      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .terminal-drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      height: 40px;
+      padding: 0 14px;
+      background: #111215;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .drawer-body {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: #8ab4f8;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .drawer-input-row {
+      height: 40px;
+      padding: 0 12px;
+      border-top: 1px solid var(--border);
+      background: #111215;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+    }
+
+    .drawer-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
     }
 
     .toast-msg {
       position: fixed;
-      top: 20px;
+      top: 16px;
       left: 50%;
       transform: translateX(-50%) translateY(-20px);
-      background: #1e2025;
+      background: #1c1e24;
       border: 1px solid var(--border-hover);
       color: #fff;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 12.5px;
+      padding: 7px 16px;
+      border-radius: 18px;
+      font-size: 12px;
       font-weight: 500;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.22s ease;
       z-index: 1000;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
     }
@@ -965,29 +1022,29 @@
       opacity: 1;
     }
 
-    /* Scrollbars */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
   </style>
 </head>
 <body>
 
-  <!-- Toast -->
   <div class="toast-msg" id="toastMsg">Notification</div>
 
   <!-- Sidebar -->
   <aside class="sidebar" id="appSidebar">
     <div class="sidebar-header">
       <button type="button" class="icon-btn" id="btnSidebarCollapse" title="Toggle Sidebar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
       </button>
-      <div class="brand-tag">Oh My Works</div>
+      <div class="brand-title">
+        <span>Oh My Works</span>
+        <span class="brand-badge">ARENA</span>
+      </div>
     </div>
 
     <button type="button" class="btn-new-chat" id="btnNewSession">
-      <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       <span>New session</span>
     </button>
 
@@ -997,10 +1054,7 @@
     <div class="sidebar-footer">
       <div class="telemetry-row">
         <span>Kernel PSI Stall</span>
-        <div class="telemetry-badge">
-          <span class="pulse-dot" id="psiPulse"></span>
-          <span id="psiLabel">0.00% SAFE</span>
-        </div>
+        <span id="psiLabel" style="color: var(--green); font-weight: 600;">0.00% SAFE</span>
       </div>
       <div class="telemetry-row">
         <span>Available RAM</span>
@@ -1012,81 +1066,83 @@
   <!-- Main Viewport -->
   <main class="main-viewport">
     <header class="app-topbar">
-      <!-- 9Router Model Dropdown -->
-      <div class="model-selector-container">
-        <div class="model-pill-btn" id="btnModelSelector">
-          <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-            <defs>
-              <linearGradient id="gemini-sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#4285F4"/>
-                <stop offset="0.4" stop-color="#9B72CF"/>
-                <stop offset="0.75" stop-color="#D96570"/>
-                <stop offset="1" stop-color="#FF8F73"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <span id="currentModelLabel">auto (9Router)</span>
-          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      <div class="topbar-left">
+        <!-- View Switcher -->
+        <div class="view-switcher">
+          <button type="button" class="view-btn" id="btnViewSingle">
+            <span>❚ Single</span>
+          </button>
+          <button type="button" class="view-btn active" id="btnViewSplit">
+            <span>❚❚ Split Arena</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Center: Model Selectors -->
+      <div class="topbar-center" id="topbarCenter">
+        <!-- Model A Pill -->
+        <div class="model-picker-pill" id="pillModelA" title="Click to search & change Model A">
+          <span class="dot"></span>
+          <span id="labelModelA">ag/gemini-4-argon-high</span>
+          <svg style="width: 12px; height: 12px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
 
-        <div class="model-dropdown-menu" id="modelDropdownMenu">
-          <div class="model-item active" data-model="auto">
-            <div>
-              <div class="model-item-title">✦ auto</div>
-              <div class="model-item-sub">9Router • Intelligent Load-Balancing</div>
-            </div>
-            <span>✓</span>
-          </div>
-          <div class="model-item" data-model="paid">
-            <div>
-              <div class="model-item-title">✦ paid</div>
-              <div class="model-item-sub">9Router • High-Capacity Cluster</div>
-            </div>
-          </div>
-          <div class="model-item" data-model="Haltech">
-            <div>
-              <div class="model-item-title">✦ Haltech</div>
-              <div class="model-item-sub">9Router • 1M Context Reasoning</div>
-            </div>
-          </div>
-          <div class="model-item" data-model="cbcn/deepseek-v4-pro">
-            <div>
-              <div class="model-item-title">✦ cbcn/deepseek-v4-pro</div>
-              <div class="model-item-sub">DeepSeek • Coding &amp; Architecture</div>
-            </div>
-          </div>
-          <div class="model-item" data-model="ag/gemini-4-argon-high">
-            <div>
-              <div class="model-item-title">✦ ag/gemini-4-argon-high</div>
-              <div class="model-item-sub">Google Gemini • High Precision</div>
-            </div>
-          </div>
+        <span class="vs-badge" id="arenaVsBadge">⚡ VS ⚡</span>
+
+        <!-- Model B Pill -->
+        <div class="model-picker-pill model-b" id="pillModelB" title="Click to search & change Model B">
+          <span class="dot"></span>
+          <span id="labelModelB">cbcn/deepseek-v4-pro</span>
+          <svg style="width: 12px; height: 12px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
       </div>
 
       <div class="topbar-right">
-        <!-- 9Router Status Indicator -->
-        <div class="router-badge" id="routerBadge" title="Connected to 9Router on port 20128">
-          <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green);"></span>
-          <span>9Router :20128</span>
+        <div class="router-badge" id="routerBadge" title="9Router connected on port 20128">
+          <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);"></span>
+          <span id="routerModelCount">65 Models</span>
         </div>
-
         <button type="button" class="btn-terminal-toggle" id="btnTerminalToggle">
           <span>>_ Terminal</span>
         </button>
-        <div class="avatar-circle" title="Ivano Wisnu">I</div>
       </div>
     </header>
 
-    <div class="canvas-scroll-area" id="canvasScroll">
-      <div class="canvas-inner" id="canvasInner"></div>
+    <!-- Arena Container (Single vs Split) -->
+    <div class="arena-container" id="arenaContainer">
+      <!-- Pane A (Left / Primary) -->
+      <section class="arena-pane" id="paneA">
+        <div class="pane-header" id="headerPaneA">
+          <div class="pane-header-title">
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--blue);"></span>
+            <span id="headerLabelA">ag/gemini-4-argon-high</span>
+          </div>
+          <div id="statPaneA" style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);">Ready</div>
+        </div>
+        <div class="pane-scroll" id="scrollPaneA">
+          <div class="canvas-inner" id="canvasInnerA"></div>
+        </div>
+      </section>
+
+      <!-- Pane B (Right / Competitor in Split View) -->
+      <section class="arena-pane pane-b" id="paneB">
+        <div class="pane-header" id="headerPaneB">
+          <div class="pane-header-title">
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--purple);"></span>
+            <span id="headerLabelB">cbcn/deepseek-v4-pro</span>
+          </div>
+          <div id="statPaneB" style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);">Ready</div>
+        </div>
+        <div class="pane-scroll" id="scrollPaneB">
+          <div class="canvas-inner" id="canvasInnerB"></div>
+        </div>
+      </section>
     </div>
 
     <!-- Floating Prompt Bar -->
     <div class="floating-prompt-bar">
       <div class="mentions-row">
-        <span class="mention-chip active" data-mention="@all">@all (Orchestrator)</span>
+        <span class="mention-chip active" data-mention="@all">@all (Both Models)</span>
         <span class="mention-chip" data-mention="@guardian">@guardian (Anti-OOM)</span>
         <span class="mention-chip" data-mention="@cindy">@cindy (Sessions)</span>
         <span class="mention-chip" data-mention="@terminal">@terminal</span>
@@ -1094,24 +1150,24 @@
       </div>
 
       <div class="input-row">
-        <button type="button" class="btn-attach" id="btnAttach" title="Attach context">+</button>
-        <textarea id="promptInput" class="main-textarea" rows="1" placeholder="Ask 9Router or type @agent..."></textarea>
+        <button type="button" class="btn-attach" id="btnAttach" title="Attach Context">+</button>
+        <textarea id="promptInput" class="main-textarea" rows="1" placeholder="Enter prompt to compare models side-by-side..."></textarea>
         <button type="button" class="btn-send" id="btnSend" title="Send message">➔</button>
       </div>
 
-      <div class="disclaimer">Powered by 9Router API Proxy (:20128). Responses streamed directly from live models.</div>
+      <div class="disclaimer">Oh My Works AI Arena • 9Router Live Engine • Real-time side-by-side comparison</div>
     </div>
 
-    <!-- Interactive Terminal Drawer -->
+    <!-- Slide-Out Terminal Drawer -->
     <div class="terminal-drawer" id="terminalDrawer">
       <div class="drawer-header">
-        <span>INTERACTIVE PTY — OM-WORKS</span>
-        <button type="button" class="icon-btn" id="btnCloseDrawer" style="width: 24px; height: 24px;">✕</button>
+        <span>INTERACTIVE MULTIPLEXER PTY</span>
+        <button type="button" class="icon-btn" id="btnCloseDrawer" style="width:24px;height:24px;">✕</button>
       </div>
       <div class="drawer-body" id="drawerBody">
-        <div>[OMW PTY BRIDGE INITIALIZED]</div>
-        <div>Connected to kernel pseudo-terminal &amp; 9Router daemon.</div>
-        <div style="color: #c4c7c5;">Commands: <code style="color: #fdd663;">status</code>, <code style="color: #fdd663;">router</code>, <code style="color: #fdd663;">sessions</code>, <code style="color: #fdd663;">clear</code>.</div>
+        <div>[OMW PTY ENGINE ACTIVE]</div>
+        <div>Connected to kernel daemon and 9Router proxy.</div>
+        <div style="color: #c4c7c5;">Commands: <code style="color: #fdd663;">models</code>, <code style="color: #fdd663;">status</code>, <code style="color: #fdd663;">sessions</code>, <code style="color: #fdd663;">clear</code>.</div>
       </div>
       <div class="drawer-input-row">
         <span style="color: #81c995;">omw$</span>
@@ -1120,22 +1176,85 @@
     </div>
   </main>
 
+  <!-- ==========================================================================
+       SEARCHABLE MODEL MODAL (AIArena Catalog)
+       ========================================================================== -->
+  <div class="modal-overlay" id="modelModalOverlay">
+    <div class="model-modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>Select Model</span>
+          <span style="font-size:12px;font-weight:500;color:var(--text-muted);" id="modalTargetSlot">(Model A)</span>
+        </div>
+        <button type="button" class="icon-btn" id="btnCloseModal">✕</button>
+      </div>
+
+      <div class="modal-search-row">
+        <div class="search-input-box">
+          <svg style="width:16px;height:16px;opacity:0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" class="search-input" id="modelSearchInput" placeholder="Search 65+ models (gemini, claude, deepseek, qwen, kimi, glm)..." />
+        </div>
+
+        <div class="category-tabs" id="categoryTabs">
+          <button type="button" class="cat-tab active" data-cat="all">All (65)</button>
+          <button type="button" class="cat-tab" data-cat="google">Google</button>
+          <button type="button" class="cat-tab" data-cat="anthropic">Anthropic</button>
+          <button type="button" class="cat-tab" data-cat="openai">OpenAI</button>
+          <button type="button" class="cat-tab" data-cat="deepseek">DeepSeek</button>
+          <button type="button" class="cat-tab" data-cat="qwen">Qwen</button>
+          <button type="button" class="cat-tab" data-cat="kimi">Kimi</button>
+          <button type="button" class="cat-tab" data-cat="glm">GLM</button>
+          <button type="button" class="cat-tab" data-cat="combos">Combos</button>
+        </div>
+      </div>
+
+      <div class="model-catalog-grid" id="modelCatalogGrid"></div>
+    </div>
+  </div>
+
   <script>
     (function () {
-      // 9Router Configuration
       const ROUTER_URL = 'http://127.0.0.1:20128/v1/chat/completions';
       const ROUTER_KEY = 'Bearer sk-9d6e79acb260096f-53jdmp-b86fbd6e';
 
-      let activeSessionId = 'sess-1';
-      let activeModel = 'auto';
+      // App State
+      let viewMode = 'split'; // 'single' | 'split'
+      let modelA = 'ag/gemini-4-argon-high';
+      let modelB = 'cbcn/deepseek-v4-pro';
+      let activeSessionId = 'sess-arena-1';
       let selectedMention = '@all';
       let isSidebarCollapsed = false;
       let isTerminalOpen = false;
+      let modalSelectingSlot = 'A'; // 'A' | 'B'
+
+      let allModels = [
+        "auto", "paid", "Haltech",
+        "ag/gemini-4-argon-high", "ag/gemini-3.8-flash-high", "ag/claude-opus-5-5-high",
+        "cbcn/deepseek-v4-pro", "cbcn/deepseek-v4.1-flash", "cbcn/glm-5.3", "cbcn/glm-5.2", "cbcn/glm-5.1",
+        "cbcn/minimax-m3", "cbcn/kimi-k3-1", "cbcn/kimi-k2.8-preview",
+        "ivano/gpt-5.6-luna", "ivano/gpt-5.6-sol", "ivano/gpt-5.6-terra", "ivano/gpt-5.5",
+        "ivano/claude-sonnet-4.5", "ivano/claude-haiku-4.5",
+        "ivano/gemini-3.7-flash", "ivano/gemini-3.5-flash", "ivano/gemini-3.1-pro", "ivano/gemini-3.6-flash",
+        "ivano/deepseek-v4-pro", "ivano/deepseek-v4-flash", "ivano/deepseek-3.2",
+        "ivano/qwen-3.8-max", "ivano/qwen-3.7-max", "ivano/qwen-3.8-flash",
+        "ivano/kimi-k3", "ivano/kimi-k2.7-code", "ivano/glm-5.3", "ivano/glm-5.2", "ivano/minimax-m3", "ivano/nemotron-3-ultra",
+        "mux/deepseek-v4.1-flash", "mux/gemini-3.8-flash", "mux/gemini-3.7-flash", "mux/gpt-5.6-luna", "mux/kimi-k3",
+        "oc/union-alpha", "oc/muse-spark-1.3-contributor-free", "oc/jev-1.13-free", "mmf/mimo-auto"
+      ];
 
       let sessions = [
-        { id: 'sess-1', title: '9Router Live Connection', messages: [] },
-        { id: 'sess-2', title: 'Kernel PSI & Anti-OOM', messages: [] },
-        { id: 'sess-3', title: 'Cindy Sessions (45)', messages: [] }
+        {
+          id: 'sess-arena-1',
+          title: 'Arena: Gemini vs DeepSeek',
+          messagesA: [],
+          messagesB: []
+        },
+        {
+          id: 'sess-arena-2',
+          title: 'Kernel PSI Anti-OOM Guardian',
+          messagesA: [],
+          messagesB: []
+        }
       ];
 
       // Toast Notification
@@ -1153,45 +1272,134 @@
         sidebar.classList.toggle('collapsed', isSidebarCollapsed);
       });
 
-      // Model Selector
-      const btnModel = document.getElementById('btnModelSelector');
-      const modelMenu = document.getElementById('modelDropdownMenu');
-      const modelLabel = document.getElementById('currentModelLabel');
+      // View Mode Toggle (Single vs Split)
+      const btnViewSingle = document.getElementById('btnViewSingle');
+      const btnViewSplit = document.getElementById('btnViewSplit');
+      const paneB = document.getElementById('paneB');
+      const pillModelB = document.getElementById('pillModelB');
+      const arenaVsBadge = document.getElementById('arenaVsBadge');
 
-      btnModel.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = modelMenu.classList.contains('show');
-        modelMenu.classList.toggle('show', !isOpen);
-        btnModel.classList.toggle('open', !isOpen);
+      function setViewMode(mode) {
+        viewMode = mode;
+        btnViewSingle.classList.toggle('active', mode === 'single');
+        btnViewSplit.classList.toggle('active', mode === 'split');
+        if (mode === 'single') {
+          paneB.style.display = 'none';
+          pillModelB.style.display = 'none';
+          arenaVsBadge.style.display = 'none';
+        } else {
+          paneB.style.display = 'flex';
+          pillModelB.style.display = 'flex';
+          arenaVsBadge.style.display = 'inline-block';
+        }
+        renderBothPanes();
+      }
+
+      btnViewSingle.addEventListener('click', () => setViewMode('single'));
+      btnViewSplit.addEventListener('click', () => setViewMode('split'));
+
+      // Model Modal Logic
+      const modalOverlay = document.getElementById('modelModalOverlay');
+      const btnCloseModal = document.getElementById('btnCloseModal');
+      const modalTargetSlot = document.getElementById('modalTargetSlot');
+      const modelSearchInput = document.getElementById('modelSearchInput');
+      const modelCatalogGrid = document.getElementById('modelCatalogGrid');
+      const pillModelA = document.getElementById('pillModelA');
+      const labelModelA = document.getElementById('labelModelA');
+      const labelModelB = document.getElementById('labelModelB');
+      const headerLabelA = document.getElementById('headerLabelA');
+      const headerLabelB = document.getElementById('headerLabelB');
+
+      function openModelModal(slot) {
+        modalSelectingSlot = slot;
+        modalTargetSlot.textContent = slot === 'A' ? '(Model A — Left)' : '(Model B — Right)';
+        modelSearchInput.value = '';
+        renderModelCards(allModels);
+        modalOverlay.classList.add('show');
+        modelSearchInput.focus();
+      }
+
+      pillModelA.addEventListener('click', () => openModelModal('A'));
+      pillModelB.addEventListener('click', () => openModelModal('B'));
+      btnCloseModal.addEventListener('click', () => modalOverlay.classList.remove('show'));
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) modalOverlay.classList.remove('show');
       });
 
-      document.addEventListener('click', () => {
-        modelMenu.classList.remove('show');
-        btnModel.classList.remove('open');
-      });
+      function renderModelCards(models) {
+        modelCatalogGrid.innerHTML = '';
+        const curActive = modalSelectingSlot === 'A' ? modelA : modelB;
 
-      document.querySelectorAll('.model-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const target = item.getAttribute('data-model');
-          activeModel = target;
-          modelLabel.textContent = `${target} (9Router)`;
-          document.querySelectorAll('.model-item').forEach(m => {
-            m.classList.toggle('active', m.getAttribute('data-model') === target);
-            m.querySelector('span')?.remove();
-            if (m.getAttribute('data-model') === target) {
-              const tick = document.createElement('span');
-              tick.textContent = '✓';
-              m.appendChild(tick);
-            }
+        models.forEach(m => {
+          const card = document.createElement('div');
+          card.className = `model-card ${m === curActive ? 'active' : ''}`;
+
+          let provider = 'Router';
+          if (m.includes('gemini')) provider = 'Google';
+          else if (m.includes('claude')) provider = 'Anthropic';
+          else if (m.includes('gpt')) provider = 'OpenAI';
+          else if (m.includes('deepseek')) provider = 'DeepSeek';
+          else if (m.includes('qwen')) provider = 'Alibaba';
+          else if (m.includes('kimi')) provider = 'Moonshot';
+          else if (m.includes('glm')) provider = 'Zhipu GLM';
+
+          card.innerHTML = `
+            <div class="model-card-id" title="${escapeHtml(m)}">${escapeHtml(m)}</div>
+            <div class="model-card-tags">
+              <span class="model-tag" style="background: rgba(66, 133, 244, 0.15); color: var(--blue);">${provider}</span>
+              ${m === 'auto' || m === 'paid' ? '<span class="model-tag">Balanced</span>' : '<span class="model-tag">Pro</span>'}
+            </div>
+          `;
+
+          card.addEventListener('click', () => {
+            selectModel(modalSelectingSlot, m);
+            modalOverlay.classList.remove('show');
           });
-          modelMenu.classList.remove('show');
-          btnModel.classList.remove('open');
-          showToast(`9Router model set to: ${target}`);
+
+          modelCatalogGrid.appendChild(card);
+        });
+      }
+
+      function selectModel(slot, mId) {
+        if (slot === 'A') {
+          modelA = mId;
+          labelModelA.textContent = mId;
+          headerLabelA.textContent = mId;
+          showToast(`Model A set to: ${mId}`);
+        } else {
+          modelB = mId;
+          labelModelB.textContent = mId;
+          headerLabelB.textContent = mId;
+          showToast(`Model B set to: ${mId}`);
+        }
+      }
+
+      // Search and Category Tabs
+      modelSearchInput.addEventListener('input', () => {
+        const query = modelSearchInput.value.toLowerCase().trim();
+        const filtered = allModels.filter(m => m.toLowerCase().includes(query));
+        renderModelCards(filtered);
+      });
+
+      document.querySelectorAll('.cat-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const cat = tab.getAttribute('data-cat');
+          let filtered = allModels;
+          if (cat === 'google') filtered = allModels.filter(m => m.includes('gemini'));
+          else if (cat === 'anthropic') filtered = allModels.filter(m => m.includes('claude'));
+          else if (cat === 'openai') filtered = allModels.filter(m => m.includes('gpt'));
+          else if (cat === 'deepseek') filtered = allModels.filter(m => m.includes('deepseek'));
+          else if (cat === 'qwen') filtered = allModels.filter(m => m.includes('qwen'));
+          else if (cat === 'kimi') filtered = allModels.filter(m => m.includes('kimi'));
+          else if (cat === 'glm') filtered = allModels.filter(m => m.includes('glm'));
+          else if (cat === 'combos') filtered = allModels.filter(m => ['auto', 'paid', 'Haltech', 'oc/union-alpha'].includes(m));
+          renderModelCards(filtered);
         });
       });
 
-      // Session History
+      // Session History Management
       const historyList = document.getElementById('historyList');
       function renderHistory() {
         historyList.innerHTML = '';
@@ -1220,7 +1428,7 @@
       function switchSession(id) {
         activeSessionId = id;
         renderHistory();
-        renderCanvas();
+        renderBothPanes();
       }
 
       function deleteSession(id) {
@@ -1231,104 +1439,117 @@
         sessions = sessions.filter(s => s.id !== id);
         if (activeSessionId === id) activeSessionId = sessions[0].id;
         renderHistory();
-        renderCanvas();
-        showToast('Session removed');
+        renderBothPanes();
+        showToast('Session deleted');
       }
 
       document.getElementById('btnNewSession').addEventListener('click', () => {
-        const newId = `sess-${Date.now()}`;
-        sessions.unshift({ id: newId, title: 'New 9Router Session', messages: [] });
+        const newId = `sess-arena-${Date.now()}`;
+        sessions.unshift({
+          id: newId,
+          title: 'New Arena Battle',
+          messagesA: [],
+          messagesB: []
+        });
         activeSessionId = newId;
         renderHistory();
-        renderCanvas();
-        showToast('Started new 9Router session');
+        renderBothPanes();
+        showToast('Created new session');
       });
 
-      // Canvas Render
-      const canvasInner = document.getElementById('canvasInner');
-      const canvasScroll = document.getElementById('canvasScroll');
+      // Render Panes
+      const canvasInnerA = document.getElementById('canvasInnerA');
+      const canvasInnerB = document.getElementById('canvasInnerB');
+      const scrollPaneA = document.getElementById('scrollPaneA');
+      const scrollPaneB = document.getElementById('scrollPaneB');
 
-      function renderCanvas() {
+      function renderBothPanes() {
         const cur = sessions.find(s => s.id === activeSessionId);
-        if (!cur || cur.messages.length === 0) {
-          canvasInner.innerHTML = `
+        if (!cur) return;
+
+        renderSinglePane(canvasInnerA, cur.messagesA, 'A', scrollPaneA);
+        if (viewMode === 'split') {
+          renderSinglePane(canvasInnerB, cur.messagesB, 'B', scrollPaneB);
+        }
+      }
+
+      function renderSinglePane(container, messages, slot, scrollContainer) {
+        if (!messages || messages.length === 0) {
+          container.innerHTML = `
             <div class="welcome-hero">
-              <div class="hero-heading">Hello, Ivano</div>
-              <div class="hero-subheading">9Router is connected. How can I help you today?</div>
+              <div class="hero-heading">AI Arena Battle</div>
+              <div class="hero-subheading">Side-by-side LLM benchmark &amp; multi-agent harness</div>
 
               <div class="cards-grid">
-                <div class="suggestion-card" data-prompt="Periksa kondisi kernel PSI di /proc/pressure/memory dan pastikan anti-OOM aktif">
-                  <div class="card-title">Audit Tekanan Memori Kernel PSI &amp; Anti-OOM</div>
+                <div class="suggestion-card" data-prompt="Bandingkan performa dan arsitektur anti-OOM Linux PSI stall dengan solusi tradisional cgroup memory">
+                  <div class="card-title">Analisis Linux Kernel PSI Stall vs Cgroup</div>
                   <div class="card-footer">
-                    <span class="card-tag">omw-guardian</span>
-                    <span class="card-icon">🛡️</span>
+                    <span class="card-tag">benchmark</span>
+                    <span style="font-size: 14px;">⚡</span>
                   </div>
                 </div>
 
-                <div class="suggestion-card" data-prompt="Pindai 45 sesi multi-turn di ~/.prime dan ~/.codex dengan Cindy Harvester">
-                  <div class="card-title">Pindai 45 Sesi Transkrip Agen Lokal Cindy</div>
+                <div class="suggestion-card" data-prompt="Buatkan fungsi Rust untuk menghitung SHA-256 streaming file besar tanpa lonjakan RAM">
+                  <div class="card-title">Rust Streaming SHA-256 Zero-Copy</div>
                   <div class="card-footer">
-                    <span class="card-tag">omw-session</span>
-                    <span class="card-icon">🔄</span>
-                  </div>
-                </div>
-
-                <div class="suggestion-card" data-prompt="Jelaskan arsitektur anti-OOM guardian dan kernel memory pressure stall di Linux">
-                  <div class="card-title">Analisis Arsitektur Linux PSI Memory Stall</div>
-                  <div class="card-footer">
-                    <span class="card-tag">9router::live</span>
-                    <span class="card-icon">⚡</span>
-                  </div>
-                </div>
-
-                <div class="suggestion-card" data-prompt="Buat rencana pentest Strix untuk memeriksa celah keamanan port 9180">
-                  <div class="card-title">Rencana Audit Keamanan Strix Pentest</div>
-                  <div class="card-footer">
-                    <span class="card-tag">omw-clone::strix</span>
-                    <span class="card-icon">🎯</span>
+                    <span class="card-tag">code-gen</span>
+                    <span style="font-size: 14px;">🦀</span>
                   </div>
                 </div>
               </div>
             </div>
           `;
-          bindCardClicks();
-        } else {
-          canvasInner.innerHTML = '';
-          cur.messages.forEach(msg => appendMessageElement(msg));
-        }
-        canvasScroll.scrollTop = canvasScroll.scrollHeight;
-      }
-
-      function bindCardClicks() {
-        document.querySelectorAll('.suggestion-card').forEach(card => {
-          card.addEventListener('click', () => {
-            const prompt = card.getAttribute('data-prompt');
-            handleSend(prompt);
+          container.querySelectorAll('.suggestion-card').forEach(card => {
+            card.addEventListener('click', () => {
+              handleSend(card.getAttribute('data-prompt'));
+            });
           });
-        });
+        } else {
+          container.innerHTML = '';
+          messages.forEach(msg => appendMsgElement(container, msg, slot));
+        }
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }
 
-      // Mentions
-      document.querySelectorAll('.mention-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-          selectedMention = chip.getAttribute('data-mention');
-          document.querySelectorAll('.mention-chip').forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          const area = document.getElementById('promptInput');
-          if (!area.value.startsWith(selectedMention)) {
-            area.value = `${selectedMention} ` + area.value.replace(/^@[a-z]+\s*/, '');
-            area.focus();
-          }
-        });
-      });
+      function appendMsgElement(container, msg, slot) {
+        const row = document.createElement('div');
+        row.className = `msg-row ${msg.role === 'user' ? 'msg-user' : ''}`;
 
-      // Prompt Sending via 9Router Live SSE
+        if (msg.role === 'user') {
+          row.innerHTML = `<div class="bubble-user">${escapeHtml(msg.content)}</div>`;
+        } else {
+          const accentColor = slot === 'A' ? 'var(--blue)' : 'var(--purple)';
+          row.innerHTML = `
+            <div class="ai-avatar">
+              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${accentColor};"></span>
+            </div>
+            <div class="assistant-body">
+              <div style="font-size:11px;font-weight:700;color:${accentColor};font-family:var(--font-mono);">${escapeHtml(msg.model || '')}</div>
+              <div class="markdown-content">${formatMarkdown(msg.content)}</div>
+              <div class="msg-actions">
+                <button type="button" class="action-icon-btn btn-copy" title="Copy text">📋</button>
+                <button type="button" class="action-icon-btn" title="Good">👍</button>
+                <button type="button" class="action-icon-btn" title="Bad">👎</button>
+              </div>
+            </div>
+          `;
+          row.querySelector('.btn-copy')?.addEventListener('click', () => {
+            navigator.clipboard.writeText(msg.content);
+            showToast('Copied to clipboard');
+          });
+        }
+
+        container.appendChild(row);
+        return row;
+      }
+
+      // Prompt Dispatch & Dual Concurrent Streaming
       const promptInput = document.getElementById('promptInput');
       const btnSend = document.getElementById('btnSend');
 
       promptInput.addEventListener('input', () => {
         promptInput.style.height = 'auto';
-        promptInput.style.height = `${Math.min(140, promptInput.scrollHeight)}px`;
+        promptInput.style.height = `${Math.min(130, promptInput.scrollHeight)}px`;
         btnSend.classList.toggle('active', promptInput.value.trim().length > 0);
       });
 
@@ -1346,41 +1567,68 @@
       });
 
       document.getElementById('btnAttach').addEventListener('click', () => {
-        showToast('Attached Oh-My-Works workspace context.');
+        showToast('Attached repository workspace context.');
+      });
+
+      // Mentions
+      document.querySelectorAll('.mention-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          selectedMention = chip.getAttribute('data-mention');
+          document.querySelectorAll('.mention-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          const area = document.getElementById('promptInput');
+          if (!area.value.startsWith(selectedMention)) {
+            area.value = `${selectedMention} ` + area.value.replace(/^@[a-z]+\s*/, '');
+            area.focus();
+          }
+        });
       });
 
       async function handleSend(text) {
         const cur = sessions.find(s => s.id === activeSessionId);
         if (!cur) return;
 
-        if (cur.messages.length === 0) {
-          cur.title = text.length > 28 ? text.slice(0, 28) + '...' : text;
+        if (cur.messagesA.length === 0) {
+          cur.title = text.length > 26 ? text.slice(0, 26) + '...' : text;
           renderHistory();
         }
 
         const userMsg = { role: 'user', content: text };
-        cur.messages.push(userMsg);
-        renderCanvas();
+        cur.messagesA.push(userMsg);
+        if (viewMode === 'split') cur.messagesB.push(userMsg);
+        renderBothPanes();
 
         promptInput.value = '';
         promptInput.style.height = 'auto';
         btnSend.classList.remove('active');
 
-        // AI Response Container
-        const aiMsg = {
-          role: 'assistant',
-          toolName: `9Router [${activeModel}]`,
-          thoughts: `Routing prompt via 9Router port 20128 (model: ${activeModel})...`,
-          content: ''
-        };
-        cur.messages.push(aiMsg);
+        // Prepare AI containers
+        const aiMsgA = { role: 'assistant', model: modelA, content: '' };
+        cur.messagesA.push(aiMsgA);
+        const rowA = appendMsgElement(canvasInnerA, aiMsgA, 'A');
+        const mdA = rowA.querySelector('.markdown-content');
+        mdA.innerHTML = '<span class="typing-cursor"></span>';
 
-        const rowElem = appendMessageElement(aiMsg);
-        const mdContainer = rowElem.querySelector('.markdown-content');
-        mdContainer.innerHTML = '<span class="typing-cursor"></span>';
+        let promiseB = Promise.resolve();
+        if (viewMode === 'split') {
+          const aiMsgB = { role: 'assistant', model: modelB, content: '' };
+          cur.messagesB.push(aiMsgB);
+          const rowB = appendMsgElement(canvasInnerB, aiMsgB, 'B');
+          const mdB = rowB.querySelector('.markdown-content');
+          mdB.innerHTML = '<span class="typing-cursor"></span>';
 
-        // Prepare message payload
-        const apiMessages = cur.messages
+          promiseB = streamFromRouter(modelB, cur.messagesB, aiMsgB, mdB, scrollPaneB, 'B');
+        }
+
+        const promiseA = streamFromRouter(modelA, cur.messagesA, aiMsgA, mdA, scrollPaneA, 'A');
+        await Promise.allSettled([promiseA, promiseB]);
+      }
+
+      async function streamFromRouter(targetModel, messageList, msgObj, mdContainer, scrollContainer, slot) {
+        const statElem = document.getElementById(slot === 'A' ? 'statPaneA' : 'statPaneB');
+        if (statElem) statElem.textContent = 'Streaming...';
+
+        const apiPayload = messageList
           .filter(m => m.role === 'user' || (m.role === 'assistant' && m.content))
           .map(m => ({ role: m.role, content: m.content }));
 
@@ -1392,15 +1640,13 @@
               'Authorization': ROUTER_KEY
             },
             body: JSON.stringify({
-              model: activeModel,
-              messages: apiMessages,
+              model: targetModel,
+              messages: apiPayload,
               stream: true
             })
           });
 
-          if (!res.ok) {
-            throw new Error(`9Router error ${res.status}: ${res.statusText}`);
-          }
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
           const reader = res.body.getReader();
           const decoder = new TextDecoder('utf-8');
@@ -1412,7 +1658,7 @@
 
             buffer += decoder.decode(value, { stream: true });
             const lines = buffer.split('\n');
-            buffer = lines.pop(); // keep tail
+            buffer = lines.pop();
 
             for (const line of lines) {
               const trimmed = line.trim();
@@ -1422,75 +1668,26 @@
                   const json = JSON.parse(trimmed.slice(6));
                   const delta = json.choices?.[0]?.delta?.content;
                   if (delta) {
-                    aiMsg.content += delta;
-                    mdContainer.innerHTML = formatMarkdown(aiMsg.content) + '<span class="typing-cursor"></span>';
-                    canvasScroll.scrollTop = canvasScroll.scrollHeight;
+                    msgObj.content += delta;
+                    mdContainer.innerHTML = formatMarkdown(msgObj.content) + '<span class="typing-cursor"></span>';
+                    scrollContainer.scrollTop = scrollContainer.scrollHeight;
                   }
-                } catch (err) {
-                  // ignore non-json SSE lines
-                }
+                } catch (e) {}
               }
             }
           }
-
-          // Finish streaming
-          mdContainer.innerHTML = formatMarkdown(aiMsg.content);
+          mdContainer.innerHTML = formatMarkdown(msgObj.content);
+          if (statElem) statElem.textContent = 'Completed';
         } catch (err) {
-          console.error("9Router fetch error:", err);
-          aiMsg.content = `**Peringatan 9Router:** Gagal terhubung ke \`http://127.0.0.1:20128/v1\` (${err.message}).\n\n*Memakai fallback offline response...*\n\nSistem tetap aman: Kernel PSI memori 0.00% stall. Tersedia 5,901 MB RAM.`;
-          mdContainer.innerHTML = formatMarkdown(aiMsg.content);
+          msgObj.content = `*[Model error: ${err.message}]*`;
+          mdContainer.innerHTML = formatMarkdown(msgObj.content);
+          if (statElem) statElem.textContent = 'Error';
         }
       }
 
-      function appendMessageElement(msg) {
-        const row = document.createElement('div');
-        row.className = `msg-row ${msg.role === 'user' ? 'msg-user' : ''}`;
-
-        if (msg.role === 'user') {
-          row.innerHTML = `<div class="bubble-user">${escapeHtml(msg.content)}</div>`;
-        } else {
-          row.innerHTML = `
-            <div class="ai-avatar">
-              <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#gemini-sparkle-grad)"/>
-              </svg>
-            </div>
-            <div class="assistant-body">
-              ${msg.thoughts ? `
-                <details class="thinking-accordion" open>
-                  <summary>Show thinking</summary>
-                  <div class="thinking-text">${escapeHtml(msg.thoughts)}</div>
-                </details>
-              ` : ''}
-
-              <div class="markdown-content">${formatMarkdown(msg.content)}</div>
-
-              <div class="msg-actions">
-                <button type="button" class="action-icon-btn" title="Good">👍</button>
-                <button type="button" class="action-icon-btn" title="Bad">👎</button>
-                <button type="button" class="action-icon-btn btn-copy" title="Copy text">📋</button>
-                <button type="button" class="action-icon-btn" title="Share">↗</button>
-                <button type="button" class="action-icon-btn" title="Retry">↻</button>
-              </div>
-            </div>
-          `;
-
-          const copyBtn = row.querySelector('.btn-copy');
-          if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-              navigator.clipboard.writeText(msg.content);
-              showToast('Copied to clipboard');
-            });
-          }
-        }
-
-        canvasInner.appendChild(row);
-        return row;
-      }
-
-      // Terminal Drawer
+      // Terminal Drawer Logic
       const terminalDrawer = document.getElementById('terminalDrawer');
-      const btnTerminal = document.getElementById('btnTerminalToggle');
+      const btnTerminalToggle = document.getElementById('btnTerminalToggle');
       const btnCloseDrawer = document.getElementById('btnCloseDrawer');
       const drawerBody = document.getElementById('drawerBody');
       const drawerInput = document.getElementById('drawerInput');
@@ -1498,11 +1695,11 @@
       function toggleDrawer() {
         isTerminalOpen = !isTerminalOpen;
         terminalDrawer.classList.toggle('open', isTerminalOpen);
-        btnTerminal.classList.toggle('active', isTerminalOpen);
+        btnTerminalToggle.classList.toggle('active', isTerminalOpen);
         if (isTerminalOpen) drawerInput.focus();
       }
 
-      btnTerminal.addEventListener('click', toggleDrawer);
+      btnTerminalToggle.addEventListener('click', toggleDrawer);
       btnCloseDrawer.addEventListener('click', toggleDrawer);
 
       drawerInput.addEventListener('keydown', (e) => {
@@ -1520,37 +1717,38 @@
         drawerBody.appendChild(echo);
 
         const out = document.createElement('div');
-        if (cmd === 'router') {
-          out.innerHTML = `9Router Status: ONLINE on http://127.0.0.1:20128/v1<br/>Active Model: ${activeModel}<br/>PID: 1681 (Next.js server :3120)`;
+        if (cmd === 'models') {
+          out.innerHTML = `Loaded ${allModels.length} models from 9Router.<br/>Active Model A: ${modelA}<br/>Active Model B: ${modelB}`;
         } else if (cmd === 'status') {
           out.innerHTML = `OMW Guardian: SAFE (0.00% stall)<br/>RAM: 5,901 MB available (46.3%)`;
         } else if (cmd === 'sessions') {
-          out.innerHTML = `Cindy: 45 multi-turn agent sessions indexed.`;
+          out.innerHTML = `Active Sessions: ${sessions.length} sessions tracked.`;
         } else if (cmd === 'clear') {
           drawerBody.innerHTML = '';
           return;
         } else {
-          out.innerHTML = `Executed: ${escapeHtml(cmd)} (exit 0)`;
+          out.innerHTML = `Command executed: ${escapeHtml(cmd)} (exit 0)`;
         }
         drawerBody.appendChild(out);
         drawerBody.scrollTop = drawerBody.scrollHeight;
       }
 
-      // Sync Telemetry & 9Router Health Check
-      async function syncTelemetry() {
+      // Sync Models from 9Router Live API
+      async function syncModelsFromRouter() {
         try {
-          const badge = document.getElementById('routerBadge');
-          const rCheck = await fetch('http://127.0.0.1:20128/v1/models', {
+          const res = await fetch('http://127.0.0.1:20128/v1/models', {
             headers: { 'Authorization': ROUTER_KEY }
-          }).then(r => r.ok).catch(() => false);
-
-          if (badge) {
-            badge.style.color = rCheck ? 'var(--green)' : 'var(--pink)';
-            badge.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${rCheck ? 'var(--green)' : 'var(--pink)'};"></span> <span>9Router ${rCheck ? ':20128' : 'OFFLINE'}</span>`;
+          });
+          if (res.ok) {
+            const json = await res.json();
+            const list = json.data?.map(m => m.id);
+            if (list && list.length > 0) {
+              allModels = list;
+              document.getElementById('routerModelCount').textContent = `${allModels.length} Models`;
+              document.querySelector('.cat-tab[data-cat="all"]').textContent = `All (${allModels.length})`;
+            }
           }
-        } catch (e) {
-          // ignore
-        }
+        } catch (e) {}
       }
 
       function formatMarkdown(text) {
@@ -1558,7 +1756,7 @@
         let escaped = escapeHtml(text);
         escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
-        escaped = escaped.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px;">$1</code>');
+        escaped = escaped.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 11.5px;">$1</code>');
         escaped = escaped.replace(/\n/g, '<br/>');
         return escaped;
       }
@@ -1573,10 +1771,10 @@
           .replace(/'/g, '&#39;');
       }
 
+      // Init
       renderHistory();
-      renderCanvas();
-      syncTelemetry();
-      setInterval(syncTelemetry, 5000);
+      renderBothPanes();
+      syncModelsFromRouter();
     })();
   </script>
 </body>
