@@ -810,7 +810,7 @@
         <span id="ramVal">5,901 MB Free</span>
       </div>
       <button type="button" class="btn-secondary" id="btnOpenSettingsSide" style="margin-top:4px;width:100%;text-align:center;">
-        Antigravity Settings
+        IDE Settings
       </button>
     </div>
   </aside>
@@ -882,7 +882,7 @@
   <div class="modal-overlay" id="settingsModal">
     <div class="antigravity-settings-box">
       <div class="antigravity-header">
-        <span>Antigravity IDE &bull; Unified Preferences</span>
+        <span>IDE Settings &bull; Preferences</span>
         <button type="button" class="btn-close-canvas" id="btnHideSettings">[Esc]</button>
       </div>
       
@@ -1082,7 +1082,7 @@
       let currentSkillScope = 'installed';
 
       let sessions = [
-        { id: 'sess-1', title: 'Antigravity Workspace Init', messages: [] }
+        { id: 'sess-1', title: 'Workspace Init', messages: [] }
       ];
       let activeSessionId = 'sess-1';
 
@@ -1706,7 +1706,7 @@
             }
           }
         } catch (err) {
-          aiMsg.content = '[Router Notice: ' + err.message + ']. Verifikasi konfigurasi di Antigravity Settings.';
+          aiMsg.content = '[Router Notice: ' + err.message + ']. Verifikasi konfigurasi di IDE Settings.';
           aiBody.innerHTML = formatMarkdown(aiMsg.content);
         }
       }
