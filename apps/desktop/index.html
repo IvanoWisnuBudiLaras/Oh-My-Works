@@ -1639,9 +1639,25 @@
         cur.messages.push(aiMsg);
         const aiBody = appendMessage('assistant', '...', activeModel);
 
-        const apiPayload = cur.messages
+        let sysPrompt = 'You are Oh My Works (OMW), an AI workspace orchestrator with integrated terminal, anti-OOM guardian, and multi-harness sessions.';
+        try {
+          if (text.includes('@') || text.toLowerCase().includes('harness') || text.toLowerCase().includes('psi') || text.toLowerCase().includes('status')) {
+            const [telem, sess] = await Promise.all([
+              fetch(`${config.daemonUrl}`).then(r => r.json()).catch(() => null),
+              fetch(`${config.daemonUrl}/sessions`).then(r => r.json()).catch(() => null)
+            ]);
+            let extra = '';
+            if (telem) extra += `\n[DAEMON KERNEL GUARDIAN] PSI Stall: ${telem.full_avg10}%, RAM Available: ${telem.available_percent}%, Health: ${telem.status}.`;
+            if (sess) extra += `\n[DAEMON HARVESTED SESSIONS] Total Indexed Sessions: ${sess.length} sessions harvested from ~/.prime, ~/.codex, ~/.claude.`;
+            if (extra) sysPrompt += extra;
+          }
+        } catch (e) {}
+
+        const userMsgs = cur.messages
           .filter(m => m.role === 'user' || (m.role === 'assistant' && m.content && m.content !== '...'))
           .map(m => ({ role: m.role, content: m.content }));
+
+        const apiPayload = [{ role: 'system', content: sysPrompt }, ...userMsgs];
 
         aiMsg.content = '';
 
@@ -1719,6 +1735,16 @@
           aiOpenSideCanvas(`Artifact (${lang})`, `<pre class="code-block"><code>${escapeHtml(code)}</code></pre>`);
         }
       }
+
+      document.querySelectorAll('.chip-btn').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const tag = chip.getAttribute('data-agent');
+          if (!promptInput.value.includes(tag)) {
+            promptInput.value = (tag + ' ' + promptInput.value).trim() + ' ';
+            promptInput.focus();
+          }
+        });
+      });
 
       btnSubmit.addEventListener('click', handleSend);
       promptInput.addEventListener('keydown', (e) => {
