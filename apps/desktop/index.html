@@ -132,6 +132,10 @@
         <button id="btnPRDModal" type="button" class="btn-fluid px-2.5 py-1.5 rounded-lg bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-400/40 text-xs font-medium text-indigo-200">
           Ringkasan 8 Pilar Repo
         </button>
+
+        <button id="btnToggleSidePanel" type="button" class="btn-fluid px-2.5 py-1.5 rounded-lg bg-cyan-600/25 hover:bg-cyan-600/40 border border-cyan-400/40 text-xs font-semibold text-cyan-200 flex items-center gap-1.5 shadow-sm">
+          <span>🎨</span> Panel Desain &amp; Tema
+        </button>
       </div>
     </div>
 
@@ -1009,6 +1013,158 @@
     </div>
   </div>
 
+  <!-- BACKDROP OVERLAY FOR SIDE PANEL -->
+  <div id="themePanelBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity duration-300"></div>
+
+  <!-- SLIDE-OVER THEME & DESIGN DRAWER PANEL -->
+  <aside id="themeCustomizerDrawer" class="fixed top-0 right-0 h-full w-full sm:w-[410px] z-50 bg-slate-950/95 backdrop-blur-2xl border-l border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between overflow-y-auto">
+    <!-- Panel Header -->
+    <div class="p-5 border-b border-slate-800/80 flex items-center justify-between sticky top-0 bg-slate-950/90 backdrop-blur-md z-10">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-sm shadow-md">
+          🎨
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-white tracking-tight">Panel Kustomisasi Desain</h3>
+          <p class="text-[11px] text-slate-400">Atur font &amp; warna template live</p>
+        </div>
+      </div>
+      <button id="btnCloseSidePanel" type="button" class="w-7 h-7 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs font-mono border border-slate-800">
+        ✕
+      </button>
+    </div>
+
+    <!-- Panel Body (Controls) -->
+    <div class="p-5 space-y-5 flex-1">
+      <!-- 1. Font Family -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold text-white flex items-center gap-1.5">
+            <span>🔤</span> Tipografi (Font)
+          </label>
+          <span id="drawerActiveFontLabel" class="text-[10px] font-mono text-cyan-400">Inter</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5" id="drawerFontList">
+          <button type="button" data-font="Inter" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 truncate">
+            Inter (Clean UI)
+          </button>
+          <button type="button" data-font="Plus Jakarta Sans" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate">
+            Plus Jakarta Sans
+          </button>
+          <button type="button" data-font="Outfit" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate">
+            Outfit (Modern)
+          </button>
+          <button type="button" data-font="Space Grotesk" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate">
+            Space Grotesk
+          </button>
+          <button type="button" data-font="JetBrains Mono" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate font-mono">
+            JetBrains Mono
+          </button>
+          <button type="button" data-font="Fira Code" class="drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate font-mono">
+            Fira Code
+          </button>
+          <button type="button" data-font="Playfair Display" class="drawer-font-btn col-span-2 px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate italic">
+            Playfair Display (Editorial)
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Color Palettes -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold text-white flex items-center gap-1.5">
+            <span>🎨</span> Palet Warna Template
+          </label>
+          <span id="drawerActiveThemeLabel" class="text-[10px] font-mono text-cyan-400">CYAN</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5" id="drawerThemeList">
+          <button type="button" data-theme="cyan" data-hex="#06b6d4" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded-full bg-cyan-400 shrink-0"></span>
+            <span>Cyan</span>
+          </button>
+          <button type="button" data-theme="tokyo" data-hex="#6366f1" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded-full bg-indigo-500 shrink-0"></span>
+            <span>Tokyo</span>
+          </button>
+          <button type="button" data-theme="emerald" data-hex="#10b981" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 shrink-0"></span>
+            <span>Emerald</span>
+          </button>
+          <button type="button" data-theme="frost" data-hex="#38bdf8" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded-full bg-sky-400 shrink-0"></span>
+            <span>Frost</span>
+          </button>
+          <button type="button" data-theme="amber" data-hex="#f59e0b" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 shrink-0"></span>
+            <span>Amber</span>
+          </button>
+          <button type="button" data-theme="obsidian" data-hex="#84cc16" class="drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2">
+            <span class="w-3.5 h-3.5 rounded-full bg-lime-400 shrink-0"></span>
+            <span>Lime</span>
+          </button>
+        </div>
+
+        <!-- Custom Hex Input in Drawer -->
+        <div class="pt-2 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <input type="color" id="drawerCustomColorPicker" value="#06b6d4" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent" />
+            <input type="text" id="drawerCustomColorText" value="#06b6d4" class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white focus:outline-none focus:border-cyan-400" />
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs text-slate-400">Radius:</span>
+            <select id="drawerRadiusSelect" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white">
+              <option value="4px">4px</option>
+              <option value="12px" selected>12px</option>
+              <option value="20px">20px</option>
+              <option value="9999px">Pill</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Mini Live Dummy Preview Card inside Drawer -->
+      <div class="space-y-2 pt-2 border-t border-slate-800/80">
+        <label class="text-xs font-bold text-white flex items-center gap-1.5">
+          <span>✨</span> Mini Preview Dummy
+        </label>
+        <div id="drawerMiniPreview" class="p-4 bg-slate-900/90 border border-slate-800 space-y-3 transition-all duration-300 rounded-xl">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 text-[10px] font-semibold text-white rounded" id="drawerPreviewBadge" style="background-color: #06b6d4">Aktif</span>
+            <span class="text-[10px] font-mono text-slate-400">Dummy Component</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white" id="drawerPreviewTitle">Oh My Works Desktop Preview</div>
+            <p class="text-[11px] text-slate-400 mt-0.5">Komponen otomatis merespons font dan palet terpilih secara instan.</p>
+          </div>
+          <div class="flex items-center gap-2 pt-1">
+            <button type="button" class="btn-fluid px-3 py-1.5 text-xs font-bold text-white shadow-sm" id="drawerPreviewBtn" style="background-color: #06b6d4">
+              Uji Klik
+            </button>
+            <input type="text" value="Input Contoh" class="flex-1 bg-slate-950 border border-slate-700 px-2 py-1 text-xs text-white rounded" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Link to Full Tab 8 -->
+      <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 text-xs text-slate-300 flex items-center justify-between">
+        <span>Butuh preview fullscreen &amp; tabel lengkap?</span>
+        <button id="btnJumpToFullStudio" type="button" class="text-cyan-400 hover:text-cyan-300 font-semibold text-xs underline">
+          Buka Tab 8 ➔
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Footer -->
+    <div class="p-4 border-t border-slate-800/80 bg-slate-950/90 flex items-center justify-between gap-2 sticky bottom-0">
+      <button id="btnDrawerCopyTokens" type="button" class="btn-fluid flex-1 py-2 text-xs font-semibold bg-cyan-600/30 text-cyan-200 border border-cyan-400/30 rounded-lg hover:bg-cyan-600/50 flex items-center justify-center gap-1.5">
+        <span>📋</span> Salin Token CSS
+      </button>
+      <button id="btnDrawerCloseFooter" type="button" class="btn-fluid px-4 py-2 text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-lg">
+        Tutup
+      </button>
+    </div>
+  </aside>
+
   <script>
     (function () {
       const state = {
@@ -1703,10 +1859,39 @@
         const glow = hexToRgba(studioState.hex, 0.28);
         const canvas = document.getElementById('studioPreviewCanvas');
 
-        // Update labels
-        document.getElementById('labelActiveFont').textContent = studioState.font;
-        document.getElementById('labelActiveTheme').textContent = studioState.theme.toUpperCase();
-        document.getElementById('labelActivePreset').textContent = studioState.preset;
+        // Update labels in full tab & drawer
+        const fontLbl = document.getElementById('labelActiveFont');
+        if (fontLbl) fontLbl.textContent = studioState.font;
+        const themeLbl = document.getElementById('labelActiveTheme');
+        if (themeLbl) themeLbl.textContent = studioState.theme.toUpperCase();
+        const presetLbl = document.getElementById('labelActivePreset');
+        if (presetLbl) presetLbl.textContent = studioState.preset;
+
+        const dFontLbl = document.getElementById('drawerActiveFontLabel');
+        if (dFontLbl) dFontLbl.textContent = studioState.font;
+        const dThemeLbl = document.getElementById('drawerActiveThemeLabel');
+        if (dThemeLbl) dThemeLbl.textContent = studioState.theme.toUpperCase();
+
+        // Mini preview inside drawer
+        const drawerMini = document.getElementById('drawerMiniPreview');
+        if (drawerMini) {
+          drawerMini.style.fontFamily = fontStr;
+          drawerMini.style.borderRadius = studioState.radius;
+        }
+        const drawerBadge = document.getElementById('drawerPreviewBadge');
+        if (drawerBadge) drawerBadge.style.backgroundColor = studioState.hex;
+        const drawerBtn = document.getElementById('drawerPreviewBtn');
+        if (drawerBtn) {
+          drawerBtn.style.backgroundColor = studioState.hex;
+          drawerBtn.style.borderRadius = studioState.radius;
+        }
+
+        const dColorPicker = document.getElementById('drawerCustomColorPicker');
+        if (dColorPicker && dColorPicker.value !== studioState.hex) dColorPicker.value = studioState.hex;
+        const dColorText = document.getElementById('drawerCustomColorText');
+        if (dColorText && dColorText.value !== studioState.hex) dColorText.value = studioState.hex;
+        const dRadSelect = document.getElementById('drawerRadiusSelect');
+        if (dRadSelect && dRadSelect.value !== studioState.radius) dRadSelect.value = studioState.radius;
 
         // Apply to Preview Canvas
         if (canvas) {
@@ -1747,6 +1932,21 @@
           btn.className = isCurrent
             ? 'theme-chip p-1.5 rounded-lg text-left text-[10px] font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center gap-1.5'
             : 'theme-chip p-1.5 rounded-lg text-left text-[10px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-700/60 flex items-center gap-1.5';
+        });
+
+        // Drawer chips
+        document.querySelectorAll('.drawer-font-btn').forEach(btn => {
+          const isCurrent = btn.getAttribute('data-font') === studioState.font;
+          btn.className = isCurrent
+            ? 'drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 truncate'
+            : 'drawer-font-btn px-2.5 py-1.5 rounded-lg text-left text-xs font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 truncate';
+        });
+
+        document.querySelectorAll('.drawer-theme-btn').forEach(btn => {
+          const isCurrent = btn.getAttribute('data-theme') === studioState.theme;
+          btn.className = isCurrent
+            ? 'drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 flex items-center gap-2'
+            : 'drawer-theme-btn p-2 rounded-lg text-left text-[11px] font-medium text-slate-300 hover:bg-slate-800 border border-slate-800 flex items-center gap-2';
         });
 
         document.querySelectorAll('.dummy-preset-btn').forEach(btn => {
@@ -2080,6 +2280,112 @@
           showToast('Design Studio di-reset ke pengaturan standar OMW');
         });
       }
+
+      // DRAWER PANEL CONTROLS (Open, Close, Live Drawer Pickers)
+      const drawer = document.getElementById('themeCustomizerDrawer');
+      const backdrop = document.getElementById('themePanelBackdrop');
+
+      function openThemeDrawer() {
+        if (!drawer || !backdrop) return;
+        backdrop.classList.remove('hidden');
+        drawer.classList.remove('translate-x-full');
+        drawer.classList.add('translate-x-0');
+      }
+
+      function closeThemeDrawer() {
+        if (!drawer || !backdrop) return;
+        drawer.classList.remove('translate-x-0');
+        drawer.classList.add('translate-x-full');
+        setTimeout(() => {
+          backdrop.classList.add('hidden');
+        }, 300);
+      }
+
+      const btnToggleDrawer = document.getElementById('btnToggleSidePanel');
+      if (btnToggleDrawer) btnToggleDrawer.addEventListener('click', openThemeDrawer);
+
+      const btnCloseDrawer = document.getElementById('btnCloseSidePanel');
+      if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', closeThemeDrawer);
+
+      const btnCloseDrawerFooter = document.getElementById('btnDrawerCloseFooter');
+      if (btnCloseDrawerFooter) btnCloseDrawerFooter.addEventListener('click', closeThemeDrawer);
+
+      if (backdrop) backdrop.addEventListener('click', closeThemeDrawer);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeThemeDrawer();
+      });
+
+      // Drawer font click
+      document.querySelectorAll('.drawer-font-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          studioState.font = btn.getAttribute('data-font');
+          updateStudioStyles();
+          showToast('Font diubah ke ' + studioState.font);
+        });
+      });
+
+      // Drawer theme click
+      document.querySelectorAll('.drawer-theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          studioState.theme = btn.getAttribute('data-theme');
+          studioState.hex = btn.getAttribute('data-hex');
+          updateStudioStyles();
+          showToast('Tema palet diubah ke ' + studioState.theme.toUpperCase());
+        });
+      });
+
+      const drawerColorPicker = document.getElementById('drawerCustomColorPicker');
+      const drawerColorText = document.getElementById('drawerCustomColorText');
+      if (drawerColorPicker) {
+        drawerColorPicker.addEventListener('input', (e) => {
+          studioState.hex = e.target.value;
+          studioState.theme = 'custom';
+          if (drawerColorText) drawerColorText.value = studioState.hex;
+          updateStudioStyles();
+        });
+      }
+      if (drawerColorText) {
+        drawerColorText.addEventListener('change', (e) => {
+          let val = e.target.value.trim();
+          if (!val.startsWith('#')) val = '#' + val;
+          if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+            studioState.hex = val;
+            studioState.theme = 'custom';
+            if (drawerColorPicker) drawerColorPicker.value = val;
+            updateStudioStyles();
+            showToast('Warna custom diterapkan: ' + val);
+          }
+        });
+      }
+
+      const drawerRadiusSelect = document.getElementById('drawerRadiusSelect');
+      if (drawerRadiusSelect) {
+        drawerRadiusSelect.addEventListener('change', (e) => {
+          studioState.radius = e.target.value;
+          updateStudioStyles();
+        });
+      }
+
+      const btnJumpStudio = document.getElementById('btnJumpToFullStudio');
+      if (btnJumpStudio) {
+        btnJumpStudio.addEventListener('click', () => {
+          closeThemeDrawer();
+          switchTab('studio');
+        });
+      }
+
+      const btnDrawerCopy = document.getElementById('btnDrawerCopyTokens');
+      if (btnDrawerCopy) {
+        btnDrawerCopy.addEventListener('click', () => {
+          const pre = document.getElementById('studioTokensPre');
+          if (pre && navigator.clipboard) {
+            navigator.clipboard.writeText(pre.textContent);
+            showToast('Token CSS berhasil disalin ke clipboard!');
+          }
+        });
+      }
+
 
       // Initial render
       renderSynthesisCards();
