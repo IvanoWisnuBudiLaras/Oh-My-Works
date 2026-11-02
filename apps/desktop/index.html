@@ -1383,15 +1383,68 @@
       font-size: 11.5px;
     }
 
-    .code-block {
-      background: var(--code-bg);
+    .code-container {
+      margin: 10px 0;
       border: 1px solid var(--border);
       border-radius: 8px;
+      overflow: hidden;
+      background: var(--code-bg);
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    .code-filepath {
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+    }
+
+    .btn-code-action {
+      background: rgba(53, 116, 240, 0.15);
+      border: 1px solid rgba(53, 116, 240, 0.4);
+      color: #589df6;
+      font-size: 10.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-code-action:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .btn-code-action.applied {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10B981;
+      color: #34D399;
+    }
+
+    .code-block {
+      background: transparent;
+      border: none;
+      border-radius: 0;
       padding: 10px 12px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
       overflow-x: auto;
-      margin: 8px 0;
+      margin: 0;
     }
   </style>
 </head>
@@ -2279,6 +2332,47 @@ const FIGMA_PALETTES = {
       const promptInput = document.getElementById('promptInput');
       const btnSubmit = document.getElementById('btnSubmit');
 
+      // Interactive Action Delegation for Code Blocks (Apply to Workspace / Run in Terminal)
+      messagesList.addEventListener('click', async (e) => {
+        const btnApply = e.target.closest('.btn-apply-file');
+        if (btnApply) {
+          const relPath = btnApply.getAttribute('data-path');
+          const encCode = btnApply.getAttribute('data-code');
+          if (!relPath || !encCode) return;
+          const rawCode = decodeURIComponent(encCode);
+          btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">sync</span>Writing...';
+          try {
+            const targetPath = (currentWorktreePath ? (currentWorktreePath.replace(/\/+$/, '') + '/' + relPath.replace(/^\/+/, '')) : relPath);
+            const res = await fetch(`${config.daemonUrl}/workspace/file_write`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ path: targetPath, content: rawCode })
+            });
+            const d = await res.json();
+            if (d.success) {
+              btnApply.classList.add('applied');
+              btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">check_circle</span>Applied';
+              loadWorktreesAndFiles();
+            } else {
+              btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">error</span>Failed';
+            }
+          } catch (err) {
+            btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">error</span>Error';
+          }
+          return;
+        }
+
+        const btnRun = e.target.closest('.btn-run-cmd');
+        if (btnRun) {
+          const encCmd = btnRun.getAttribute('data-cmd');
+          if (!encCmd) return;
+          const cmd = decodeURIComponent(encCmd);
+          switchCanvasTab('terminal');
+          runTerminalCmd(cmd);
+          return;
+        }
+      });
+
       // Side Canvas Elements
       const sideCanvas = document.getElementById('sideCanvas');
       const btnCloseCanvas = document.getElementById('btnCloseCanvas');
@@ -2864,38 +2958,40 @@ const FIGMA_PALETTES = {
           }
         }
 
-        const apiPayload = [{ role: 'system', content: sysPrompt }, ...userMsgs];
+        const isEnsemble = text.startsWith('@all') || activeModel === 'auto' || activeModel === 'all' || activeModel.includes('combo');
+        const cleanText = text.replace(/^@all\s*/i, '');
         aiMsg.content = '';
 
-        const activeServers = serversList.filter(s => s.enabled);
-        const primaryServer = activeServers[0]?.url || 'http://127.0.0.1:20128';
-        const completionUrl = `${primaryServer.replace(/\/+$/, '')}/v1/chat/completions`;
-        const defaultKey = 'sk-9d6e79acb260096f-53jdmp-b86fbd6e';
-        const key = config.apiKey && config.apiKey.trim().length > 10 ? config.apiKey.trim() : defaultKey;
-        const headers = {
-          'Content-Type': 'application/json',
-          'Authorization': key.startsWith('Bearer ') ? key : `Bearer ${key}`
-        };
+        async function streamChatCompletion(modelName, messages, onDelta) {
+          const primaryServer = serversList.find(s => s.enabled)?.url || 'http://127.0.0.1:20128';
+          const completionUrl = `${primaryServer.replace(/\/+$/, '')}/v1/chat/completions`;
+          const defaultKey = 'sk-9d6e79acb260096f-53jdmp-b86fbd6e';
+          const key = config.apiKey && config.apiKey.trim().length > 10 ? config.apiKey.trim() : defaultKey;
+          const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': key.startsWith('Bearer ') ? key : `Bearer ${key}`
+          };
 
-        try {
-          let res = await fetch(completionUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
-          });
+          const candidateModels = [modelName, 'ag/gemini-3.8-flash-high', 'ag/claude-opus-5-5-high', 'mux/glm-5.3-flash'].filter((v, i, a) => v && a.indexOf(v) === i);
+          let res = null;
+          let usedModel = modelName;
 
-          if (!res.ok && activeServers.length > 1) {
+          for (const m of candidateModels) {
             try {
-              const fallbackUrl = `${activeServers[1].url.replace(/\/+$/, '')}/v1/chat/completions`;
-              res = await fetch(fallbackUrl, {
+              const attempt = await fetch(completionUrl, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify({ model: activeModel, messages: apiPayload, stream: true })
+                body: JSON.stringify({ model: m, messages: messages, stream: true })
               });
-            } catch (fallbackErr) {}
+              if (attempt.ok) {
+                res = attempt;
+                usedModel = m;
+                break;
+              }
+            } catch (_) {}
           }
 
-          if (!res.ok) throw new Error('HTTP ' + res.status);
+          if (!res || !res.ok) throw new Error('Model upstream unavailable. Check 9Router status.');
 
           const reader = res.body.getReader();
           const decoder = new TextDecoder();
@@ -2915,17 +3011,62 @@ const FIGMA_PALETTES = {
                 try {
                   const json = JSON.parse(trimmed.slice(6));
                   const delta = json.choices?.[0]?.delta?.content;
-                  if (delta) {
-                    aiMsg.content += delta;
-                    aiBody.innerHTML = formatMarkdown(aiMsg.content);
-                    messagesScroll.scrollTop = messagesScroll.scrollHeight;
-                    checkAiAutoSplit(aiMsg.content);
-                  }
-                } catch (e) {}
+                  if (delta) onDelta(delta);
+                } catch (_) {}
               }
             }
           }
+          return usedModel;
+        }
 
+        try {
+          if (isEnsemble) {
+            const leadModel = (allModels.includes(config.leadEngine) && config.leadEngine !== 'ag/gemini-4-argon-high') ? config.leadEngine : 'ag/gemini-3.8-flash-high';
+            const specModel = (allModels.includes(config.specialistEngine) && config.specialistEngine !== 'cbcn/deepseek-v4-pro') ? config.specialistEngine : 'mux/glm-5.3-flash';
+
+            // Stage 1: Lead Architect / Planner
+            aiMsg.content = `### 1. Architectural Plan (${leadModel})\n\n`;
+            aiBody.innerHTML = formatMarkdown(aiMsg.content);
+            const planPayload = [
+              { role: 'system', content: sysPrompt + '\n[ROLE: LEAD ARCHITECT]\nAnalyze the requirement, formulate system architecture, specify required files, and determine execution sequence.' },
+              ...userMsgs.slice(0, -1),
+              { role: 'user', content: cleanText }
+            ];
+
+            const finalLead = await streamChatCompletion(leadModel, planPayload, (delta) => {
+              aiMsg.content += delta;
+              aiBody.innerHTML = formatMarkdown(aiMsg.content);
+              messagesScroll.scrollTop = messagesScroll.scrollHeight;
+              checkAiAutoSplit(aiMsg.content);
+            });
+
+            // Stage 2: Specialist Implementation / Coder
+            const stage1Plan = aiMsg.content;
+            aiMsg.content += `\n\n---\n\n### 2. Specialist Implementation (${specModel})\n\n`;
+            aiBody.innerHTML = formatMarkdown(aiMsg.content);
+            const coderPayload = [
+              { role: 'system', content: sysPrompt + '\n[ROLE: SPECIALIST CODER]\nImplement complete, production-ready code. For EVERY file created or edited, start the code block with `// FILE: path/to/file` (or `# FILE:` or `<!-- FILE: -->`). Provide shell check commands in ```bash code blocks.' },
+              ...userMsgs.slice(0, -1),
+              { role: 'user', content: cleanText },
+              { role: 'assistant', content: stage1Plan },
+              { role: 'user', content: 'Generate the complete implementation files and verification commands following the Architectural Plan above.' }
+            ];
+
+            await streamChatCompletion(specModel, coderPayload, (delta) => {
+              aiMsg.content += delta;
+              aiBody.innerHTML = formatMarkdown(aiMsg.content);
+              messagesScroll.scrollTop = messagesScroll.scrollHeight;
+              checkAiAutoSplit(aiMsg.content);
+            });
+          } else {
+            const apiPayload = [{ role: 'system', content: sysPrompt }, ...userMsgs];
+            await streamChatCompletion(activeModel, apiPayload, (delta) => {
+              aiMsg.content += delta;
+              aiBody.innerHTML = formatMarkdown(aiMsg.content);
+              messagesScroll.scrollTop = messagesScroll.scrollHeight;
+              checkAiAutoSplit(aiMsg.content);
+            });
+          }
           // Save assistant turn to SQLite
           try {
             await fetch(`${config.daemonUrl}/sessions/save_turn`, {
@@ -3006,16 +3147,6 @@ const FIGMA_PALETTES = {
         return body;
       }
 
-      function formatMarkdown(text) {
-        if (!text) return '';
-        let s = escapeHtml(text);
-        s = s.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>');
-        s = s.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
-        s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        s = s.replace(/\n/g, '<br/>');
-        return s;
-      }
-
       function escapeHtml(str) {
         if (!str) return '';
         return String(str)
@@ -3024,6 +3155,40 @@ const FIGMA_PALETTES = {
           .replace(/>/g, '&gt;')
           .replace(/"/g, '&quot;')
           .replace(/'/g, '&#39;');
+      }
+
+      function unescapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'");
+      }
+
+      function formatMarkdown(text) {
+        if (!text) return '';
+        let s = escapeHtml(text);
+        s = s.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (m, lang, code) => {
+          const rawCode = unescapeHtml(code);
+          const fileMatch = rawCode.match(/^(?:\/\/|#|<!--)\s*(?:FILE:\s*)?([a-zA-Z0-9_\-\.\/]+\.[a-zA-Z0-9_-]+)(?:\s*-->)?$/m);
+          if (fileMatch) {
+            const filePath = fileMatch[1].trim();
+            return `<div class="code-container"><div class="code-header"><span class="code-filepath"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">description</span>${filePath}</span><button type="button" class="btn-code-action btn-apply-file" data-path="${escapeHtml(filePath)}" data-code="${encodeURIComponent(rawCode)}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">save</span>Apply to Workspace</button></div><pre class="code-block"><code>${code}</code></pre></div>`;
+          }
+          if (lang === 'bash' || lang === 'sh') {
+            return `<div class="code-container"><div class="code-header"><span class="code-filepath"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">terminal</span>Terminal</span><button type="button" class="btn-code-action btn-run-cmd" data-cmd="${encodeURIComponent(rawCode.trim())}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">play_arrow</span>Run in Terminal</button></div><pre class="code-block"><code>${code}</code></pre></div>`;
+          }
+          return `<div class="code-container"><div class="code-header"><span class="code-filepath">${lang || 'code'}</span></div><pre class="code-block"><code>${code}</code></pre></div>`;
+        });
+        s = s.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
+        s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        s = s.replace(/### (.*?)(?:<br\/>|\n|$)/g, '<h3>$1</h3>');
+        s = s.replace(/## (.*?)(?:<br\/>|\n|$)/g, '<h2>$1</h2>');
+        s = s.replace(/# (.*?)(?:<br\/>|\n|$)/g, '<h1>$1</h1>');
+        s = s.replace(/\n/g, '<br/>');
+        return s;
       }
 
       // Chip Buttons
@@ -3527,10 +3692,11 @@ const FIGMA_PALETTES = {
                     if (evRes && typeof evRes.then === 'function') {
                       evRes = await evRes;
                     }
-                    window.__lastEvalResult = evRes;
+                    window.__lastEvalResult = { res: evRes, nonce: act.nonce || null };
                   } catch (e) {
-                    window.__lastEvalResult = { error: e.toString() };
+                    window.__lastEvalResult = { error: e.toString(), nonce: act.nonce || null };
                   }
+                  await syncAgentState();
                   break;
                 case 'toggleSidebar':
                   if (sidebarEl) {
