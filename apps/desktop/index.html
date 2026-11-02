@@ -450,30 +450,51 @@
     /* Appearance Controls (Color & Font) */
   /* Web Preview Styler & Layout Toolbar */
     .web-preview-footer, .canvas-footer {
-      padding: 6px 12px;
+      padding: 8px 12px;
       background: var(--sidebar);
       border-top: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       font-size: 11px;
       color: var(--text-muted);
       flex-shrink: 0;
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
     }
 
     .preview-styler-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
-      justify-content: space-between;
       flex-wrap: wrap;
+      min-width: 0;
     }
 
-    .styler-group {
+    .styler-grid-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+      align-items: center;
+    }
+
+    @media (max-width: 680px) {
+      .styler-grid-controls {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+    }
+
+    .styler-control-item {
       display: flex;
       align-items: center;
       gap: 6px;
+      min-width: 0;
+      width: 100%;
     }
 
     .styler-label {
@@ -482,6 +503,8 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .color-presets {
@@ -489,6 +512,7 @@
       align-items: center;
       gap: 6px;
       flex-wrap: wrap;
+      min-width: 0;
     }
 
     .preview-color-dot {
@@ -500,6 +524,7 @@
       transition: transform 0.15s, box-shadow 0.15s;
       position: relative;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .preview-color-dot:hover {
@@ -519,6 +544,7 @@
       cursor: pointer;
       background: transparent;
       border-radius: 3px;
+      flex-shrink: 0;
     }
 
     select, .appearance-select, .worktree-select, .setting-select {
@@ -543,7 +569,15 @@
       padding: 2px 6px;
       outline: none;
       cursor: pointer;
-      height: 24px;
+      height: 26px;
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     .appearance-select:focus {
@@ -1657,62 +1691,58 @@
 
             <!-- Web Preview Bottom Styler: Color, Font & Layout -->
             <div class="web-preview-footer" id="webPreviewFooter">
-              <!-- Row 1: Figma Color Schemes & Awwwards Typography -->
+              <!-- Row 1: Figma Color Schemes -->
               <div class="preview-styler-row">
-                <!-- Figma Harmonious Color Palettes (Multi-color schemes) -->
-                <div class="styler-group">
-                  <span class="styler-label">Figma Palette:</span>
-                  <div class="color-presets">
-                    <span class="preview-color-dot active" data-palette="awwwards-emerald" style="background:linear-gradient(135deg, #00F5A0 50%, #090D16 50%);" title="Awwwards Emerald (#00F5A0 accent, #090D16 dark void)"></span>
-                    <span class="preview-color-dot" data-palette="cyber-minimal" style="background:linear-gradient(135deg, #6366F1 50%, #0B0F19 50%);" title="Cyber Minimal / Midnight (#6366F1 indigo, #0B0F19 midnight)"></span>
-                    <span class="preview-color-dot" data-palette="modern-fintech" style="background:linear-gradient(135deg, #3B82F6 50%, #0F172A 50%);" title="Modern Fintech (#3B82F6 royal, #0F172A slate navy)"></span>
-                    <span class="preview-color-dot" data-palette="bento-organic" style="background:linear-gradient(135deg, #D97706 50%, #FAF7F2 50%); border-color:#bbb;" title="Bento Organic Alabaster (#D97706 amber, #FAF7F2 cream)"></span>
-                    <span class="preview-color-dot" data-palette="tech-blue" style="background:linear-gradient(135deg, #0D99FF 50%, #0F172A 50%);" title="Figma Tech Blue (#0D99FF primary, #0F172A bg)"></span>
-                    <span class="preview-color-dot" data-palette="copper-sunset" style="background:linear-gradient(135deg, #FF7237 50%, #1C1917 50%);" title="Copper Sunset (#FF7237 primary, #1C1917 bg)"></span>
-                    <span class="preview-color-dot" data-palette="woodland" style="background:linear-gradient(135deg, #A3E635 50%, #141E15 50%);" title="Woodland Lime (#A3E635 primary, #141E15 bg)"></span>
-                    <input type="color" id="previewCustomColor" class="color-picker-input" value="#00F5A0" title="Custom Accent Color" />
-                  </div>
-                </div>
-
-                <!-- Awwwards Typography Selector -->
-                <div class="styler-group">
-                  <span class="styler-label">Awwwards Font:</span>
-                  <select id="previewFontSelect" class="appearance-select" title="Awwwards Typography Winners">
-                    <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans (Modern Clean)</option>
-                    <option value="'Space Grotesk', sans-serif">Space Grotesk (Tech Editorial)</option>
-                    <option value="'Syne', sans-serif">Syne (Bold Brutalist)</option>
-                    <option value="'Cinzel', serif">Cinzel (Luxury Editorial)</option>
-                    <option value="'Epilogue', sans-serif">Epilogue (Clean Sans)</option>
-                    <option value="'JetBrains Mono', monospace">JetBrains Mono (Developer)</option>
-                    <option value="'Inter', sans-serif">Inter (Standard App)</option>
-                  </select>
+                <span class="styler-label">Palette:</span>
+                <div class="color-presets">
+                  <span class="preview-color-dot active" data-palette="awwwards-emerald" style="background:linear-gradient(135deg, #00F5A0 50%, #090D16 50%);" title="Awwwards Emerald (#00F5A0 accent, #090D16 dark void)"></span>
+                  <span class="preview-color-dot" data-palette="cyber-minimal" style="background:linear-gradient(135deg, #6366F1 50%, #0B0F19 50%);" title="Cyber Minimal / Midnight (#6366F1 indigo, #0B0F19 midnight)"></span>
+                  <span class="preview-color-dot" data-palette="modern-fintech" style="background:linear-gradient(135deg, #3B82F6 50%, #0F172A 50%);" title="Modern Fintech (#3B82F6 royal, #0F172A slate navy)"></span>
+                  <span class="preview-color-dot" data-palette="bento-organic" style="background:linear-gradient(135deg, #D97706 50%, #FAF7F2 50%); border-color:#bbb;" title="Bento Organic Alabaster (#D97706 amber, #FAF7F2 cream)"></span>
+                  <span class="preview-color-dot" data-palette="tech-blue" style="background:linear-gradient(135deg, #0D99FF 50%, #0F172A 50%);" title="Figma Tech Blue (#0D99FF primary, #0F172A bg)"></span>
+                  <span class="preview-color-dot" data-palette="copper-sunset" style="background:linear-gradient(135deg, #FF7237 50%, #1C1917 50%);" title="Copper Sunset (#FF7237 primary, #1C1917 bg)"></span>
+                  <span class="preview-color-dot" data-palette="woodland" style="background:linear-gradient(135deg, #A3E635 50%, #141E15 50%);" title="Woodland Lime (#A3E635 primary, #141E15 bg)"></span>
+                  <input type="color" id="previewCustomColor" class="color-picker-input" value="#00F5A0" title="Custom Accent Color" />
                 </div>
               </div>
 
-              <!-- Row 2: Archetype Layouts (Ecommerce variants, SaaS, Dashboard) & AI Sync -->
-              <div class="preview-styler-row" style="margin-top:2px;">
-                <!-- Archetype Layout Presets -->
-                <div class="styler-group">
+              <!-- Row 2: Typography, Layout & AI Sync (Responsive Fluid Grid) -->
+              <div class="styler-grid-controls">
+                <!-- Typography Selector -->
+                <div class="styler-control-item">
+                  <span class="styler-label">Font:</span>
+                  <select id="previewFontSelect" class="appearance-select" title="Awwwards Typography">
+                    <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans</option>
+                    <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+                    <option value="'Syne', sans-serif">Syne</option>
+                    <option value="'Cinzel', serif">Cinzel</option>
+                    <option value="'Epilogue', sans-serif">Epilogue</option>
+                    <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                    <option value="'Inter', sans-serif">Inter</option>
+                  </select>
+                </div>
+
+                <!-- Layout Selector -->
+                <div class="styler-control-item">
                   <span class="styler-label">Layout:</span>
                   <select id="previewLayoutSelect" class="appearance-select" title="Interactive Archetype Layout">
-                    <option value="bento">Bento Grid (Modular Asymmetric Compartments)</option>
-                    <option value="golden-ratio">Golden Ratio (1.618:1 Asymmetric Editorial)</option>
-                    <option value="dashboard">Executive Dashboard (Sidebar + KPI Metrics + SVG Canvas)</option>
-                    <option value="blueprint">Blueprint / Spaceship Manual (Grid + Monospace Schematics)</option>
-                    <option value="tactile">Tactile Neo-Brutalism (Bold Borders + High Contrast)</option>
-                    <option value="full">Default Fluid Canvas</option>
-                    <option value="saas-hero">SaaS Architecture (Sticky Nav + Hero CTA + Feature Cards)</option>
-                    <option value="responsive">Responsive Tablet (768px)</option>
-                    <option value="mobile">Mobile View (375x667)</option>
+                    <option value="bento">Bento Grid</option>
+                    <option value="golden-ratio">Golden Ratio</option>
+                    <option value="dashboard">Executive Dashboard</option>
+                    <option value="blueprint">Blueprint</option>
+                    <option value="tactile">Neo-Brutalism</option>
+                    <option value="full">Default Canvas</option>
+                    <option value="saas-hero">SaaS Hero</option>
+                    <option value="responsive">Tablet (768px)</option>
+                    <option value="mobile">Mobile (375px)</option>
                   </select>
                 </div>
 
                 <!-- AI Sync Button -->
-                <div class="styler-group">
-                  <button type="button" class="btn-apply-prompt" id="btnSyncToAi" title="Send design changes to AI model to re-generate code">
-                    Sync to AI &rarr;
-                  </button>
-                </div>
+                <button type="button" class="btn-apply-prompt" id="btnSyncToAi" title="Send design changes to AI model to re-generate code" style="white-space:nowrap;justify-content:center;">
+                  <span class="material-symbols-outlined" style="font-size:13px;">sync</span>
+                  Sync to AI
+                </button>
               </div>
             </div>
           </div>
@@ -2659,6 +2689,17 @@ const FIGMA_PALETTES = {
 
       // Interactive Action Delegation for Code Blocks (Apply to Workspace / Run in Terminal)
       messagesList.addEventListener('click', async (e) => {
+        // Preview HTML Button (On-demand canvas open)
+        const btnPrev = e.target.closest('.btn-preview-html');
+        if (btnPrev) {
+          const encHtml = btnPrev.getAttribute('data-html');
+          if (encHtml) {
+            renderWebPreview(decodeURIComponent(encHtml));
+          }
+          switchCanvasTab('web');
+          return;
+        }
+
         // Copy Code Block Button
         const copyBtn = e.target.closest('.btn-copy-code');
         if (copyBtn) {
@@ -3693,18 +3734,17 @@ RULES:
       }
 
       function checkAiAutoSplit(fullText) {
-        // Web Preview trigger: HTML/CSS code
+        // Render web preview silently into background iframe; NEVER force open or split screen!
         const htmlMatch = fullText.match(/```html\n([\s\S]+?)```/i);
         if (htmlMatch) {
           renderWebPreview(htmlMatch[1]);
-          const lastUserMsg = [...currentMessages].reverse().find(m => m.role === 'user')?.content?.toLowerCase() || '';
-          const wantsPreview = /dashboard|halaman|preview|web|html|ui|tampilan|design|layout/i.test(lastUserMsg);
-          if (config.permAutoSplit || wantsPreview) {
+          // Only switch tab if the canvas is ALREADY open and user enabled auto-split in settings
+          if (config.permAutoSplit && sideCanvas && sideCanvas.classList.contains('open')) {
             switchCanvasTab('web');
           }
           return;
         }
-        if (!config.permAutoSplit) return;
+        if (!config.permAutoSplit || !sideCanvas || !sideCanvas.classList.contains('open')) return;
 
         // Terminal trigger: Rust, Bash, or Shell code
         const codeMatch = fullText.match(/```(rust|bash|sh|python)\n([\s\S]+?)```/i);
@@ -3765,14 +3805,17 @@ RULES:
           const rawCode = unescapeHtml(code);
           const copyBtn = `<button type="button" class="btn-code-action btn-copy-code" data-code="${encodeURIComponent(rawCode)}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">content_copy</span>Copy</button>`;
           const fileMatch = rawCode.match(/^(?:\/\/|#|<!--)\s*(?:FILE:\s*)?([a-zA-Z0-9_\-\.\/]+\.[a-zA-Z0-9_-]+)(?:\s*-->)?$/m);
+          const isHtml = lang === 'html' || (fileMatch && fileMatch[1].endsWith('.html')) || /<!DOCTYPE html|<html[\s>]/i.test(rawCode);
+          const previewBtn = isHtml ? `<button type="button" class="btn-code-action btn-preview-html" data-html="${encodeURIComponent(rawCode)}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">visibility</span>Preview</button>` : '';
+
           if (fileMatch) {
             const filePath = fileMatch[1].trim();
-            return `<div class="code-container"><div class="code-header"><span class="code-filepath"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">description</span>${filePath}</span><div style="display:flex;gap:6px;">${copyBtn}<button type="button" class="btn-code-action btn-apply-file" data-path="${escapeHtml(filePath)}" data-code="${encodeURIComponent(rawCode)}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">save</span>Apply to Workspace</button></div></div><pre class="code-block"><code>${code}</code></pre></div>`;
+            return `<div class="code-container"><div class="code-header"><span class="code-filepath"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">${isHtml ? 'html' : 'description'}</span>${filePath}</span><div style="display:flex;gap:6px;">${copyBtn}${previewBtn}<button type="button" class="btn-code-action btn-apply-file" data-path="${escapeHtml(filePath)}" data-code="${encodeURIComponent(rawCode)}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">save</span>Apply to Workspace</button></div></div><pre class="code-block"><code>${code}</code></pre></div>`;
           }
           if (lang === 'bash' || lang === 'sh') {
             return `<div class="code-container"><div class="code-header"><span class="code-filepath"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">terminal</span>Terminal</span><div style="display:flex;gap:6px;">${copyBtn}<button type="button" class="btn-code-action btn-run-cmd" data-cmd="${encodeURIComponent(rawCode.trim())}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">play_arrow</span>Run in Terminal</button></div></div><pre class="code-block"><code>${code}</code></pre></div>`;
           }
-          return `<div class="code-container"><div class="code-header"><span class="code-filepath">${lang || 'code'}</span><div style="display:flex;gap:6px;">${copyBtn}</div></div><pre class="code-block"><code>${code}</code></pre></div>`;
+          return `<div class="code-container"><div class="code-header"><span class="code-filepath">${lang || 'code'}</span><div style="display:flex;gap:6px;">${copyBtn}${previewBtn}</div></div><pre class="code-block"><code>${code}</code></pre></div>`;
         });
         s = s.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
         s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
