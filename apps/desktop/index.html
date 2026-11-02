@@ -6,7 +6,7 @@
   <title>Oh My Works</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Epilogue:wght@400;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;600;700&family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&display=swap" rel="stylesheet">
   <style>
     /* JetBrains New UI / Antigravity Theme System */
     :root[data-theme="dark"] {
@@ -384,24 +384,24 @@
     /* Appearance Controls (Color & Font) */
   /* Web Preview Styler & Layout Toolbar */
     .web-preview-footer, .canvas-footer {
-      height: 42px;
-      padding: 0 12px;
+      padding: 6px 12px;
       background: var(--sidebar);
       border-top: 1px solid var(--border);
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 6px;
       font-size: 11px;
       color: var(--text-muted);
-      overflow-x: auto;
+      flex-shrink: 0;
     }
 
     .preview-styler-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
       justify-content: space-between;
+      flex-wrap: wrap;
     }
 
     .styler-group {
@@ -411,7 +411,7 @@
     }
 
     .styler-label {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -422,11 +422,12 @@
       display: flex;
       align-items: center;
       gap: 5px;
+      flex-wrap: wrap;
     }
 
     .preview-color-dot {
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
       border-radius: 50%;
       cursor: pointer;
       border: 1px solid rgba(255, 255, 255, 0.25);
@@ -467,6 +468,25 @@
       border-color: var(--border-focus);
     }
 
+    .btn-apply-prompt {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s;
+    }
+
+    .btn-apply-prompt:hover {
+      background: var(--accent-hover);
+    }
+
     /* Preview Container & Dynamic Layout Presets */
     .preview-container {
       flex: 1;
@@ -485,7 +505,7 @@
       background: #ffffff;
       width: 100%;
       height: 100%;
-      transition: width 0.2s ease, max-width 0.2s ease, height 0.2s ease, border-radius 0.2s ease, box-shadow 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     /* Layout Preset Modes */
@@ -497,7 +517,7 @@
     }
 
     .preview-container[data-layout="responsive"] {
-      padding: 16px;
+      padding: 14px;
       overflow-y: auto;
     }
     .preview-container[data-layout="responsive"] .preview-view {
@@ -511,32 +531,32 @@
     }
 
     .preview-container[data-layout="mobile"] {
-      padding: 16px;
+      padding: 14px;
       overflow-y: auto;
     }
     .preview-container[data-layout="mobile"] .preview-view {
       width: 375px;
       height: 667px;
       max-height: 95%;
-      border-radius: 24px;
+      border-radius: 20px;
       border: 3px solid var(--border);
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
     }
 
     .preview-container[data-layout="card"] {
-      padding: 24px;
+      padding: 20px;
       overflow-y: auto;
     }
     .preview-container[data-layout="card"] .preview-view {
       width: 440px;
       height: 520px;
       max-height: 90%;
-      border-radius: 14px;
+      border-radius: 12px;
       border: 1px solid var(--border);
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
     }
 
-    as {
+    .side-canvas {
       width: 0;
       border-left: 0 solid var(--border);
       background: var(--panel);
@@ -1303,42 +1323,62 @@
 
             <!-- Web Preview Bottom Styler: Color, Font & Layout -->
             <div class="web-preview-footer" id="webPreviewFooter">
+              <!-- Row 1: Figma Color Schemes & Awwwards Typography -->
               <div class="preview-styler-row">
-                <!-- Color Presets -->
+                <!-- Figma Color Palette Presets -->
                 <div class="styler-group">
-                  <span class="styler-label">Color:</span>
+                  <span class="styler-label">Figma Color:</span>
                   <div class="color-presets">
-                    <span class="preview-color-dot active" data-color="#3574f0" style="background:#3574f0;" title="Default Blue"></span>
-                    <span class="preview-color-dot" data-color="#10b981" style="background:#10b981;" title="Emerald Green"></span>
-                    <span class="preview-color-dot" data-color="#8b5cf6" style="background:#8b5cf6;" title="Cyber Purple"></span>
-                    <span class="preview-color-dot" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></span>
-                    <span class="preview-color-dot" data-color="#ec4899" style="background:#ec4899;" title="Neon Pink"></span>
-                    <span class="preview-color-dot" data-color="#00ffff" style="background:#00ffff;" title="Cyan Neon"></span>
-                    <input type="color" id="previewCustomColor" class="color-picker-input" value="#3574f0" title="Custom Preview Color" />
+                    <span class="preview-color-dot active" data-color="#0D99FF" data-scheme="figma-blue" style="background:#0D99FF;" title="Figma Tech Blue (#0D99FF)"></span>
+                    <span class="preview-color-dot" data-color="#14AE5C" data-scheme="figma-jade" style="background:#14AE5C;" title="Jade Pebble (#14AE5C)"></span>
+                    <span class="preview-color-dot" data-color="#7B61FF" data-scheme="figma-lapis" style="background:#7B61FF;" title="Lapis Velvet / Pearl (#7B61FF)"></span>
+                    <span class="preview-color-dot" data-color="#FF7237" data-scheme="figma-copper" style="background:#FF7237;" title="Copper Sunset (#FF7237)"></span>
+                    <span class="preview-color-dot" data-color="#E4FF97" data-scheme="figma-woodland" style="background:#E4FF97; border-color:#888;" title="Woodland Lime (#E4FF97)"></span>
+                    <span class="preview-color-dot" data-color="#24CB71" data-scheme="figma-mint" style="background:#24CB71;" title="Amethyst Mint (#24CB71)"></span>
+                    <span class="preview-color-dot" data-color="#FF3737" data-scheme="figma-garnet" style="background:#FF3737;" title="Seashell Garnet (#FF3737)"></span>
+                    <span class="preview-color-dot" data-color="#252D41" data-scheme="figma-ink" style="background:#252D41;" title="Ink Wash Minimal (#252D41)"></span>
+                    <input type="color" id="previewCustomColor" class="color-picker-input" value="#0D99FF" title="Custom Hex Picker" />
                   </div>
                 </div>
 
-                <!-- Font Selector -->
+                <!-- Awwwards Typography Selector -->
                 <div class="styler-group">
-                  <span class="styler-label">Font:</span>
-                  <select id="previewFontSelect" class="appearance-select" title="Preview Typography">
-                    <option value="'Inter', sans-serif">Inter</option>
-                    <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-                    <option value="'Courier New', monospace">Courier</option>
-                    <option value="'Comic Sans MS', cursive">Casual / Comic</option>
-                    <option value="system-ui, sans-serif">System UI</option>
+                  <span class="styler-label">Awwwards Font:</span>
+                  <select id="previewFontSelect" class="appearance-select" title="Awwwards Typography Winners">
+                    <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans (Modern Clean)</option>
+                    <option value="'Space Grotesk', sans-serif">Space Grotesk (Tech Editorial)</option>
+                    <option value="'Syne', sans-serif">Syne (Bold Brutalist)</option>
+                    <option value="'Cinzel', serif">Cinzel (Luxury Editorial)</option>
+                    <option value="'Epilogue', sans-serif">Epilogue (Clean Sans)</option>
+                    <option value="'JetBrains Mono', monospace">JetBrains Mono (Developer)</option>
+                    <option value="'Inter', sans-serif">Inter (Standard App)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Row 2: Archetype Layouts (Ecommerce variants, SaaS, Dashboard) & AI Sync -->
+              <div class="preview-styler-row" style="margin-top:2px;">
+                <!-- Archetype Layout Presets -->
+                <div class="styler-group">
+                  <span class="styler-label">Layout:</span>
+                  <select id="previewLayoutSelect" class="appearance-select" title="Interactive Archetype Layout">
+                    <option value="full">Default Layout</option>
+                    <option value="ecom-grid">E-Commerce Grid (Navbar + Hero Banner + 3-Col Product Grid)</option>
+                    <option value="ecom-carousel">E-Commerce Carousel (Sticky Search + Slider + Quick Buy)</option>
+                    <option value="ecom-sidebar">E-Commerce Filtered (Filter Sidebar + Product Catalog)</option>
+                    <option value="saas-hero">SaaS Landing (Sticky Nav + Hero CTA + Feature Cards)</option>
+                    <option value="dashboard">Dashboard (Sidebar Nav + Top Stats + Data Canvas)</option>
+                    <option value="responsive">Responsive Tablet (768px)</option>
+                    <option value="mobile">Mobile View (375x667)</option>
+                    <option value="card">Centered Card / Modal</option>
                   </select>
                 </div>
 
-                <!-- Layout Presets Selector -->
+                <!-- AI Sync Button -->
                 <div class="styler-group">
-                  <span class="styler-label">Layout:</span>
-                  <select id="previewLayoutSelect" class="appearance-select" title="Preview Viewport Layout">
-                    <option value="full">Full Canvas</option>
-                    <option value="responsive">Responsive (768px)</option>
-                    <option value="mobile">Mobile (375x667)</option>
-                    <option value="card">Centered Card</option>
-                  </select>
+                  <button type="button" class="btn-apply-prompt" id="btnSyncToAi" title="Send design changes to AI model to re-generate code">
+                    Sync to AI &rarr;
+                  </button>
                 </div>
               </div>
             </div>
@@ -2006,7 +2046,11 @@ $ </div>
         const aiBody = appendMessage('assistant', '...', activeModel);
 
         // Fetch Live CodeGraph Reflections & Telemetry
-        let sysPrompt = 'You are Oh My Works (OMW), an AI workspace orchestrator with terminal, anti-OOM guardian, and multi-harness sessions.';
+        let sysPrompt = `You are Oh My Works (OMW), an AI workspace orchestrator with terminal, anti-OOM guardian, and multi-harness sessions.
+[ACTIVE DESIGN PREVIEW SETTINGS]
+* Accent Color: ${previewColor}
+* Typography: ${previewFont}
+* Selected Archetype Layout: ${previewLayout} (When outputting HTML/CSS, adapt styles and markup to respect these active user styling choices).`;
         try {
           const [telem, refl] = await Promise.all([
             fetch(`${config.daemonUrl}`).then(r => r.json()).catch(() => null),
@@ -2646,11 +2690,49 @@ $ </div>
         } catch (e) {}
       }, 1000);
 
-      // Web Preview Interactive Styler (Color, Font & Layout)
+      // Web Preview Interactive Styler (Figma Colors, Awwwards Typography & Archetype Layouts)
       let currentRawHtml = '';
-      let previewColor = localStorage.getItem('omw_preview_color') || '#3574f0';
-      let previewFont = localStorage.getItem('omw_preview_font') || "'Inter', sans-serif";
+      let previewColor = localStorage.getItem('omw_preview_color') || '#0D99FF';
+      let previewFont = localStorage.getItem('omw_preview_font') || "'Plus Jakarta Sans', sans-serif";
       let previewLayout = localStorage.getItem('omw_preview_layout') || 'full';
+
+      // Layout CSS Templates for Web Preview
+      const layoutStyles = {
+        'full': '',
+        'ecom-grid': `
+          body { display: flex !important; flex-direction: column !important; min-height: 100vh !important; margin: 0 !important; }
+          .navbar, header, nav { width: 100% !important; position: sticky !important; top: 0 !important; z-index: 99 !important; }
+          .hero, .banner { width: 100% !important; min-height: 180px !important; }
+          .products, .grid, .catalog, main, [class*="list"], [class*="grid"] { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important; gap: 16px !important; padding: 16px !important; }
+          .card, .item, .product { border-radius: 8px !important; border: 1px solid rgba(0,0,0,0.1) !important; padding: 12px !important; }
+        `,
+        'ecom-carousel': `
+          body { display: flex !important; flex-direction: column !important; min-height: 100vh !important; margin: 0 !important; }
+          .search-bar, nav, header { position: sticky !important; top: 0 !important; z-index: 100 !important; }
+          .carousel, .slider, .featured { display: flex !important; overflow-x: auto !important; scroll-snap-type: x mandatory !important; gap: 12px !important; padding: 12px !important; }
+          .carousel > *, .slider > * { scroll-snap-align: start !important; flex: 0 0 260px !important; }
+        `,
+        'ecom-sidebar': `
+          body { display: grid !important; grid-template-columns: 220px 1fr !important; min-height: 100vh !important; margin: 0 !important; }
+          aside, .sidebar, .filters { grid-column: 1 !important; border-right: 1px solid rgba(0,0,0,0.1) !important; padding: 16px !important; }
+          main, .content, .catalog { grid-column: 2 !important; padding: 16px !important; display: grid !important; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important; gap: 16px !important; }
+        `,
+        'saas-hero': `
+          body { display: flex !important; flex-direction: column !important; align-items: center !important; margin: 0 !important; }
+          nav, header { width: 100% !important; max-width: 1100px !important; }
+          .hero, header + section, main > section:first-child { text-align: center !important; padding: 60px 20px !important; max-width: 800px !important; margin: 0 auto !important; }
+          .features, .grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 20px !important; max-width: 1000px !important; margin: 0 auto !important; }
+        `,
+        'dashboard': `
+          body { display: grid !important; grid-template-columns: 240px 1fr !important; grid-template-rows: 56px 1fr !important; min-height: 100vh !important; margin: 0 !important; }
+          nav, .sidebar { grid-column: 1 !important; grid-row: 1 / -1 !important; border-right: 1px solid rgba(0,0,0,0.1) !important; }
+          header, .topbar { grid-column: 2 !important; grid-row: 1 !important; border-bottom: 1px solid rgba(0,0,0,0.1) !important; }
+          main, .content { grid-column: 2 !important; grid-row: 2 !important; padding: 20px !important; }
+        `,
+        'responsive': ``,
+        'mobile': ``,
+        'card': `body { display: flex !important; justify-content: center !important; align-items: center !important; min-height: 100vh !important; }`
+      };
 
       function renderWebPreview(rawHtml) {
         if (rawHtml !== undefined && rawHtml !== null) {
@@ -2658,8 +2740,12 @@ $ </div>
         }
         if (!currentRawHtml) return;
 
-        // Inject dynamic style overrides into the preview document
+        // Custom style injection with Figma Accent Colors + Awwwards Typography + Archetype Layouts
+        const extraLayoutCss = layoutStyles[previewLayout] || '';
         const styleTag = `
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Epilogue:wght@400;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;600;700&family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&display=swap" rel="stylesheet">
 <style id="omw-preview-injected-style">
   :root {
     --accent: ${previewColor} !important;
@@ -2672,10 +2758,11 @@ $ </div>
   a, button:not([class*="bg-"]), .btn-primary, .accent, [data-accent] {
     color: ${previewColor};
   }
-  .btn-fill, button.primary {
+  .btn-fill, button.primary, [class*="btn-primary"], input[type="submit"] {
     background-color: ${previewColor} !important;
     border-color: ${previewColor} !important;
   }
+  ${extraLayoutCss}
 </style>`;
 
         let modifiedHtml = currentRawHtml;
@@ -2699,6 +2786,7 @@ $ </div>
         }
         const select = document.getElementById('previewLayoutSelect');
         if (select) select.value = layout;
+        renderWebPreview();
       }
 
       function updatePreviewColor(color) {
@@ -2743,6 +2831,18 @@ $ </div>
       const previewLayoutSelect = document.getElementById('previewLayoutSelect');
       if (previewLayoutSelect) {
         previewLayoutSelect.addEventListener('change', (e) => updatePreviewLayout(e.target.value));
+      }
+
+      // Sync Design to AI: automatically formulate prompt and send to model
+      const btnSyncToAi = document.getElementById('btnSyncToAi');
+      if (btnSyncToAi) {
+        btnSyncToAi.addEventListener('click', () => {
+          const layoutName = previewLayoutSelect ? previewLayoutSelect.options[previewLayoutSelect.selectedIndex].text : previewLayout;
+          const fontName = previewFontSelect ? previewFontSelect.options[previewFontSelect.selectedIndex].text : previewFont;
+          const syncPrompt = `Perbarui desain komponen web ini: terapkan warna accent '${previewColor}', tipografi '${fontName}', dan tata letak struktur '${layoutName}'. Tulis kode HTML & CSS lengkapnya.`;
+          promptInput.value = syncPrompt;
+          handleSend();
+        });
       }
 
       // Initialize preview controls on boot
