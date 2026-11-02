@@ -57,8 +57,8 @@
       background: var(--bg);
       background-image: var(--bg-gradient);
       color: var(--text);
-      font-family: var(--font-family, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
-      font-size: var(--font-size-base, 13px);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
       line-height: 1.5;
       height: 100vh;
       overflow: hidden;
@@ -382,45 +382,63 @@
 
     
     /* Appearance Controls (Color & Font) */
-    .appearance-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 4px;
-      padding-top: 6px;
+  /* Web Preview Styler & Layout Toolbar */
+    .web-preview-footer, .canvas-footer {
+      height: 42px;
+      padding: 0 12px;
+      background: var(--sidebar);
       border-top: 1px solid var(--border);
-    }
-
-    .appearance-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
       font-size: 11px;
       color: var(--text-muted);
+      overflow-x: auto;
+    }
+
+    .preview-styler-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .styler-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .styler-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .color-presets {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
-    .color-dot {
-      width: 13px;
-      height: 13px;
+    .preview-color-dot {
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       cursor: pointer;
       border: 1px solid rgba(255, 255, 255, 0.25);
-      transition: transform 0.15s;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
 
-    .color-dot:hover {
-      transform: scale(1.25);
+    .preview-color-dot:hover {
+      transform: scale(1.2);
     }
 
-    .color-dot.active {
-      box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent);
+    .preview-color-dot.active {
+      box-shadow: 0 0 0 2px var(--sidebar), 0 0 0 3.5px var(--accent);
     }
 
     .color-picker-input {
@@ -439,29 +457,86 @@
       border: 1px solid var(--border);
       border-radius: 4px;
       font-size: 11px;
-      padding: 2px 4px;
+      padding: 2px 6px;
       outline: none;
       cursor: pointer;
+      height: 24px;
     }
 
     .appearance-select:focus {
       border-color: var(--border-focus);
     }
 
-    .canvas-footer {
-      height: 38px;
-      padding: 0 14px;
-      background: var(--sidebar);
-      border-top: 1px solid var(--border);
+    /* Preview Container & Dynamic Layout Presets */
+    .preview-container {
+      flex: 1;
       display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #111216;
       align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--text-muted);
+      justify-content: flex-start;
+      padding: 0;
+      position: relative;
     }
 
-    /* Multi-View Side Canvas */
-    .side-canvas {
+    .preview-view {
+      border: none;
+      background: #ffffff;
+      width: 100%;
+      height: 100%;
+      transition: width 0.2s ease, max-width 0.2s ease, height 0.2s ease, border-radius 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Layout Preset Modes */
+    .preview-container[data-layout="full"] .preview-view {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .preview-container[data-layout="responsive"] {
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .preview-container[data-layout="responsive"] .preview-view {
+      width: 100%;
+      max-width: 768px;
+      height: 100%;
+      min-height: 480px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .preview-container[data-layout="mobile"] {
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .preview-container[data-layout="mobile"] .preview-view {
+      width: 375px;
+      height: 667px;
+      max-height: 95%;
+      border-radius: 24px;
+      border: 3px solid var(--border);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    .preview-container[data-layout="card"] {
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .preview-container[data-layout="card"] .preview-view {
+      width: 440px;
+      height: 520px;
+      max-height: 90%;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+    }
+
+    as {
       width: 0;
       border-left: 0 solid var(--border);
       background: var(--panel);
@@ -1163,38 +1238,6 @@
         <span>System RAM</span>
         <span id="ramVal">5,901 MB Free</span>
       </div>
-      <div class="appearance-controls">
-        <div class="appearance-row">
-          <span>Accent</span>
-          <div class="color-presets">
-            <span class="color-dot active" data-color="#3574f0" style="background:#3574f0;" title="Default Blue"></span>
-            <span class="color-dot" data-color="#10b981" style="background:#10b981;" title="Emerald Green"></span>
-            <span class="color-dot" data-color="#8b5cf6" style="background:#8b5cf6;" title="Purple"></span>
-            <span class="color-dot" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></span>
-            <span class="color-dot" data-color="#ec4899" style="background:#ec4899;" title="Pink"></span>
-            <input type="color" id="customColorPicker" class="color-picker-input" value="#3574f0" title="Custom Accent" />
-          </div>
-        </div>
-        <div class="appearance-row">
-          <span>Font</span>
-          <div style="display:flex;gap:4px;">
-            <select id="fontFamilySelect" class="appearance-select font-family-shared">
-              <option value="'Inter', -apple-system, sans-serif">Inter</option>
-              <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-              <option value="'Fira Code', monospace">Fira Code</option>
-              <option value="monospace">Monospace</option>
-              <option value="sans-serif">System Sans</option>
-            </select>
-            <select id="fontSizeSelect" class="appearance-select font-size-shared" style="width:48px;">
-              <option value="12px">12</option>
-              <option value="13px" selected>13</option>
-              <option value="14px">14</option>
-              <option value="15px">15</option>
-              <option value="16px">16</option>
-            </select>
-          </div>
-        </div>
-      </div>
       <button type="button" class="btn-secondary" id="btnOpenSettingsSide" style="margin-top:4px;width:100%;text-align:center;">
         IDE Settings
       </button>
@@ -1243,7 +1286,8 @@
       <section class="side-canvas" id="sideCanvas">
         <div class="canvas-header">
           <div class="canvas-tab-bar">
-            <button type="button" class="canvas-tab-btn active" data-canvas="terminal">Terminal</button>
+            <button type="button" class="canvas-tab-btn active" data-canvas="web">Web Preview</button>
+            <button type="button" class="canvas-tab-btn" data-canvas="terminal">Terminal</button>
             <button type="button" class="canvas-tab-btn" data-canvas="harness">Harnesses</button>
             <button type="button" class="canvas-tab-btn" data-canvas="editor">Editor</button>
           </div>
@@ -1251,8 +1295,57 @@
         </div>
 
         <div class="canvas-viewport-container">
-          <!-- Pane 1: Terminal -->
-          <div class="canvas-view-pane active" id="paneTerminal">
+          <!-- Pane 1: Web Preview with Interactive Canvas Container & Bottom Styler -->
+          <div class="canvas-view-pane active" id="paneWeb" style="display:flex;flex-direction:column;height:100%;">
+            <div class="preview-container" id="previewContainer" data-layout="full">
+              <iframe class="preview-view" id="webPreviewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+            </div>
+
+            <!-- Web Preview Bottom Styler: Color, Font & Layout -->
+            <div class="web-preview-footer" id="webPreviewFooter">
+              <div class="preview-styler-row">
+                <!-- Color Presets -->
+                <div class="styler-group">
+                  <span class="styler-label">Color:</span>
+                  <div class="color-presets">
+                    <span class="preview-color-dot active" data-color="#3574f0" style="background:#3574f0;" title="Default Blue"></span>
+                    <span class="preview-color-dot" data-color="#10b981" style="background:#10b981;" title="Emerald Green"></span>
+                    <span class="preview-color-dot" data-color="#8b5cf6" style="background:#8b5cf6;" title="Cyber Purple"></span>
+                    <span class="preview-color-dot" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></span>
+                    <span class="preview-color-dot" data-color="#ec4899" style="background:#ec4899;" title="Neon Pink"></span>
+                    <span class="preview-color-dot" data-color="#00ffff" style="background:#00ffff;" title="Cyan Neon"></span>
+                    <input type="color" id="previewCustomColor" class="color-picker-input" value="#3574f0" title="Custom Preview Color" />
+                  </div>
+                </div>
+
+                <!-- Font Selector -->
+                <div class="styler-group">
+                  <span class="styler-label">Font:</span>
+                  <select id="previewFontSelect" class="appearance-select" title="Preview Typography">
+                    <option value="'Inter', sans-serif">Inter</option>
+                    <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                    <option value="'Courier New', monospace">Courier</option>
+                    <option value="'Comic Sans MS', cursive">Casual / Comic</option>
+                    <option value="system-ui, sans-serif">System UI</option>
+                  </select>
+                </div>
+
+                <!-- Layout Presets Selector -->
+                <div class="styler-group">
+                  <span class="styler-label">Layout:</span>
+                  <select id="previewLayoutSelect" class="appearance-select" title="Preview Viewport Layout">
+                    <option value="full">Full Canvas</option>
+                    <option value="responsive">Responsive (768px)</option>
+                    <option value="mobile">Mobile (375x667)</option>
+                    <option value="card">Centered Card</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pane 2: Terminal -->
+          <div class="canvas-view-pane" id="paneTerminal">
             <div class="terminal-view">
               <div class="terminal-screen" id="terminalScreen">[Oh My Works Interactive PTY Terminal Ready]
 $ </div>
@@ -1263,45 +1356,18 @@ $ </div>
             </div>
           </div>
 
-          <!-- Pane 2: Harness Observer -->
+          <!-- Pane 3: Harness Observer -->
           <div class="canvas-view-pane" id="paneHarness">
             <div class="observer-view" id="harnessObserverContainer"></div>
           </div>
 
-          <!-- Pane 3: Editor / File Viewer -->
+          <!-- Pane 4: Editor / File Viewer -->
           <div class="canvas-view-pane" id="paneEditor">
             <div class="editor-view" id="editorContent">Select a file from Worktree &amp; Files to view or edit.</div>
           </div>
         </div>
 
-        <!-- Canvas Footer: Color & Font Customization -->
-        <div class="canvas-footer">
-          <span>Side Styling</span>
-          <div class="appearance-row" style="gap:8px;">
-            <div class="color-presets">
-              <span class="color-dot active" data-color="#3574f0" style="background:#3574f0;" title="Default Blue"></span>
-              <span class="color-dot" data-color="#10b981" style="background:#10b981;" title="Emerald Green"></span>
-              <span class="color-dot" data-color="#8b5cf6" style="background:#8b5cf6;" title="Purple"></span>
-              <span class="color-dot" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></span>
-              <span class="color-dot" data-color="#ec4899" style="background:#ec4899;" title="Pink"></span>
-              <input type="color" class="color-picker-input customColorPickerShared" value="#3574f0" title="Custom Accent" />
-            </div>
-            <select class="appearance-select font-family-shared">
-              <option value="'Inter', -apple-system, sans-serif">Inter</option>
-              <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-              <option value="'Fira Code', monospace">Fira Code</option>
-              <option value="monospace">Monospace</option>
-              <option value="sans-serif">System Sans</option>
-            </select>
-            <select class="appearance-select font-size-shared" style="width:48px;">
-              <option value="12px">12</option>
-              <option value="13px" selected>13</option>
-              <option value="14px">14</option>
-              <option value="15px">15</option>
-              <option value="16px">16</option>
-            </select>
-          </div>
-        </div>
+
       </section>
     </div>
   </main>
@@ -1612,6 +1678,9 @@ $ </div>
         });
 
         canvasViewPanes.forEach(p => p.classList.remove('active'));
+        if (tabName === 'web') {
+          document.getElementById('paneWeb').classList.add('active');
+        }
         if (tabName === 'terminal') document.getElementById('paneTerminal').classList.add('active');
         if (tabName === 'harness') {
           document.getElementById('paneHarness').classList.add('active');
@@ -2062,6 +2131,14 @@ $ </div>
 
       function checkAiAutoSplit(fullText) {
         if (!config.permAutoSplit) return;
+
+        // Web Preview trigger: HTML/CSS code
+        const htmlMatch = fullText.match(/```html\n([\s\S]+?)```/i);
+        if (htmlMatch) {
+          renderWebPreview(htmlMatch[1]);
+          switchCanvasTab('web');
+          return;
+        }
 
         // Terminal trigger: Rust, Bash, or Shell code
         const codeMatch = fullText.match(/```(rust|bash|sh|python)\n([\s\S]+?)```/i);
@@ -2569,64 +2646,109 @@ $ </div>
         } catch (e) {}
       }, 1000);
 
-      // Appearance Engine: Color & Font Customization
-      function applyAppearance(accent, fontFam, fontSize) {
-        if (accent) {
-          document.documentElement.style.setProperty('--accent', accent);
-          document.documentElement.style.setProperty('--border-focus', accent);
-          document.documentElement.style.setProperty('--accent-hover', accent);
-          localStorage.setItem('omw_accent_color', accent);
-          document.querySelectorAll('.color-dot').forEach(d => {
-            if (d.getAttribute('data-color') === accent) d.classList.add('active');
-            else d.classList.remove('active');
-          });
-          document.querySelectorAll('#customColorPicker, .customColorPickerShared').forEach(p => {
-            p.value = accent;
-          });
+      // Web Preview Interactive Styler (Color, Font & Layout)
+      let currentRawHtml = '';
+      let previewColor = localStorage.getItem('omw_preview_color') || '#3574f0';
+      let previewFont = localStorage.getItem('omw_preview_font') || "'Inter', sans-serif";
+      let previewLayout = localStorage.getItem('omw_preview_layout') || 'full';
+
+      function renderWebPreview(rawHtml) {
+        if (rawHtml !== undefined && rawHtml !== null) {
+          currentRawHtml = rawHtml;
         }
-        if (fontFam) {
-          document.documentElement.style.setProperty('--font-family', fontFam);
-          document.body.style.fontFamily = fontFam;
-          localStorage.setItem('omw_font_family', fontFam);
-          document.querySelectorAll('.font-family-shared').forEach(s => {
-            s.value = fontFam;
-          });
+        if (!currentRawHtml) return;
+
+        // Inject dynamic style overrides into the preview document
+        const styleTag = `
+<style id="omw-preview-injected-style">
+  :root {
+    --accent: ${previewColor} !important;
+    --primary: ${previewColor} !important;
+    --color-primary: ${previewColor} !important;
+  }
+  * {
+    font-family: ${previewFont} !important;
+  }
+  a, button:not([class*="bg-"]), .btn-primary, .accent, [data-accent] {
+    color: ${previewColor};
+  }
+  .btn-fill, button.primary {
+    background-color: ${previewColor} !important;
+    border-color: ${previewColor} !important;
+  }
+</style>`;
+
+        let modifiedHtml = currentRawHtml;
+        if (modifiedHtml.includes('</head>')) {
+          modifiedHtml = modifiedHtml.replace('</head>', styleTag + '</head>');
+        } else if (modifiedHtml.includes('<body>')) {
+          modifiedHtml = modifiedHtml.replace('<body>', '<body>' + styleTag);
+        } else {
+          modifiedHtml = styleTag + modifiedHtml;
         }
-        if (fontSize) {
-          document.documentElement.style.setProperty('--font-size-base', fontSize);
-          document.body.style.fontSize = fontSize;
-          localStorage.setItem('omw_font_size', fontSize);
-          document.querySelectorAll('.font-size-shared').forEach(s => {
-            s.value = fontSize;
-          });
-        }
+
+        webPreviewFrame.srcdoc = modifiedHtml;
       }
 
+      function updatePreviewLayout(layout) {
+        previewLayout = layout;
+        localStorage.setItem('omw_preview_layout', layout);
+        const container = document.getElementById('previewContainer');
+        if (container) {
+          container.setAttribute('data-layout', layout);
+        }
+        const select = document.getElementById('previewLayoutSelect');
+        if (select) select.value = layout;
+      }
+
+      function updatePreviewColor(color) {
+        previewColor = color;
+        localStorage.setItem('omw_preview_color', color);
+        document.querySelectorAll('.preview-color-dot').forEach(d => {
+          if (d.getAttribute('data-color') === color) d.classList.add('active');
+          else d.classList.remove('active');
+        });
+        const picker = document.getElementById('previewCustomColor');
+        if (picker) picker.value = color;
+        renderWebPreview();
+      }
+
+      function updatePreviewFont(font) {
+        previewFont = font;
+        localStorage.setItem('omw_preview_font', font);
+        const select = document.getElementById('previewFontSelect');
+        if (select) select.value = font;
+        renderWebPreview();
+      }
+
+      // Event listeners for Web Preview Toolbar
       document.addEventListener('click', (e) => {
-        const dot = e.target.closest('.color-dot');
+        const dot = e.target.closest('.preview-color-dot');
         if (dot) {
-          const color = dot.getAttribute('data-color');
-          if (color) applyAppearance(color, null, null);
+          const c = dot.getAttribute('data-color');
+          if (c) updatePreviewColor(c);
         }
       });
 
-      document.querySelectorAll('#customColorPicker, .customColorPickerShared').forEach(p => {
-        p.addEventListener('input', (e) => applyAppearance(e.target.value, null, null));
-      });
+      const previewColorPicker = document.getElementById('previewCustomColor');
+      if (previewColorPicker) {
+        previewColorPicker.addEventListener('input', (e) => updatePreviewColor(e.target.value));
+      }
 
-      document.querySelectorAll('.font-family-shared').forEach(s => {
-        s.addEventListener('change', (e) => applyAppearance(null, e.target.value, null));
-      });
+      const previewFontSelect = document.getElementById('previewFontSelect');
+      if (previewFontSelect) {
+        previewFontSelect.addEventListener('change', (e) => updatePreviewFont(e.target.value));
+      }
 
-      document.querySelectorAll('.font-size-shared').forEach(s => {
-        s.addEventListener('change', (e) => applyAppearance(null, null, e.target.value));
-      });
+      const previewLayoutSelect = document.getElementById('previewLayoutSelect');
+      if (previewLayoutSelect) {
+        previewLayoutSelect.addEventListener('change', (e) => updatePreviewLayout(e.target.value));
+      }
 
-      // Init Load
-      const savedAccent = localStorage.getItem('omw_accent_color') || '#3574f0';
-      const savedFont = localStorage.getItem('omw_font_family') || "'Inter', -apple-system, sans-serif";
-      const savedSize = localStorage.getItem('omw_font_size') || '13px';
-      applyAppearance(savedAccent, savedFont, savedSize);
+      // Initialize preview controls on boot
+      updatePreviewLayout(previewLayout);
+      updatePreviewColor(previewColor);
+      updatePreviewFont(previewFont);
 
       loadHierarchicalSessions();
       syncModels();
