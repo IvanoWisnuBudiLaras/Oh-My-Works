@@ -2016,6 +2016,59 @@ const FIGMA_PALETTES = {
       };
 
       // Web Preview Interactive Styler (Figma Palettes, Awwwards Typography & Archetype Layouts)
+      // Empty Preview Placeholder for fresh/blank sessions
+      const EMPTY_PREVIEW_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg, #090D16);
+      color: var(--text, #64748B);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+      text-align: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .empty-icon {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 14px;
+      opacity: 0.35;
+      stroke: currentColor;
+    }
+    .empty-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-bright, #94A3B8);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+    .empty-desc {
+      font-size: 11px;
+      opacity: 0.65;
+      max-width: 260px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5">
+    <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor"/>
+    <path d="M3 9h18M9 21V9" stroke="currentColor"/>
+  </svg>
+  <div class="empty-title">Belum ada preview web</div>
+  <div class="empty-desc">Kirim prompt untuk menghasilkan kode HTML / UI komponen di sesi ini.</div>
+</body>
+</html>`;
+
       // Default Executive Telemetry Showcase
       const DEFAULT_TELEMETRY_HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -2329,7 +2382,7 @@ const FIGMA_PALETTES = {
   </main>
 </body>
 </html>`;
-      let currentRawHtml = DEFAULT_TELEMETRY_HTML;
+      let currentRawHtml = EMPTY_PREVIEW_HTML;
 
       let activePaletteKey = localStorage.getItem('omw_preview_palette') || 'awwwards-emerald';
       let previewColor = localStorage.getItem('omw_preview_color') || FIGMA_PALETTES[activePaletteKey]?.primary || '#00F5A0';
@@ -2938,7 +2991,7 @@ const FIGMA_PALETTES = {
         currentSessionId = newRootId;
         currentMessages = [];
         messagesList.innerHTML = '';
-        renderWebPreview(DEFAULT_TELEMETRY_HTML);
+        renderWebPreview(EMPTY_PREVIEW_HTML);
         await loadHierarchicalSessions();
         promptInput.focus();
       });
@@ -2993,19 +3046,23 @@ const FIGMA_PALETTES = {
           updatePreviewLayout(sessLayout, false);
         }
 
+        // Check if turns contain HTML
+        let turnHtml = null;
+        for (let i = currentMessages.length - 1; i >= 0; i--) {
+          const m = currentMessages[i].content?.match(/```html\n([\s\S]+?)```/i);
+          if (m) {
+            turnHtml = m[1];
+            break;
+          }
+        }
+
         const sessHtml = localStorage.getItem('omw_preview_cached_html_' + sessionId);
-        if (sessHtml) {
+        if (turnHtml) {
+          renderWebPreview(turnHtml);
+        } else if (sessHtml && !sessHtml.includes('OMW TELEMETRY') && !sessHtml.includes('Executive Telemetry & Analytics')) {
           renderWebPreview(sessHtml);
         } else {
-          let turnHtml = null;
-          for (let i = currentMessages.length - 1; i >= 0; i--) {
-            const m = currentMessages[i].content?.match(/```html\n([\s\S]+?)```/i);
-            if (m) {
-              turnHtml = m[1];
-              break;
-            }
-          }
-          renderWebPreview(turnHtml || DEFAULT_TELEMETRY_HTML);
+          renderWebPreview(EMPTY_PREVIEW_HTML);
         }
       }
 
@@ -4003,9 +4060,15 @@ const FIGMA_PALETTES = {
         if (rawHtml !== undefined && rawHtml !== null) {
           currentRawHtml = rawHtml;
           if (typeof currentSessionId !== 'undefined' && currentSessionId) {
-            localStorage.setItem('omw_preview_cached_html_' + currentSessionId, currentRawHtml);
+            if (rawHtml === EMPTY_PREVIEW_HTML || rawHtml === '') {
+              localStorage.removeItem('omw_preview_cached_html_' + currentSessionId);
+            } else {
+              localStorage.setItem('omw_preview_cached_html_' + currentSessionId, currentRawHtml);
+            }
           }
-          localStorage.setItem('omw_preview_cached_html', currentRawHtml);
+          if (rawHtml !== EMPTY_PREVIEW_HTML) {
+            localStorage.setItem('omw_preview_cached_html', currentRawHtml);
+          }
         }
         if (!currentRawHtml) return;
 
