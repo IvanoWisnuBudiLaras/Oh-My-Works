@@ -11,7 +11,7 @@
   "app": {
     "windows": [
       {
-        "title": "Gemini Browser \u2014 Oh My Works",
+        "title": "Oh My Works",
         "width": 1280,
         "height": 820,
         "resizable": true,

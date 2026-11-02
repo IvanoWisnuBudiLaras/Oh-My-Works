@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="omwGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3574F0"/>
+      <stop offset="50%" stop-color="#00D2FF"/>
+      <stop offset="100%" stop-color="#00F5A0"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E2025"/>
+      <stop offset="100%" stop-color="#121316"/>
+    </linearGradient>
+    <filter id="neonBlur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base Frame -->
+  <rect x="16" y="16" width="480" height="480" rx="108" ry="108" fill="url(#bgGrad)" stroke="#2B2D33" stroke-width="8"/>
+
+  <!-- Subtle Inner Ring Accent -->
+  <rect x="36" y="36" width="440" height="440" rx="88" ry="88" fill="none" stroke="#3574F0" stroke-width="2" stroke-opacity="0.3"/>
+
+  <!-- Glowing Workspace Glyph: Stylized OMW Geometric Chevron & Neural Node -->
+  <g transform="translate(256, 256)" filter="url(#neonBlur)">
+    <!-- Outer Hex Prism Facets -->
+    <!-- Left Wing / Chevron -->
+    <path d="M -115 -70 L -45 -135 L -15 -105 L -65 -50 L -15 5 L -45 35 Z" fill="url(#omwGlow)" opacity="0.95"/>
+    
+    <!-- Right Wing / Chevron -->
+    <path d="M 115 70 L 45 135 L 15 105 L 65 50 L 15 -5 L 45 -35 Z" fill="url(#omwGlow)" opacity="0.95"/>
+
+    <!-- Center Dynamic Core (Stylized Diamond Matrix) -->
+    <polygon points="0,-75 65,0 0,75 -65,0" fill="url(#omwGlow)"/>
+    <!-- Inner Dark Matrix Cutout -->
+    <polygon points="0,-42 36,0 0,42 -36,0" fill="#121316"/>
+    <!-- Core Spark Node -->
+    <circle cx="0" cy="0" r="14" fill="#00F5A0"/>
+  </g>
+
+  <!-- Monospace Subtitle Label Accent -->
+  <text x="256" y="420" font-family="'JetBrains Mono', monospace" font-size="34" font-weight="700" fill="#E2E8F0" letter-spacing="8" text-anchor="middle">OMW</text>
+</svg>
