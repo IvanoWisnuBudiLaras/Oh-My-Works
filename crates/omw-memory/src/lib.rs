@@ -188,6 +188,17 @@ impl CodeGraphStore {
         Ok(out)
     }
 
+    pub fn delete_session(&self, id: &str) -> Result<()> {
+        self.conn.execute("DELETE FROM turns WHERE session_id = ?1", params![id])?;
+        self.conn.execute("DELETE FROM sessions WHERE id = ?1 OR root_id = ?1", params![id])?;
+        Ok(())
+    }
+
+    pub fn update_session_title(&self, id: &str, title: &str) -> Result<()> {
+        self.conn.execute("UPDATE sessions SET title = ?1 WHERE id = ?2", params![title, id])?;
+        Ok(())
+    }
+
     // --- Turns & History ---
 
     pub fn save_turn(&self, turn: &ChatTurn) -> Result<()> {

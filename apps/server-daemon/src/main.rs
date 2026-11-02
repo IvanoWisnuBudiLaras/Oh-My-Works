@@ -26,6 +26,28 @@ fn get_db() -> omw_memory::Result<CodeGraphStore> {
     CodeGraphStore::open(&db_path())
 }
 
+fn urldecode(s: &str) -> String {
+    let mut res = Vec::new();
+    let bytes = s.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'%' && i + 2 < bytes.len() {
+            if let Ok(b) = u8::from_str_radix(&s[i + 1..i + 3], 16) {
+                res.push(b);
+                i += 3;
+                continue;
+            }
+        } else if bytes[i] == b'+' {
+            res.push(b' ');
+            i += 1;
+            continue;
+        }
+        res.push(bytes[i]);
+        i += 1;
+    }
+    String::from_utf8_lossy(&res).to_string()
+}
+
 fn parse_query(uri: &str) -> std::collections::HashMap<String, String> {
     let mut map = std::collections::HashMap::new();
     if let Some(pos) = uri.find('?') {
@@ -33,7 +55,7 @@ fn parse_query(uri: &str) -> std::collections::HashMap<String, String> {
         for pair in q.split('&') {
             let mut parts = pair.splitn(2, '=');
             if let (Some(k), Some(v)) = (parts.next(), parts.next()) {
-                map.insert(k.to_string(), v.to_string());
+                map.insert(k.to_string(), urldecode(v));
             }
         }
     }
@@ -292,6 +314,24 @@ fn handle_client(mut stream: TcpStream) {
             }
         }
         ("200 OK", "application/json", r#"{"status":"branched"}"#.to_string())
+    } else if uri.starts_with("/sessions/delete") && method == "POST" {
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            if let Some(id) = val["id"].as_str() {
+                if let Ok(db) = get_db() {
+                    let _ = db.delete_session(id);
+                }
+            }
+        }
+        ("200 OK", "application/json", r#"{"status":"deleted"}"#.to_string())
+    } else if uri.starts_with("/sessions/rename") && method == "POST" {
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            if let (Some(id), Some(title)) = (val["id"].as_str(), val["title"].as_str()) {
+                if let Ok(db) = get_db() {
+                    let _ = db.update_session_title(id, title);
+                }
+            }
+        }
+        ("200 OK", "application/json", r#"{"status":"renamed"}"#.to_string())
     } else if uri.starts_with("/sessions/turns") {
         let session_id = query_map.get("session_id").map(|s| s.as_str()).unwrap_or("");
         let turns = match get_db() {

@@ -249,8 +249,32 @@
     }
 
     .file-node:hover { background: var(--panel-hover); color: var(--text-bright); }
-    .file-node.dir { font-weight: 600; color: var(--text-muted); }
-    .file-node.file { color: var(--text); }
+    .file-node.dir { font-weight: 600; color: var(--text-bright); }
+    .file-node.file { color: var(--text-muted); font-size: 11px; }
+    .file-node.file:hover { color: var(--text-bright); }
+    .file-node.file.active { background: var(--panel-active); color: var(--accent); }
+    .dir-icon { font-size: 9px; width: 12px; display: inline-block; color: var(--text-muted); text-align: center; }
+    .file-children { display: block; }
+    .session-del-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 1px 5px;
+      border-radius: 4px;
+      opacity: 0.5;
+      transition: all 0.15s ease;
+    }
+    .session-del-btn:hover {
+      opacity: 1;
+      color: var(--red);
+      background: rgba(224, 108, 117, 0.15);
+    }
+    .root-session-group.active {
+      border-color: var(--accent);
+    }
 
     .sidebar-footer {
       padding: 10px 14px;
@@ -1351,15 +1375,15 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-tab-bar">
-      <button type="button" class="sidebar-tab-btn active" id="tabBtnSessions">Sessions</button>
+      <button type="button" class="sidebar-tab-btn active" id="tabBtnSessions">Chat History</button>
       <button type="button" class="sidebar-tab-btn" id="tabBtnFiles">Worktree &amp; Files</button>
     </div>
 
-    <!-- View 1: Hierarchical Sessions -->
+    <!-- View 1: Chat History & Sessions -->
     <div class="sidebar-content-view" id="viewSessions">
       <div class="sidebar-btn-row">
-        <button type="button" class="btn-new" id="btnNewRootSession">+ New Project</button>
-        <button type="button" class="btn-new" id="btnNewBranchThread">+ Branch</button>
+        <button type="button" class="btn-new" id="btnNewRootSession" style="background:var(--accent);color:#fff;border-color:transparent;font-weight:600;">+ New Chat</button>
+        <button type="button" class="btn-new" id="btnNewBranchThread" title="Branch thread from active chat">+ Branch</button>
       </div>
       <div id="hierarchicalSessionsList" style="display:flex;flex-direction:column;gap:6px;"></div>
     </div>
@@ -1986,22 +2010,58 @@ $ </div>
 
       async function renderHierarchicalSessions() {
         hierarchicalSessionsList.innerHTML = '';
+        if (rootSessions.length === 0) {
+          hierarchicalSessionsList.innerHTML = '<div style="color:var(--text-muted);font-size:11px;padding:8px;text-align:center;">Belum ada riwayat obrolan. Klik + New Chat untuk memulai.</div>';
+          return;
+        }
+
         for (const root of rootSessions) {
           const group = document.createElement('div');
-          group.className = 'root-session-group';
+          group.className = `root-session-group ${root.id === currentSessionId ? 'active' : ''}`;
 
           const header = document.createElement('div');
           header.className = 'root-session-header';
           header.innerHTML = `
-            <span>${escapeHtml(root.title)}</span>
-            <span class="badge-branch">Root</span>
+            <div style="display:flex;align-items:center;gap:6px;overflow:hidden;flex:1;min-width:0;">
+              <span>💬</span>
+              <span class="session-title-text" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px;">${escapeHtml(root.title)}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <span class="badge-branch">${root.turn_count || 0}</span>
+              <button type="button" class="session-del-btn" title="Hapus riwayat obrolan">&times;</button>
+            </div>
           `;
+
+          // Click on header switches session
           header.addEventListener('click', () => {
             currentRootId = root.id;
             currentSessionId = root.id;
             loadSessionTurns(root.id);
             renderHierarchicalSessions();
           });
+
+          // Delete session button
+          const delBtn = header.querySelector('.session-del-btn');
+          if (delBtn) {
+            delBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              if (confirm(`Hapus riwayat obrolan "${root.title}"?`)) {
+                await fetch(`${config.daemonUrl}/sessions/delete`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ id: root.id })
+                });
+                if (currentSessionId === root.id) {
+                  currentSessionId = 'sess-root-1';
+                  currentRootId = 'sess-root-1';
+                  currentMessages = [];
+                  messagesList.innerHTML = '';
+                }
+                await loadHierarchicalSessions();
+              }
+            });
+          }
+
           group.appendChild(header);
 
           // Fetch tree branches for this root
@@ -2009,26 +2069,56 @@ $ </div>
             const bRes = await fetch(`${config.daemonUrl}/sessions/tree?root_id=${encodeURIComponent(root.id)}`);
             if (bRes.ok) {
               const bData = await bRes.json();
-              const branchList = document.createElement('div');
-              branchList.className = 'branch-list';
+              const branches = (bData.tree || []).filter(b => b.id !== root.id);
 
-              (bData.tree || []).forEach(b => {
-                const bItem = document.createElement('div');
-                bItem.className = `branch-item ${b.id === currentSessionId ? 'active' : ''}`;
-                bItem.innerHTML = `
-                  <span>${escapeHtml(b.title)}</span>
-                  <span class="badge-branch">${escapeHtml(b.branch_label)} (${b.turn_count || 0})</span>
-                `;
-                bItem.addEventListener('click', (ev) => {
-                  ev.stopPropagation();
-                  currentRootId = b.root_id;
-                  currentSessionId = b.id;
-                  loadSessionTurns(b.id);
-                  renderHierarchicalSessions();
+              if (branches.length > 0) {
+                const branchList = document.createElement('div');
+                branchList.className = 'branch-list';
+
+                branches.forEach(b => {
+                  const bItem = document.createElement('div');
+                  bItem.className = `branch-item ${b.id === currentSessionId ? 'active' : ''}`;
+                  bItem.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:4px;overflow:hidden;flex:1;min-width:0;">
+                      <span style="opacity:0.6;">↳</span>
+                      <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(b.title)}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+                      <span class="badge-branch">${escapeHtml(b.branch_label)} (${b.turn_count || 0})</span>
+                      <button type="button" class="session-del-btn" title="Hapus branch">&times;</button>
+                    </div>
+                  `;
+                  bItem.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    currentRootId = b.root_id;
+                    currentSessionId = b.id;
+                    loadSessionTurns(b.id);
+                    renderHierarchicalSessions();
+                  });
+
+                  const bDel = bItem.querySelector('.session-del-btn');
+                  if (bDel) {
+                    bDel.addEventListener('click', async (ev) => {
+                      ev.stopPropagation();
+                      if (confirm(`Hapus branch "${b.title}"?`)) {
+                        await fetch(`${config.daemonUrl}/sessions/delete`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ id: b.id })
+                        });
+                        if (currentSessionId === b.id) {
+                          currentSessionId = root.id;
+                          loadSessionTurns(root.id);
+                        }
+                        await loadHierarchicalSessions();
+                      }
+                    });
+                  }
+
+                  branchList.appendChild(bItem);
                 });
-                branchList.appendChild(bItem);
-              });
-              group.appendChild(branchList);
+                group.appendChild(branchList);
+              }
             }
           } catch (e) {}
 
@@ -2036,24 +2126,26 @@ $ </div>
         }
       }
 
-      // New Root Project
+      // + New Chat: instant clean conversation creation
       document.getElementById('btnNewRootSession').addEventListener('click', async () => {
-        const title = prompt('Nama Project / Root Workspace:', 'New Workspace Project');
-        if (!title) return;
-        const newRootId = 'sess-root-' + Date.now();
+        const newRootId = 'sess-chat-' + Date.now();
+        const defaultTitle = 'New Chat';
         await fetch(`${config.daemonUrl}/sessions/branch`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             id: newRootId,
             root_id: newRootId,
-            title: title.trim(),
+            title: defaultTitle,
             branch_label: 'main'
           })
         });
         currentRootId = newRootId;
         currentSessionId = newRootId;
+        currentMessages = [];
+        messagesList.innerHTML = '';
         await loadHierarchicalSessions();
+        promptInput.focus();
       });
 
       // New Branch Thread under active root
@@ -2077,7 +2169,6 @@ $ </div>
         await loadHierarchicalSessions();
       });
 
-      // Load session turns from SQLite
       async function loadSessionTurns(sessionId) {
         messagesList.innerHTML = '';
         currentMessages = [];
@@ -2156,11 +2247,32 @@ $ </div>
           const div = document.createElement('div');
           div.className = `file-node ${node.is_dir ? 'dir' : 'file'}`;
           div.style.paddingLeft = (depth * 14 + 6) + 'px';
-          div.innerHTML = `<span>${node.is_dir ? '📁' : '📄'}</span><span>${escapeHtml(node.name)}</span>`;
 
-          div.addEventListener('click', async () => {
-            if (!node.is_dir) {
-              // Open file in Editor view
+          if (node.is_dir) {
+            const hasChildren = node.children && node.children.length > 0;
+            div.innerHTML = `<span class="dir-icon">${hasChildren ? '▾' : '▸'}</span><span>📁</span><span style="font-weight:600;">${escapeHtml(node.name)}</span>`;
+            container.appendChild(div);
+
+            if (hasChildren) {
+              const childrenContainer = document.createElement('div');
+              childrenContainer.className = 'file-children';
+              renderFileNodes(node.children, childrenContainer, depth + 1);
+              container.appendChild(childrenContainer);
+
+              div.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isHidden = childrenContainer.style.display === 'none';
+                childrenContainer.style.display = isHidden ? 'block' : 'none';
+                const icon = div.querySelector('.dir-icon');
+                if (icon) icon.textContent = isHidden ? '▾' : '▸';
+              });
+            }
+          } else {
+            div.innerHTML = `<span style="width:12px;display:inline-block;"></span><span>📄</span><span>${escapeHtml(node.name)}</span>`;
+            div.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              document.querySelectorAll('.file-node.file').forEach(f => f.classList.remove('active'));
+              div.classList.add('active');
               try {
                 const res = await fetch(`${config.daemonUrl}/workspace/file_read`, {
                   method: 'POST',
@@ -2168,15 +2280,14 @@ $ </div>
                   body: JSON.stringify({ path: node.path })
                 });
                 const d = await res.json();
-                editorContent.textContent = d.content || '(Empty)';
+                editorContent.textContent = d.content || '(Empty file)';
                 switchCanvasTab('editor');
-              } catch (e) {}
-            }
-          });
-
-          container.appendChild(div);
-          if (node.is_dir && node.children && node.children.length) {
-            renderFileNodes(node.children, container, depth + 1);
+              } catch (e) {
+                editorContent.textContent = `Error reading file: ${e.message}`;
+                switchCanvasTab('editor');
+              }
+            });
+            container.appendChild(div);
           }
         });
       }
@@ -2204,6 +2315,18 @@ $ </div>
             })
           });
         } catch (e) {}
+
+        // Auto-update session title on first prompt in New Chat
+        const activeRootObj = rootSessions.find(r => r.id === currentSessionId);
+        if (activeRootObj && (activeRootObj.title === 'New Chat' || activeRootObj.title.startsWith('sess-chat'))) {
+          const autoTitle = text.replace(/[\n\r]+/g, ' ').trim().substring(0, 32);
+          activeRootObj.title = autoTitle;
+          fetch(`${config.daemonUrl}/sessions/rename`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: currentSessionId, title: autoTitle })
+          }).then(() => renderHierarchicalSessions()).catch(() => {});
+        }
 
         const aiMsg = { role: 'assistant', content: '', author: activeModel };
         currentMessages.push(aiMsg);
@@ -2880,12 +3003,17 @@ $ </div>
           const actRes = await fetch(`${config.daemonUrl}/agent/action?consume=true`);
           if (actRes.ok) {
             const actData = await actRes.json();
-            if (actData && actData.type) {
+            const act = (actData && actData.action) ? actData.action : actData;
+            if (act && act.type) {
               const sidebarEl = document.querySelector('.sidebar');
-              switch (actData.type) {
+              switch (act.type) {
                 case 'eval':
                   try {
-                    window.__lastEvalResult = eval(actData.code);
+                    let evRes = eval(act.code);
+                    if (evRes && typeof evRes.then === 'function') {
+                      evRes = await evRes;
+                    }
+                    window.__lastEvalResult = evRes;
                   } catch (e) {
                     window.__lastEvalResult = { error: e.toString() };
                   }
@@ -2902,23 +3030,23 @@ $ </div>
                     sideCanvas.classList.remove('open');
                     updateCanvasLayout();
                   } else {
-                    switchCanvasTab(actData.tab || 'web');
+                    switchCanvasTab(act.tab || 'web');
                   }
                   break;
                 case 'switchCanvasTab':
-                  switchCanvasTab(actData.tab || 'web');
+                  switchCanvasTab(act.tab || 'web');
                   break;
                 case 'setCanvasSize':
-                  if (actData.size) setCanvasSize(actData.size);
+                  if (act.size) setCanvasSize(act.size);
                   break;
                 case 'setPalette':
-                  if (actData.palette) updatePreviewPalette(actData.palette);
+                  if (act.palette) updatePreviewPalette(act.palette);
                   break;
                 case 'setLayout':
-                  if (actData.layout) updatePreviewLayout(actData.layout);
+                  if (act.layout) updatePreviewLayout(act.layout);
                   break;
                 case 'setFont':
-                  if (actData.font) updatePreviewFont(actData.font);
+                  if (act.font) updatePreviewFont(act.font);
                   break;
                 case 'syncToAi':
                   const btnSync = document.getElementById('btnSyncToAi');
@@ -2931,8 +3059,8 @@ $ </div>
                   closeSettingsModal();
                   break;
                 case 'sendPrompt':
-                  if (actData.prompt) {
-                    promptInput.value = actData.prompt;
+                  if (act.prompt) {
+                    promptInput.value = act.prompt;
                     handleSend();
                   }
                   break;
@@ -3349,6 +3477,7 @@ $ </div>
       updatePreviewFont(previewFont);
 
       loadHierarchicalSessions();
+      loadWorktreesAndFiles();
       syncModels();
     })();
   </script>
