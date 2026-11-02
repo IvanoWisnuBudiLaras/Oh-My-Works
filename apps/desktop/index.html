@@ -67,7 +67,7 @@
       transition: background 0.2s ease, color 0.2s ease;
     }
 
-    /* Sidebar */
+    /* Sidebar with Minimize / Collapsed Support */
     .sidebar {
       width: 280px;
       background: var(--sidebar);
@@ -75,6 +75,16 @@
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
+      transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s ease;
+      position: relative;
+    }
+
+    .sidebar.collapsed {
+      width: 0 !important;
+      min-width: 0 !important;
+      overflow: hidden !important;
+      border-right: none !important;
+      visibility: hidden;
     }
 
     .sidebar-tab-bar {
@@ -421,25 +431,28 @@
     .color-presets {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
     .preview-color-dot {
-      width: 13px;
-      height: 13px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+      overflow: hidden;
     }
 
     .preview-color-dot:hover {
-      transform: scale(1.2);
+      transform: scale(1.22);
     }
 
     .preview-color-dot.active {
       box-shadow: 0 0 0 2px var(--sidebar), 0 0 0 3.5px var(--accent);
+      transform: scale(1.15);
     }
 
     .color-picker-input {
@@ -565,11 +578,42 @@
       transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
       box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+      position: relative;
     }
 
     .side-canvas.open {
-      width: 540px;
+      width: 560px;
       border-left: 1px solid var(--border);
+    }
+
+    .side-canvas.open.size-wide {
+      width: 780px !important;
+    }
+
+    .side-canvas.open.size-full {
+      width: 1040px !important;
+      max-width: 90vw !important;
+    }
+
+    .canvas-size-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-size: 10.5px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 6px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .canvas-size-btn:hover {
+      color: var(--text-bright);
+      border-color: var(--border-focus);
+    }
+    .canvas-size-btn.active {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--panel);
     }
 
     .canvas-header {
@@ -1268,12 +1312,18 @@
   <main class="main">
     <header class="topbar">
       <div class="topbar-left">
+        <button type="button" class="btn-topbar" id="btnToggleSidebar" title="Toggle left sidebar (minimize/expand)">
+          <span id="sidebarIcon">&LeftArrowBar;</span> Sidebar
+        </button>
         <button type="button" class="btn-topbar" id="btnModelPicker">
           Engine: <span id="currentModelLabel">cbcn/deepseek-v4-pro</span>
         </button>
         <span class="combo-badge" id="activeRouterBadge">Unified 9Router + OmniRoute</span>
       </div>
       <div class="topbar-right">
+        <button type="button" class="btn-topbar" id="btnToggleSideCanvas" title="Toggle right side canvas (show/hide preview & terminal)">
+          Canvas &RightArrowBar;
+        </button>
         <button type="button" class="btn-topbar" id="btnSettingsTop">Settings</button>
         <button type="button" class="btn-topbar" id="btnThemeToggle">Theme: Dark</button>
       </div>
@@ -1311,7 +1361,14 @@
             <button type="button" class="canvas-tab-btn" data-canvas="harness">Harnesses</button>
             <button type="button" class="canvas-tab-btn" data-canvas="editor">Editor</button>
           </div>
-          <button type="button" class="btn-close-canvas" id="btnCloseCanvas">[Close]</button>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="display:flex;gap:3px;align-items:center;" title="Resize side canvas for desktop inspection">
+              <button type="button" class="canvas-size-btn active" data-size="default" title="Standard width (560px)">Standard</button>
+              <button type="button" class="canvas-size-btn" data-size="wide" title="Wide width (780px)">Wide</button>
+              <button type="button" class="canvas-size-btn" data-size="full" title="Ultra Desktop width (1040px)">Max</button>
+            </div>
+            <button type="button" class="btn-close-canvas" id="btnCloseCanvas" title="Close canvas">[Close]</button>
+          </div>
         </div>
 
         <div class="canvas-viewport-container">
@@ -1325,19 +1382,19 @@
             <div class="web-preview-footer" id="webPreviewFooter">
               <!-- Row 1: Figma Color Schemes & Awwwards Typography -->
               <div class="preview-styler-row">
-                <!-- Figma Color Palette Presets -->
+                <!-- Figma Harmonious Color Palettes (Multi-color schemes) -->
                 <div class="styler-group">
-                  <span class="styler-label">Figma Color:</span>
+                  <span class="styler-label">Figma Palette:</span>
                   <div class="color-presets">
-                    <span class="preview-color-dot active" data-color="#0D99FF" data-scheme="figma-blue" style="background:#0D99FF;" title="Figma Tech Blue (#0D99FF)"></span>
-                    <span class="preview-color-dot" data-color="#14AE5C" data-scheme="figma-jade" style="background:#14AE5C;" title="Jade Pebble (#14AE5C)"></span>
-                    <span class="preview-color-dot" data-color="#7B61FF" data-scheme="figma-lapis" style="background:#7B61FF;" title="Lapis Velvet / Pearl (#7B61FF)"></span>
-                    <span class="preview-color-dot" data-color="#FF7237" data-scheme="figma-copper" style="background:#FF7237;" title="Copper Sunset (#FF7237)"></span>
-                    <span class="preview-color-dot" data-color="#E4FF97" data-scheme="figma-woodland" style="background:#E4FF97; border-color:#888;" title="Woodland Lime (#E4FF97)"></span>
-                    <span class="preview-color-dot" data-color="#24CB71" data-scheme="figma-mint" style="background:#24CB71;" title="Amethyst Mint (#24CB71)"></span>
-                    <span class="preview-color-dot" data-color="#FF3737" data-scheme="figma-garnet" style="background:#FF3737;" title="Seashell Garnet (#FF3737)"></span>
-                    <span class="preview-color-dot" data-color="#252D41" data-scheme="figma-ink" style="background:#252D41;" title="Ink Wash Minimal (#252D41)"></span>
-                    <input type="color" id="previewCustomColor" class="color-picker-input" value="#0D99FF" title="Custom Hex Picker" />
+                    <span class="preview-color-dot active" data-palette="tech-blue" style="background:linear-gradient(135deg, #0D99FF 50%, #0F172A 50%);" title="Figma Tech Blue (#0D99FF primary, #0F172A bg)"></span>
+                    <span class="preview-color-dot" data-palette="jade-pebble" style="background:linear-gradient(135deg, #14AE5C 50%, #F4FBF6 50%); border-color:#aaa;" title="Jade Pebble Morning (#14AE5C primary, #F4FBF6 bg)"></span>
+                    <span class="preview-color-dot" data-palette="lapis-pearl" style="background:linear-gradient(135deg, #7B61FF 50%, #161224 50%);" title="Lapis Velvet Evening (#7B61FF primary, #161224 bg)"></span>
+                    <span class="preview-color-dot" data-palette="copper-sunset" style="background:linear-gradient(135deg, #FF7237 50%, #1C1917 50%);" title="Copper Sunset (#FF7237 primary, #1C1917 bg)"></span>
+                    <span class="preview-color-dot" data-palette="woodland" style="background:linear-gradient(135deg, #A3E635 50%, #141E15 50%);" title="Woodland Lime (#A3E635 primary, #141E15 bg)"></span>
+                    <span class="preview-color-dot" data-palette="amethyst-mint" style="background:linear-gradient(135deg, #24CB71 50%, #181124 50%);" title="Amethyst Mint (#24CB71 primary, #181124 bg)"></span>
+                    <span class="preview-color-dot" data-palette="seashell-garnet" style="background:linear-gradient(135deg, #FF3737 50%, #FFF1F2 50%); border-color:#aaa;" title="Seashell Garnet (#FF3737 primary, #FFF1F2 bg)"></span>
+                    <span class="preview-color-dot" data-palette="ink-wash" style="background:linear-gradient(135deg, #252D41 50%, #F8FAFC 50%); border-color:#aaa;" title="Ink Wash Minimal (#252D41 primary, #F8FAFC bg)"></span>
+                    <input type="color" id="previewCustomColor" class="color-picker-input" value="#0D99FF" title="Custom Accent Color" />
                   </div>
                 </div>
 
@@ -2048,9 +2105,9 @@ $ </div>
         // Fetch Live CodeGraph Reflections & Telemetry
         let sysPrompt = `You are Oh My Works (OMW), an AI workspace orchestrator with terminal, anti-OOM guardian, and multi-harness sessions.
 [ACTIVE DESIGN PREVIEW SETTINGS]
-* Accent Color: ${previewColor}
+* Figma Harmonious Palette: ${activePaletteKey} (${FIGMA_PALETTES[activePaletteKey]?.name || 'Custom'}) - Primary: ${previewColor}, Bg: ${FIGMA_PALETTES[activePaletteKey]?.bg || 'Auto'}, CardBg: ${FIGMA_PALETTES[activePaletteKey]?.cardBg || 'Auto'}, Text: ${FIGMA_PALETTES[activePaletteKey]?.text || 'Auto'}
 * Typography: ${previewFont}
-* Selected Archetype Layout: ${previewLayout} (When outputting HTML/CSS, adapt styles and markup to respect these active user styling choices).`;
+* Selected Archetype Layout: ${previewLayout} (When outputting HTML/CSS in ```html ... ```, strictly adopt this color palette, typography and layout structure).`;
         try {
           const [telem, refl] = await Promise.all([
             fetch(`${config.daemonUrl}`).then(r => r.json()).catch(() => null),
@@ -2690,11 +2747,138 @@ $ </div>
         } catch (e) {}
       }, 1000);
 
-      // Web Preview Interactive Styler (Figma Colors, Awwwards Typography & Archetype Layouts)
-      let currentRawHtml = '';
-      let previewColor = localStorage.getItem('omw_preview_color') || '#0D99FF';
+            // Figma Color Harmonious Palettes (Multi-color schemes from Figma Resource Library)
+      const FIGMA_PALETTES = {
+        'tech-blue': {
+          name: 'Figma Tech Blue',
+          primary: '#0D99FF',
+          secondary: '#70C4FF',
+          bg: '#0F172A',
+          cardBg: '#1E293B',
+          text: '#F8FAFC',
+          accent: '#0D99FF'
+        },
+        'jade-pebble': {
+          name: 'Jade Pebble Morning',
+          primary: '#14AE5C',
+          secondary: '#CFF7D3',
+          bg: '#F4FBF6',
+          cardBg: '#FFFFFF',
+          text: '#133E26',
+          accent: '#14AE5C'
+        },
+        'lapis-pearl': {
+          name: 'Lapis Velvet Evening',
+          primary: '#7B61FF',
+          secondary: '#F1E5FF',
+          bg: '#161224',
+          cardBg: '#231D38',
+          text: '#F5F3FF',
+          accent: '#7B61FF'
+        },
+        'copper-sunset': {
+          name: 'Copper Sunset',
+          primary: '#FF7237',
+          secondary: '#FFDFCC',
+          bg: '#1C1917',
+          cardBg: '#292524',
+          text: '#FAF7F5',
+          accent: '#FF7237'
+        },
+        'woodland': {
+          name: 'Woodland Lime',
+          primary: '#A3E635',
+          secondary: '#E4FF97',
+          bg: '#141E15',
+          cardBg: '#1E2D20',
+          text: '#F7FEE7',
+          accent: '#A3E635'
+        },
+        'amethyst-mint': {
+          name: 'Amethyst Mint',
+          primary: '#24CB71',
+          secondary: '#D946EF',
+          bg: '#181124',
+          cardBg: '#251B38',
+          text: '#FDF4FF',
+          accent: '#24CB71'
+        },
+        'seashell-garnet': {
+          name: 'Seashell Garnet',
+          primary: '#FF3737',
+          secondary: '#FFE4E6',
+          bg: '#FFF1F2',
+          cardBg: '#FFFFFF',
+          text: '#4C0519',
+          accent: '#FF3737'
+        },
+        'ink-wash': {
+          name: 'Ink Wash Minimal',
+          primary: '#252D41',
+          secondary: '#536383',
+          bg: '#F8FAFC',
+          cardBg: '#FFFFFF',
+          text: '#1E293B',
+          accent: '#252D41'
+        }
+      };
+
+      // Web Preview Interactive Styler (Figma Palettes, Awwwards Typography & Archetype Layouts)
+      let currentRawHtml = localStorage.getItem('omw_preview_cached_html') || `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Storefront Preview</title></head>
+<body>
+  <header class="navbar" style="padding: 14px 24px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;">
+    <div style="font-weight: 700; font-size: 18px; letter-spacing: -0.5px;">OMW STORE</div>
+    <nav style="display:flex; gap: 16px; font-size: 13px;">
+      <a href="#" style="text-decoration:none;">Products</a>
+      <a href="#" style="text-decoration:none;">Collections</a>
+      <a href="#" style="text-decoration:none;">Deals</a>
+    </nav>
+    <button class="btn-primary" style="padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px; font-weight: 600;">Cart (2)</button>
+  </header>
+  <div class="banner hero" style="padding: 40px 24px; text-align: center;">
+    <h1 style="font-size: 28px; margin-bottom: 8px;">Explore Modern E-Commerce</h1>
+    <p style="font-size: 14px; opacity: 0.8; max-width: 500px; margin: 0 auto 16px;">Test live layout presets and Figma multi-color harmonious palettes directly inside Oh My Works canvas.</p>
+    <button class="btn-primary" style="padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;">Shop Now</button>
+  </div>
+  <main class="products" style="padding: 24px;">
+    <div class="card" style="padding: 16px; border-radius: 8px;">
+      <div style="height: 120px; background: rgba(0,0,0,0.06); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-weight: 600; opacity: 0.6;">Product A</div>
+      <h3 style="font-size: 15px; margin-bottom: 4px;">Minimalist Mechanical Keyboard</h3>
+      <p style="font-size: 12px; opacity: 0.7; margin-bottom: 10px;">Hot-swappable tactile switches with RGB underglow.</p>
+      <div style="display:flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 700; font-size: 14px;">$129.00</span>
+        <button class="btn-primary" style="padding: 5px 12px; border-radius: 5px; border: none; cursor: pointer; font-size: 11px;">Add</button>
+      </div>
+    </div>
+    <div class="card" style="padding: 16px; border-radius: 8px;">
+      <div style="height: 120px; background: rgba(0,0,0,0.06); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-weight: 600; opacity: 0.6;">Product B</div>
+      <h3 style="font-size: 15px; margin-bottom: 4px;">Wireless Ergonomic Mouse</h3>
+      <p style="font-size: 12px; opacity: 0.7; margin-bottom: 10px;">Precision tracking sensor with ultra-low latency.</p>
+      <div style="display:flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 700; font-size: 14px;">$79.00</span>
+        <button class="btn-primary" style="padding: 5px 12px; border-radius: 5px; border: none; cursor: pointer; font-size: 11px;">Add</button>
+      </div>
+    </div>
+    <div class="card" style="padding: 16px; border-radius: 8px;">
+      <div style="height: 120px; background: rgba(0,0,0,0.06); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-weight: 600; opacity: 0.6;">Product C</div>
+      <h3 style="font-size: 15px; margin-bottom: 4px;">Studio Monitor Headphones</h3>
+      <p style="font-size: 12px; opacity: 0.7; margin-bottom: 10px;">Active noise cancellation with 40mm beryllium drivers.</p>
+      <div style="display:flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 700; font-size: 14px;">$199.00</span>
+        <button class="btn-primary" style="padding: 5px 12px; border-radius: 5px; border: none; cursor: pointer; font-size: 11px;">Add</button>
+      </div>
+    </div>
+  </main>
+</body>
+</html>`;
+
+      let activePaletteKey = localStorage.getItem('omw_preview_palette') || 'tech-blue';
+      let previewColor = localStorage.getItem('omw_preview_color') || FIGMA_PALETTES[activePaletteKey]?.primary || '#0D99FF';
       let previewFont = localStorage.getItem('omw_preview_font') || "'Plus Jakarta Sans', sans-serif";
       let previewLayout = localStorage.getItem('omw_preview_layout') || 'full';
+      let canvasSize = localStorage.getItem('omw_canvas_size') || 'default';
 
       // Layout CSS Templates for Web Preview
       const layoutStyles = {
@@ -2737,10 +2921,20 @@ $ </div>
       function renderWebPreview(rawHtml) {
         if (rawHtml !== undefined && rawHtml !== null) {
           currentRawHtml = rawHtml;
+          localStorage.setItem('omw_preview_cached_html', currentRawHtml);
         }
         if (!currentRawHtml) return;
 
-        // Custom style injection with Figma Accent Colors + Awwwards Typography + Archetype Layouts
+        const pal = FIGMA_PALETTES[activePaletteKey] || {
+          primary: previewColor,
+          secondary: previewColor,
+          bg: '#0F172A',
+          cardBg: '#1E293B',
+          text: '#F8FAFC',
+          accent: previewColor
+        };
+
+        // Custom style injection with Figma Full Harmonious Palettes + Awwwards Typography + Archetype Layouts
         const extraLayoutCss = layoutStyles[previewLayout] || '';
         const styleTag = `
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2748,19 +2942,38 @@ $ </div>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Epilogue:wght@400;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;600;700&family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&display=swap" rel="stylesheet">
 <style id="omw-preview-injected-style">
   :root {
-    --accent: ${previewColor} !important;
-    --primary: ${previewColor} !important;
-    --color-primary: ${previewColor} !important;
+    --primary: ${pal.primary} !important;
+    --secondary: ${pal.secondary} !important;
+    --bg-page: ${pal.bg} !important;
+    --card-bg: ${pal.cardBg} !important;
+    --text-color: ${pal.text} !important;
+    --accent: ${pal.accent} !important;
+    --color-primary: ${pal.primary} !important;
   }
   * {
     font-family: ${previewFont} !important;
   }
-  a, button:not([class*="bg-"]), .btn-primary, .accent, [data-accent] {
-    color: ${previewColor};
+  body {
+    background-color: ${pal.bg} !important;
+    color: ${pal.text} !important;
+    transition: background-color 0.2s ease, color 0.2s ease !important;
   }
-  .btn-fill, button.primary, [class*="btn-primary"], input[type="submit"] {
-    background-color: ${previewColor} !important;
-    border-color: ${previewColor} !important;
+  header, nav, .navbar, .topbar {
+    background-color: ${pal.cardBg} !important;
+    border-color: rgba(255,255,255,0.08) !important;
+  }
+  .card, .item, .product, aside, .sidebar, [class*="box"], [class*="panel"] {
+    background-color: ${pal.cardBg} !important;
+    color: ${pal.text} !important;
+    border-color: rgba(255,255,255,0.1) !important;
+  }
+  a, .accent, [data-accent] {
+    color: ${pal.primary} !important;
+  }
+  .btn-primary, button.primary, .btn-fill, [class*="btn-primary"], input[type="submit"] {
+    background-color: ${pal.primary} !important;
+    color: #ffffff !important;
+    border-color: ${pal.primary} !important;
   }
   ${extraLayoutCss}
 </style>`;
@@ -2775,6 +2988,25 @@ $ </div>
         }
 
         webPreviewFrame.srcdoc = modifiedHtml;
+      }
+
+      function updatePreviewPalette(paletteKey) {
+        if (!FIGMA_PALETTES[paletteKey]) return;
+        activePaletteKey = paletteKey;
+        const pal = FIGMA_PALETTES[paletteKey];
+        previewColor = pal.primary;
+        localStorage.setItem('omw_preview_palette', paletteKey);
+        localStorage.setItem('omw_preview_color', previewColor);
+
+        document.querySelectorAll('.preview-color-dot').forEach(d => {
+          if (d.getAttribute('data-palette') === paletteKey) d.classList.add('active');
+          else d.classList.remove('active');
+        });
+
+        const picker = document.getElementById('previewCustomColor');
+        if (picker) picker.value = previewColor;
+
+        renderWebPreview();
       }
 
       function updatePreviewLayout(layout) {
@@ -2792,10 +3024,9 @@ $ </div>
       function updatePreviewColor(color) {
         previewColor = color;
         localStorage.setItem('omw_preview_color', color);
-        document.querySelectorAll('.preview-color-dot').forEach(d => {
-          if (d.getAttribute('data-color') === color) d.classList.add('active');
-          else d.classList.remove('active');
-        });
+        // Custom palette
+        activePaletteKey = 'custom';
+        document.querySelectorAll('.preview-color-dot').forEach(d => d.classList.remove('active'));
         const picker = document.getElementById('previewCustomColor');
         if (picker) picker.value = color;
         renderWebPreview();
@@ -2809,12 +3040,31 @@ $ </div>
         renderWebPreview();
       }
 
-      // Event listeners for Web Preview Toolbar
+      function setCanvasSize(size) {
+        canvasSize = size;
+        localStorage.setItem('omw_canvas_size', size);
+        sideCanvas.classList.remove('size-wide', 'size-full');
+        if (size === 'wide') sideCanvas.classList.add('size-wide');
+        if (size === 'full') sideCanvas.classList.add('size-full');
+
+        document.querySelectorAll('.canvas-size-btn').forEach(b => {
+          if (b.getAttribute('data-size') === size) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+      }
+
+      // Event listeners for Web Preview Toolbar & Layouts
       document.addEventListener('click', (e) => {
         const dot = e.target.closest('.preview-color-dot');
         if (dot) {
-          const c = dot.getAttribute('data-color');
-          if (c) updatePreviewColor(c);
+          const pal = dot.getAttribute('data-palette');
+          if (pal) updatePreviewPalette(pal);
+        }
+
+        const sizeBtn = e.target.closest('.canvas-size-btn');
+        if (sizeBtn) {
+          const sz = sizeBtn.getAttribute('data-size');
+          if (sz) setCanvasSize(sz);
         }
       });
 
@@ -2833,21 +3083,48 @@ $ </div>
         previewLayoutSelect.addEventListener('change', (e) => updatePreviewLayout(e.target.value));
       }
 
-      // Sync Design to AI: automatically formulate prompt and send to model
+      // Sidebar minimize/expand toggle button
+      const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+      const sidebarEl = document.querySelector('.sidebar');
+      const sidebarIcon = document.getElementById('sidebarIcon');
+      if (btnToggleSidebar && sidebarEl) {
+        btnToggleSidebar.addEventListener('click', () => {
+          const isCollapsed = sidebarEl.classList.toggle('collapsed');
+          if (sidebarIcon) {
+            sidebarIcon.innerHTML = isCollapsed ? '&RightArrowBar;' : '&LeftArrowBar;';
+          }
+        });
+      }
+
+      // Canvas show/hide toggle button
+      const btnToggleSideCanvas = document.getElementById('btnToggleSideCanvas');
+      if (btnToggleSideCanvas) {
+        btnToggleSideCanvas.addEventListener('click', () => {
+          if (sideCanvas.classList.contains('open')) {
+            sideCanvas.classList.remove('open');
+          } else {
+            switchCanvasTab('web');
+          }
+        });
+      }
+
+      // Sync Design to AI: automatically formulate prompt with full palette context and send to model
       const btnSyncToAi = document.getElementById('btnSyncToAi');
       if (btnSyncToAi) {
         btnSyncToAi.addEventListener('click', () => {
           const layoutName = previewLayoutSelect ? previewLayoutSelect.options[previewLayoutSelect.selectedIndex].text : previewLayout;
           const fontName = previewFontSelect ? previewFontSelect.options[previewFontSelect.selectedIndex].text : previewFont;
-          const syncPrompt = `Perbarui desain komponen web ini: terapkan warna accent '${previewColor}', tipografi '${fontName}', dan tata letak struktur '${layoutName}'. Tulis kode HTML & CSS lengkapnya.`;
+          const pal = FIGMA_PALETTES[activePaletteKey] || { name: 'Custom Hex', primary: previewColor, bg: '#0F172A', cardBg: '#1E293B', text: '#F8FAFC' };
+          const syncPrompt = `Perbarui desain komponen web ini: terapkan Figma color palette '${pal.name}' (Primary: ${pal.primary}, Background: ${pal.bg}, Card: ${pal.cardBg}, Text: ${pal.text}), tipografi '${fontName}', dan tata letak struktur '${layoutName}'. Tulis kode HTML & CSS lengkapnya dalam tag ```html ... ```.`;
           promptInput.value = syncPrompt;
           handleSend();
         });
       }
 
       // Initialize preview controls on boot
+      setCanvasSize(canvasSize);
       updatePreviewLayout(previewLayout);
-      updatePreviewColor(previewColor);
+      updatePreviewPalette(activePaletteKey);
       updatePreviewFont(previewFont);
 
       loadHierarchicalSessions();
