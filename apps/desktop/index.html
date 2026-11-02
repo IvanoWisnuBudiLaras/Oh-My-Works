@@ -1524,12 +1524,11 @@
                 <div class="styler-group">
                   <span class="styler-label">Layout:</span>
                   <select id="previewLayoutSelect" class="appearance-select" title="Interactive Archetype Layout">
-                    <option value="full">Default Layout</option>
-                    <option value="ecom-grid">E-Commerce Grid (Navbar + Hero Banner + 3-Col Product Grid)</option>
-                    <option value="ecom-carousel">E-Commerce Carousel (Sticky Search + Slider + Quick Buy)</option>
-                    <option value="ecom-sidebar">E-Commerce Filtered (Filter Sidebar + Product Catalog)</option>
-                    <option value="saas-hero">SaaS Landing (Sticky Nav + Hero CTA + Feature Cards)</option>
-                    <option value="dashboard">Dashboard (Sidebar Nav + Top Stats + Data Canvas)</option>
+                    <option value="dashboard">Executive Dashboard (Sidebar Nav + KPI Metrics + Data Canvas)</option>
+                    <option value="full">Default Fluid Canvas</option>
+                    <option value="saas-hero">SaaS Architecture (Sticky Nav + Hero CTA + Feature Cards)</option>
+                    <option value="ecom-grid">E-Commerce Grid (Navbar + Hero Banner + Product Grid)</option>
+                    <option value="ecom-sidebar">Filtered Catalog (Filter Sidebar + Product Catalog)</option>
                     <option value="responsive">Responsive Tablet (768px)</option>
                     <option value="mobile">Mobile View (375x667)</option>
                     <option value="card">Centered Card / Modal</option>
@@ -1770,7 +1769,7 @@ $ </div>
       let currentTheme = localStorage.getItem('omw_theme') || 'dark';
       document.documentElement.setAttribute('data-theme', currentTheme);
 
-      let activeModel = 'cbcn/deepseek-v4-pro';
+      let activeModel = 'ag/gemini-3.8-flash-high';
       let allModels = [
         "ag/gemini-4-argon-high", "ag/gemini-3.8-flash-high", "ag/claude-opus-5-5-high",
         "cbcn/deepseek-v4-pro", "cbcn/deepseek-v4.1-flash", "cbcn/glm-5.3", "cbcn/glm-5.2",
@@ -2334,10 +2333,15 @@ $ </div>
 
         // Fetch Live CodeGraph Reflections & Telemetry
         let sysPrompt = `You are Oh My Works (OMW), an AI workspace orchestrator with terminal, anti-OOM guardian, and multi-harness sessions.
-[ACTIVE DESIGN PREVIEW SETTINGS]
-* Figma Harmonious Palette: ${activePaletteKey} (${FIGMA_PALETTES[activePaletteKey]?.name || 'Custom'}) - Primary: ${previewColor}, Bg: ${FIGMA_PALETTES[activePaletteKey]?.bg || 'Auto'}, CardBg: ${FIGMA_PALETTES[activePaletteKey]?.cardBg || 'Auto'}, Text: ${FIGMA_PALETTES[activePaletteKey]?.text || 'Auto'}
-* Typography: ${previewFont}
-* Selected Archetype Layout: ${previewLayout} (When outputting HTML/CSS in html code blocks, strictly adopt this color palette, typography and layout structure).`;
+[CRITICAL DESIGN & AESTHETIC DIRECTIVES - AWWWARDS EDITORIAL STANDARD]
+1. ZERO EMOJIS: STRICTLY NEVER USE EMOJIS ANYWHERE. No coffee icons, no rockets, no faces, no chart emojis, no symbols from Unicode emoji blocks. Use clean SVG vector paths (<svg>) or concise typographic text labels instead.
+2. RESTRAINED MINIMAL PALETTE: Use at most 2-3 colors (Background, Card/Surface, 1 Accent). High editorial contrast, subtle hairline borders (1px solid rgba(255,255,255,0.08)), deep atmospheric backgrounds.
+3. TYPOGRAPHY DISCIPLINE: Single restrained font family (${previewFont}). Tabular numbers (font-variant-numeric: tabular-nums) for all metrics and data.
+4. HIGH-IMPACT DATA & CHARTS: When asked for dashboards or telemetry, craft bespoke inline crisp vector SVG charts (smooth cubic bezier spline area graphs with gradient fill, sparklines, bar matrices, time-series grids) directly in the HTML.
+5. NO GENERIC AI SLOP: Never produce generic centered pill buttons with emojis or cookie-cutter template cards. Build bespoke, architecturally sound layouts that look worthy of an Awwwards Site of the Day.
+[ACTIVE PREVIEW CONFIG]
+* Palette: ${activePaletteKey} (Primary: ${previewColor}, Bg: ${FIGMA_PALETTES[activePaletteKey]?.bg || 'Auto'}, CardBg: ${FIGMA_PALETTES[activePaletteKey]?.cardBg || 'Auto'}, Text: ${FIGMA_PALETTES[activePaletteKey]?.text || 'Auto'})
+* Archetype Layout: ${previewLayout}`;
         try {
           const [telem, refl] = await Promise.all([
             fetch(`${config.daemonUrl}`).then(r => r.json()).catch(() => null),
@@ -2461,15 +2465,18 @@ $ </div>
       }
 
       function checkAiAutoSplit(fullText) {
-        if (!config.permAutoSplit) return;
-
         // Web Preview trigger: HTML/CSS code
         const htmlMatch = fullText.match(/```html\n([\s\S]+?)```/i);
         if (htmlMatch) {
           renderWebPreview(htmlMatch[1]);
-          switchCanvasTab('web');
+          const lastUserMsg = [...currentMessages].reverse().find(m => m.role === 'user')?.content?.toLowerCase() || '';
+          const wantsPreview = /dashboard|halaman|preview|web|html|ui|tampilan|design|layout/i.test(lastUserMsg);
+          if (config.permAutoSplit || wantsPreview) {
+            switchCanvasTab('web');
+          }
           return;
         }
+        if (!config.permAutoSplit) return;
 
         // Terminal trigger: Rust, Bash, or Shell code
         const codeMatch = fullText.match(/```(rust|bash|sh|python)\n([\s\S]+?)```/i);
@@ -2958,6 +2965,9 @@ $ </div>
             const list = data.data?.map(m => m.id);
             if (list && list.length > 0) {
               allModels = list;
+              if (!allModels.includes(activeModel)) {
+                activeModel = allModels.includes('ag/gemini-3.8-flash-high') ? 'ag/gemini-3.8-flash-high' : (allModels.includes('mux/deepseek-v4.1-flash') ? 'mux/deepseek-v4.1-flash' : allModels[0]);
+              }
             }
           }
         } catch (e) {}
@@ -3160,48 +3170,311 @@ $ </div>
       // Web Preview Interactive Styler (Figma Palettes, Awwwards Typography & Archetype Layouts)
       let currentRawHtml = localStorage.getItem('omw_preview_cached_html') || `<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Storefront Preview</title></head>
+<head>
+  <meta charset="UTF-8">
+  <title>Executive Telemetry & Analytics</title>
+  <style>
+    :root {
+      --bg: #090D16;
+      --card-bg: #111827;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #00F5A0;
+      --accent-dim: rgba(0, 245, 160, 0.12);
+      --accent-cyan: #38BDF8;
+      --text: #94A3B8;
+      --text-bright: #F8FAFC;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+    }
+    aside {
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      background: rgba(17, 24, 39, 0.4);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: -0.03em;
+      color: var(--text-bright);
+    }
+    .brand-mark {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--accent);
+      border-radius: 3px;
+    }
+    nav { display: flex; flex-direction: column; gap: 4px; }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+    }
+    nav a:hover, nav a.active {
+      color: var(--text-bright);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    nav a.active {
+      color: var(--accent);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+    }
+    .nav-tag {
+      font-size: 9.5px;
+      padding: 2px 6px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-radius: 4px;
+    }
+    main {
+      padding: 28px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text-bright);
+      margin-bottom: 4px;
+    }
+    .header-sub { font-size: 12px; color: var(--text); }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .kpi-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+    .kpi-val {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-bright);
+      font-variant-numeric: tabular-nums;
+    }
+    .kpi-delta {
+      font-size: 11px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .grid-panels {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-bright);
+      letter-spacing: -0.01em;
+    }
+    .chart-container {
+      width: 100%;
+      height: 220px;
+      position: relative;
+    }
+    svg.chart-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 8px 10px;
+      font-weight: 500;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      color: var(--text-bright);
+      font-variant-numeric: tabular-nums;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 6px;
+    }
+  </style>
+</head>
 <body>
-  <header class="navbar" style="padding: 14px 24px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;">
-    <div style="font-weight: 700; font-size: 18px; letter-spacing: -0.5px;">OMW STORE</div>
-    <nav style="display:flex; gap: 16px; font-size: 13px;">
-      <a href="#" style="text-decoration:none;">Products</a>
-      <a href="#" style="text-decoration:none;">Collections</a>
-      <a href="#" style="text-decoration:none;">Deals</a>
+  <aside>
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <span>OMW TELEMETRY</span>
+    </div>
+    <nav>
+      <a href="#" class="active">Overview <span class="nav-tag">Live</span></a>
+      <a href="#">Throughput</a>
+      <a href="#">Memory Matrix</a>
+      <a href="#">CodeGraph Nodes</a>
+      <a href="#">Guard PSI</a>
     </nav>
-    <button class="btn-primary" style="padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px; font-weight: 600;">Cart (2)</button>
-  </header>
-  <div class="banner hero" style="padding: 40px 24px; text-align: center;">
-    <h1 style="font-size: 28px; margin-bottom: 8px;">Explore Modern E-Commerce</h1>
-    <p style="font-size: 14px; opacity: 0.8; max-width: 500px; margin: 0 auto 16px;">Test live layout presets and Figma multi-color harmonious palettes directly inside Oh My Works canvas.</p>
-    <button class="btn-primary" style="padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;">Shop Now</button>
-  </div>
-  <main class="products" style="padding: 24px;">
-    <div class="card" style="padding: 16px; border-radius: 8px;">
-      <div style="height: 120px; background: rgba(0,0,0,0.06); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-weight: 600; opacity: 0.6;">Product A</div>
-      <h3 style="font-size: 15px; margin-bottom: 4px;">Minimalist Mechanical Keyboard</h3>
-      <p style="font-size: 12px; opacity: 0.7; margin-bottom: 10px;">Hot-swappable tactile switches with RGB underglow.</p>
-      <div style="display:flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: 700; font-size: 14px;">$129.00</span>
-        <button class="btn-primary" style="padding: 5px 12px; border-radius: 5px; border: none; cursor: pointer; font-size: 11px;">Add</button>
+  </aside>
+  <main>
+    <header>
+      <div>
+        <h1>Executive Telemetry Dashboard</h1>
+        <div class="header-sub">Global node cluster metrics and real-time execution throughput</div>
+      </div>
+      <div style="font-size:11px;color:var(--text);letter-spacing:0.02em;">REFRESH RATE: 1000MS &bull; STATUS: OPTIMAL</div>
+    </header>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-label">Throughput / sec</span>
+        <span class="kpi-val">142,890</span>
+        <span class="kpi-delta">+12.4% vs baseline</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">RAM Headroom</span>
+        <span class="kpi-val">59.99%</span>
+        <span class="kpi-delta" style="color:var(--accent-cyan);">Zero pressure stall</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Vector Cache Hit</span>
+        <span class="kpi-val">99.41%</span>
+        <span class="kpi-delta">+0.8% warm index</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">P99 Latency</span>
+        <span class="kpi-val">4.18 ms</span>
+        <span class="kpi-delta">-1.2 ms delta</span>
       </div>
     </div>
-    <div class="card" style="padding: 16px; border-radius: 8px;">
-      <div style="height: 120px; background: rgba(0,0,0,0.06); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-weight: 600; opacity: 0.6;">Product B</div>
-      <h3 style="font-size: 15px; margin-bottom: 4px;">Wireless Ergonomic Mouse</h3>
-      <p style="font-size: 12px; opacity: 0.7; margin-bottom: 10px;">Precision tracking sensor with ultra-low latency.</p>
-      <div style="display:flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: 700; font-size: 14px;">$79.00</span>
-        <button class="btn-primary" style="padding: 5px 12px; border-radius: 5px; border: none; cursor: pointer; font-size: 11px;">Add</button>
+
+    <div class="grid-panels">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Throughput &amp; Execution Bandwidth</span>
+          <span style="font-size:11px;color:var(--text);">24h sliding window</span>
+        </div>
+        <div class="chart-container">
+          <svg class="chart-svg" viewBox="0 0 600 200" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00F5A0" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#00F5A0" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <!-- Gridlines -->
+            <line x1="0" y1="50" x2="600" y2="50" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4"/>
+            <line x1="0" y1="100" x2="600" y2="100" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4"/>
+            <line x1="0" y1="150" x2="600" y2="150" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4"/>
+            <!-- Area Fill -->
+            <path d="M 0,160 Q 75,120 150,135 T 300,70 T 450,90 T 600,40 L 600,200 L 0,200 Z" fill="url(#chartGradient)"/>
+            <!-- Spline Stroke -->
+            <path d="M 0,160 Q 75,120 150,135 T 300,70 T 450,90 T 600,40" fill="none" stroke="#00F5A0" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
       </div>
-    </div>
-    <div class="card" style="padding: 16px; border-radius: 8px;">
-      <div style="height: 120px; background: rgba(0,0,0,0.06); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-weight: 600; opacity: 0.6;">Product C</div>
-      <h3 style="font-size: 15px; margin-bottom: 4px;">Studio Monitor Headphones</h3>
-      <p style="font-size: 12px; opacity: 0.7; margin-bottom: 10px;">Active noise cancellation with 40mm beryllium drivers.</p>
-      <div style="display:flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: 700; font-size: 14px;">$199.00</span>
-        <button class="btn-primary" style="padding: 5px 12px; border-radius: 5px; border: none; cursor: pointer; font-size: 11px;">Add</button>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Node Instances</span>
+          <span style="font-size:11px;color:var(--text);">Live registry</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Node</th>
+              <th>Health</th>
+              <th>Load</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>node-alpha-1</td>
+              <td><span class="status-dot"></span>Active</td>
+              <td>14.2%</td>
+            </tr>
+            <tr>
+              <td>node-beta-8</td>
+              <td><span class="status-dot"></span>Active</td>
+              <td>28.5%</td>
+            </tr>
+            <tr>
+              <td>node-gamma-3</td>
+              <td><span class="status-dot"></span>Active</td>
+              <td>09.1%</td>
+            </tr>
+            <tr>
+              <td>node-omega-0</td>
+              <td><span class="status-dot"></span>Active</td>
+              <td>33.7%</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </main>
