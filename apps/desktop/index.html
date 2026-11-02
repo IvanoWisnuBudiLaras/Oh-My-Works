@@ -1594,6 +1594,7 @@
           Engine: <span id="currentModelLabel">cbcn/deepseek-v4-pro</span>
         </button>
         <span class="combo-badge" id="activeRouterBadge">Unified 9Router + OmniRoute</span>
+        <span class="combo-badge" id="tokenSaverBadge" style="display:inline-flex;align-items:center;gap:4px;background:rgba(0,245,160,0.08);color:var(--accent);border:1px solid rgba(0,245,160,0.22);font-family:monospace;font-size:11px;padding:2px 7px;border-radius:4px;" title="Token Optimizer: Sliding context window + historical code compaction"><span class="material-symbols-outlined" style="font-size:13px;">compress</span><span id="tokenSaverText">Tokens: Optimized</span></span>
       </div>
       <div class="topbar-right">
         <button type="button" class="btn-topbar" id="btnToggleSideCanvas" title="Toggle right side canvas (show/hide preview & terminal)">
@@ -3458,21 +3459,28 @@ const FIGMA_PALETTES = {
         const aiBody = appendMessage('assistant', '...', activeModel);
 
         // Fetch Live CodeGraph Reflections & Telemetry
-        let sysPrompt = `You are Oh My Works (OMW), an AI workspace orchestrator with terminal, anti-OOM guardian, and multi-harness sessions.
-[CRITICAL DESIGN & AESTHETIC DIRECTIVES - ANTI-AI SLOP & AWWWARDS EDITORIAL STANDARD]
-1. ZERO EMOJIS: STRICTLY NEVER USE EMOJIS ANYWHERE. No coffee icons, no rockets, no faces, no chart emojis. When icons are needed, use Google Material Symbols: "<span class=\"material-symbols-outlined\">icon_name</span>" (link already provided) or crisp vector <svg>.
-2. RESTRAINED HUMAN PALETTE: Use at most 2-3 colors (Background, Card/Surface, 1 Accent). High editorial contrast, subtle hairline borders (1px solid rgba(255,255,255,0.08)), deep atmospheric backgrounds.
-3. ARCHETYPE LAYOUTS (BENTO / GOLDEN RATIO): Adopt modern Bento Grid modular compartments (asymmetric cards, Apple/Linear style) or Golden Ratio (1.618fr 1fr). Never produce repetitive generic e-commerce templates unless specifically asked.
-4. TYPOGRAPHY DISCIPLINE: Single restrained font family (${previewFont}). Tabular numbers (font-variant-numeric: tabular-nums) for all metrics, stats, and financial tables.
-5. MODERN CHARTS & TELEMETRY: Build bespoke, crisp inline vector SVG charts (smooth cubic bezier spline area graphs with linearGradient fill, sparklines, bar distributions, real-time telemetry counters) directly in the HTML.
-6. NO GENERIC AI SLOP: Never produce generic centered pill buttons with emojis or cookie-cutter template cards. Build bespoke, architecturally sound layouts that look worthy of an Awwwards Site of the Day.
-7. ISOLATED PREVIEW SAFE LINKS: Never use raw href='#' or real URL links for navigation buttons. Always use '<a href="javascript:void(0)" onclick="event.preventDefault()">' or '<button type="button">'  so the sandboxed desktop preview never triggers full-window navigation.
-[ACTIVE PREVIEW CONFIG]
-* Palette: ${activePaletteKey} (Primary: ${previewColor}, Bg: ${FIGMA_PALETTES[activePaletteKey]?.bg || 'Auto'}, CardBg: ${FIGMA_PALETTES[activePaletteKey]?.cardBg || 'Auto'}, Text: ${FIGMA_PALETTES[activePaletteKey]?.text || 'Auto'})
-* Archetype Layout: ${previewLayout}`;
+        let sysPrompt = `You are Oh My Works (OMW) workspace orchestrator.
+RULES:
+1. ZERO EMOJIS: Never use emojis. Use Google Material Symbols: <span class="material-symbols-outlined">icon</span> or inline SVG.
+2. DESIGN: Restrained palette (max 2-3 colors: Bg, Surface, 1 Accent: ${previewColor}). High editorial contrast, 1px subtle borders (rgba(255,255,255,0.08)). Bento/Golden Ratio layouts. Tabular numbers (font-variant-numeric: tabular-nums).
+3. CODE: Complete production-ready. For every file, header: \`// FILE: path/to/file\`. Run shell in \`\`\`bash\`\`\`.
+4. PREVIEW: Isolated links only (<a href="javascript:void(0)" onclick="event.preventDefault()">).
+[PREVIEW CONFIG] Palette: ${activePaletteKey}, Layout: ${previewLayout}, Font: ${previewFont}`;
 
         if (systemProfile) {
-          sysPrompt += `\n[HOST PROFILE: OS=${systemProfile.os}, Display=${systemProfile.display_server}, WM=${systemProfile.compositor}, RAM=${systemProfile.memory?.available_mb}MB free / ${systemProfile.memory?.total_mb}MB total, Tools=hyprctl:${systemProfile.tools?.hyprctl}, grim:${systemProfile.tools?.grim}, wtype:${systemProfile.tools?.wtype}, wl_copy:${systemProfile.tools?.wl_copy}]`;
+          const m = systemProfile.memory || {};
+          sysPrompt += `\n[HOST: ${systemProfile.os || 'Linux'}, WM=${systemProfile.compositor || 'hyprland'}, RAM=${Math.round((m.available_mb || 0)/1024)}G/${Math.round((m.total_mb || 0)/1024)}G free]`;
+        }
+
+        // Real-Time Token Telemetry Counter
+        const rawCharCount = userMsgs.reduce((acc, m) => acc + (m.content ? m.content.length : 0), 0) + 2100;
+        const compactCharCount = compactMsgs.reduce((acc, m) => acc + (m.content ? m.content.length : 0), 0) + sysPrompt.length;
+        const rawTokEst = Math.max(1, Math.round(rawCharCount / 4));
+        const compactTokEst = Math.max(1, Math.round(compactCharCount / 4));
+        const savedPct = Math.max(0, Math.round((1 - (compactTokEst / rawTokEst)) * 100));
+        const tokenBadgeText = document.getElementById('tokenSaverText');
+        if (tokenBadgeText) {
+          tokenBadgeText.textContent = `~${compactTokEst} tok (${savedPct}% saved)`;
         }
         try {
           const [telem, refl] = await Promise.all([
@@ -3500,25 +3508,44 @@ const FIGMA_PALETTES = {
           }
         }
 
-        // Token Minimization: Sliding Context Window (last 6 messages max)
-        const MAX_WINDOW_TURNS = 6;
+        // Ultra Token Minimization: Sliding Context Window (last 4 messages max)
+        const MAX_WINDOW_TURNS = 4;
         const windowedMsgs = userMsgs.slice(-MAX_WINDOW_TURNS);
 
-        // Historical Code Compaction: in older assistant turns, compact giant code blocks into 1-line metadata summaries
+        // Historical Turn Pruning: in older turns, compact code blocks (>5 lines) and commentary (>140 chars)
         const compactMsgs = windowedMsgs.map((m, idx) => {
-          if (idx < windowedMsgs.length - 1 && m.role === 'assistant') {
-            const compacted = m.content.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]{120,}?)```/g, (match, lang, code) => {
-              const lines = code.split('\n');
-              if (lines.length > 12) {
-                const fMatch = code.match(/^(?:\/\/|#|<!--)\s*(?:FILE:\s*)?([^\n\r]+)/m);
-                const tag = fMatch ? fMatch[1].trim() : (lang || 'code');
-                return `\n\`\`\`${lang}\n// [OMW Context: ${tag} (${lines.length} lines) persisted to workspace]\n\`\`\`\n`;
+          const isLatest = idx === windowedMsgs.length - 1;
+          let content = m.content || '';
+          if (!isLatest) {
+            if (m.role === 'assistant') {
+              // 1. Compact code blocks
+              content = content.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+                const lines = code.trim().split('\n');
+                if (lines.length > 5) {
+                  const fMatch = code.match(/^(?:\/\/|#|<!--)\s*(?:FILE:\s*)?([^\n\r]+)/m);
+                  const tag = fMatch ? fMatch[1].trim() : (lang || 'code');
+                  return `\n\`\`\`${lang}\n// [OMW: ${tag} (${lines.length} lines) persisted]\n\`\`\`\n`;
+                }
+                return match;
+              });
+              // 2. Compact long conversational prose around code blocks
+              const parts = content.split('\n\n');
+              const pruned = parts.map(p => {
+                const tr = p.trim();
+                if (tr.startsWith('```')) return tr;
+                return tr.length > 140 ? tr.slice(0, 130) + '...' : tr;
+              }).filter(Boolean);
+              content = pruned.join('\n\n');
+            } else if (m.role === 'user') {
+              // Prune large historical user file pastes or error dumps
+              if (content.length > 250) {
+                content = content.slice(0, 220) + '\n...[omw: user paste truncated]';
               }
-              return match;
-            });
-            return { role: m.role, content: compacted };
+            }
           }
-          return m;
+          // Clean excessive newlines
+          content = content.replace(/\n{3,}/g, '\n\n').trim();
+          return { role: m.role, content };
         });
 
         const isEnsemble = text.startsWith('@all') || activeModel === 'auto' || activeModel === 'all' || activeModel.includes('combo');
@@ -3591,7 +3618,7 @@ const FIGMA_PALETTES = {
             aiMsg.content = `### 1. Architectural Plan (${leadModel})\n\n`;
             aiBody.innerHTML = formatMarkdown(aiMsg.content);
             const planPayload = [
-              { role: 'system', content: sysPrompt + '\n[ROLE: LEAD ARCHITECT]\nAnalyze the requirement, formulate system architecture, specify required files, and determine execution sequence.' },
+              { role: 'system', content: sysPrompt + '\n[ROLE: LEAD ARCHITECT]\nBe concise, max 120 words. Formulate system architecture, specify required files, and execution sequence.' },
               ...compactMsgs.slice(0, -1),
               { role: 'user', content: cleanText }
             ];
@@ -3604,7 +3631,8 @@ const FIGMA_PALETTES = {
             });
 
             // Stage 2: Specialist Implementation / Coder
-            const stage1Plan = aiMsg.content;
+            const rawPlan = aiMsg.content;
+            const stage1Plan = rawPlan.length > 600 ? rawPlan.slice(0, 580) + '...' : rawPlan;
             aiMsg.content += `\n\n---\n\n### 2. Specialist Implementation (${specModel})\n\n`;
             aiBody.innerHTML = formatMarkdown(aiMsg.content);
             const coderPayload = [
