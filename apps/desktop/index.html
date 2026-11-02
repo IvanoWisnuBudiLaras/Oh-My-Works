@@ -2016,10 +2016,8 @@ const FIGMA_PALETTES = {
       };
 
       // Web Preview Interactive Styler (Figma Palettes, Awwwards Typography & Archetype Layouts)
-      let cachedStoredHtml = localStorage.getItem('omw_preview_cached_html');
-      let currentRawHtml = (cachedStoredHtml && cachedStoredHtml.includes('OMW TELEMETRY'))
-        ? cachedStoredHtml.replaceAll('href="#"', 'href="javascript:void(0)"')
-        : `<!DOCTYPE html>
+      // Default Executive Telemetry Showcase
+      const DEFAULT_TELEMETRY_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -2331,6 +2329,7 @@ const FIGMA_PALETTES = {
   </main>
 </body>
 </html>`;
+      let currentRawHtml = DEFAULT_TELEMETRY_HTML;
 
       let activePaletteKey = localStorage.getItem('omw_preview_palette') || 'awwwards-emerald';
       let previewColor = localStorage.getItem('omw_preview_color') || FIGMA_PALETTES[activePaletteKey]?.primary || '#00F5A0';
@@ -2840,6 +2839,9 @@ const FIGMA_PALETTES = {
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ id: root.id })
                 });
+                localStorage.removeItem('omw_preview_cached_html_' + root.id);
+                localStorage.removeItem('omw_preview_palette_' + root.id);
+                localStorage.removeItem('omw_preview_layout_' + root.id);
                 if (currentSessionId === root.id) {
                   currentSessionId = 'sess-root-1';
                   currentRootId = 'sess-root-1';
@@ -2895,6 +2897,9 @@ const FIGMA_PALETTES = {
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ id: b.id })
                         });
+                        localStorage.removeItem('omw_preview_cached_html_' + b.id);
+                        localStorage.removeItem('omw_preview_palette_' + b.id);
+                        localStorage.removeItem('omw_preview_layout_' + b.id);
                         if (currentSessionId === b.id) {
                           currentSessionId = root.id;
                           loadSessionTurns(root.id);
@@ -2933,6 +2938,7 @@ const FIGMA_PALETTES = {
         currentSessionId = newRootId;
         currentMessages = [];
         messagesList.innerHTML = '';
+        renderWebPreview(DEFAULT_TELEMETRY_HTML);
         await loadHierarchicalSessions();
         promptInput.focus();
       });
@@ -2954,6 +2960,10 @@ const FIGMA_PALETTES = {
             branch_label: branchLabel.trim()
           })
         });
+        const parentHtml = localStorage.getItem('omw_preview_cached_html_' + currentSessionId);
+        if (parentHtml) {
+          localStorage.setItem('omw_preview_cached_html_' + newBranchId, parentHtml);
+        }
         currentSessionId = newBranchId;
         await loadHierarchicalSessions();
       });
@@ -2972,6 +2982,31 @@ const FIGMA_PALETTES = {
             });
           }
         } catch (e) {}
+
+        // Restore session-scoped Web Preview
+        const sessPal = localStorage.getItem('omw_preview_palette_' + sessionId);
+        if (sessPal && FIGMA_PALETTES[sessPal] && sessPal !== activePaletteKey) {
+          updatePreviewPalette(sessPal, false);
+        }
+        const sessLayout = localStorage.getItem('omw_preview_layout_' + sessionId);
+        if (sessLayout && sessLayout !== previewLayout) {
+          updatePreviewLayout(sessLayout, false);
+        }
+
+        const sessHtml = localStorage.getItem('omw_preview_cached_html_' + sessionId);
+        if (sessHtml) {
+          renderWebPreview(sessHtml);
+        } else {
+          let turnHtml = null;
+          for (let i = currentMessages.length - 1; i >= 0; i--) {
+            const m = currentMessages[i].content?.match(/```html\n([\s\S]+?)```/i);
+            if (m) {
+              turnHtml = m[1];
+              break;
+            }
+          }
+          renderWebPreview(turnHtml || DEFAULT_TELEMETRY_HTML);
+        }
       }
 
       // Worktree & File Tree Logic
@@ -3967,6 +4002,9 @@ const FIGMA_PALETTES = {
       function renderWebPreview(rawHtml) {
         if (rawHtml !== undefined && rawHtml !== null) {
           currentRawHtml = rawHtml;
+          if (typeof currentSessionId !== 'undefined' && currentSessionId) {
+            localStorage.setItem('omw_preview_cached_html_' + currentSessionId, currentRawHtml);
+          }
           localStorage.setItem('omw_preview_cached_html', currentRawHtml);
         }
         if (!currentRawHtml) return;
@@ -4145,13 +4183,16 @@ const FIGMA_PALETTES = {
         webPreviewFrame.srcdoc = modifiedHtml;
       }
 
-      function updatePreviewPalette(paletteKey) {
+      function updatePreviewPalette(paletteKey, saveSession = true) {
         if (!FIGMA_PALETTES[paletteKey]) return;
         activePaletteKey = paletteKey;
         const pal = FIGMA_PALETTES[paletteKey];
         previewColor = pal.primary;
         localStorage.setItem('omw_preview_palette', paletteKey);
         localStorage.setItem('omw_preview_color', previewColor);
+        if (saveSession && typeof currentSessionId !== 'undefined' && currentSessionId) {
+          localStorage.setItem('omw_preview_palette_' + currentSessionId, paletteKey);
+        }
 
         document.querySelectorAll('.preview-color-dot').forEach(d => {
           if (d.getAttribute('data-palette') === paletteKey) d.classList.add('active');
@@ -4164,9 +4205,12 @@ const FIGMA_PALETTES = {
         renderWebPreview();
       }
 
-      function updatePreviewLayout(layout) {
+      function updatePreviewLayout(layout, saveSession = true) {
         previewLayout = layout;
         localStorage.setItem('omw_preview_layout', layout);
+        if (saveSession && typeof currentSessionId !== 'undefined' && currentSessionId) {
+          localStorage.setItem('omw_preview_layout_' + currentSessionId, layout);
+        }
         const container = document.getElementById('previewContainer');
         if (container) {
           container.setAttribute('data-layout', layout);
