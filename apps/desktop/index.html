@@ -1604,7 +1604,7 @@ $ </div>
               <span>Harvest transcripts &amp; sessions (~/.prime, ~/.codex, ~/.claude)</span>
             </label>
             <label class="checkbox-row">
-              <input type="checkbox" id="permAutoSplit" checked />
+              <input type="checkbox" id="permAutoSplit" />
               <span>AI dynamic side canvas auto-split on code detection</span>
             </label>
           </div>
@@ -1716,7 +1716,7 @@ $ </div>
         permPty: true,
         permGuardian: true,
         permCindy: true,
-        permAutoSplit: true
+        permAutoSplit: false
       };
 
       let serversList = JSON.parse(localStorage.getItem('omw_servers_list') || JSON.stringify([
@@ -3334,6 +3334,12 @@ $ </div>
       if (window.innerWidth < 850 && sidebarEl && !sidebarEl.classList.contains('collapsed')) {
         sidebarEl.classList.add('collapsed');
         if (sidebarIcon) sidebarIcon.innerHTML = '&RightArrowBar;';
+      }
+
+      // Ensure side canvas starts closed
+      if (sideCanvas) {
+        sideCanvas.classList.remove('open');
+        updateCanvasLayout();
       }
 
       // Initialize preview controls on boot
