@@ -174,11 +174,53 @@ fn main() {
                 println!("  ... and {} more sessions unified under OMW.", sessions.len() - 15);
             }
         }
+        "repomap" => {
+            let max_chars = args.get(2).and_then(|s| s.parse::<usize>().ok()).unwrap_or(3000);
+            let map = omw_harness::RepoMap::build(std::path::Path::new("."), max_chars);
+            println!("Codebase AST RepoMap ({} chars):\n{}", map.len(), map);
+        }
+        "search" => {
+            let query = args.get(2).map(|s| s.as_str()).unwrap_or("");
+            if query.is_empty() {
+                eprintln!("Usage: omw search <query>");
+                std::process::exit(1);
+            }
+            let res = omw_harness::ToolEngine::execute(
+                "search",
+                &serde_json::json!({ "query": query }),
+                std::path::Path::new("."),
+            );
+            if res.success {
+                println!("{}", res.output);
+            } else {
+                eprintln!("Search error: {:?}", res.error);
+            }
+        }
+        "verify" => {
+            let cmd = args.get(2).map(|s| s.as_str()).unwrap_or("cargo test");
+            println!("Running verification: '{}'...", cmd);
+            let (ok, out) = omw_harness::PipelineExecution::run_verification(cmd, std::path::Path::new("."));
+            println!("{}", out);
+            if ok {
+                println!("\nVerification PASSED.");
+            } else {
+                eprintln!("\nVerification FAILED.");
+                std::process::exit(1);
+            }
+        }
+        "commit" => {
+            let msg = args.get(2).map(|s| s.as_str()).unwrap_or("chore: auto-commit by OMW");
+            let (ok, out) = omw_harness::PipelineExecution::auto_commit(msg, std::path::Path::new("."));
+            println!("{}", out);
+            if !ok {
+                std::process::exit(1);
+            }
+        }
         "version" | "--version" | "-v" => {
             println!("Oh My Works (OMW) CLI v0.1.0");
         }
         other => {
-            eprintln!("Unknown command: '{}'. Available: status, terminal, exec, harness, memory, sync, clone, browse, emulator, sessions, version", other);
+            eprintln!("Unknown command: '{}'. Available: status, repomap, search, verify, commit, terminal, exec, harness, memory, sync, clone, browse, emulator, sessions, version", other);
             std::process::exit(1);
         }
     }

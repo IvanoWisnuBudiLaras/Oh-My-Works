@@ -16,3 +16,4 @@ omw-clone = { path = "../omw-clone" }
 omw-browser = { path = "../omw-browser" }
 omw-emulator = { path = "../omw-emulator" }
 omw-session = { path = "../omw-session" }
+serde_json = "1.0"

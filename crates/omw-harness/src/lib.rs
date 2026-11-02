@@ -1,4 +1,13 @@
-//! Meta-AI Harness: Multi-agent coordination and task delegation.
+//! Meta-AI Harness: Multi-agent coordination, Autonomous Agent Loops,
+//! Codebase AST RepoMap, Deterministic Tools, and Verification Pipelines.
+
+pub mod repomap;
+pub mod tools;
+pub mod pipeline;
+
+pub use repomap::RepoMap;
+pub use tools::{ToolCall, ToolEngine, ToolResult};
+pub use pipeline::{PipelineExecution, PipelineStep};
 
 use serde::{Deserialize, Serialize};
 

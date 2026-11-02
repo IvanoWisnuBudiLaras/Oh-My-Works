@@ -19,6 +19,32 @@ struct BackgroundJob {
 
 static BACKGROUND_JOBS: Mutex<Vec<BackgroundJob>> = Mutex::new(Vec::new());
 
+struct DeployedProject {
+    name: String,
+    repo_url: String,
+    port: u16,
+    pid: u32,
+    command: String,
+    status: String,
+    log_path: PathBuf,
+    started_at: u64,
+}
+
+static DEPLOYED_PROJECTS: Mutex<Vec<DeployedProject>> = Mutex::new(Vec::new());
+
+fn get_process_rss_mb(pid: u32) -> f64 {
+    if let Ok(content) = fs::read_to_string(format!("/proc/{}/statm", pid)) {
+        if let Some(res_pages) = content.split_whitespace().nth(1).and_then(|s| s.parse::<u64>().ok()) {
+            return (res_pages * 4096) as f64 / (1024.0 * 1024.0);
+        }
+    }
+    0.0
+}
+
+fn is_process_alive(pid: u32) -> bool {
+    Path::new(&format!("/proc/{}", pid)).exists()
+}
+
 fn detect_system_profile() -> serde_json::Value {
     let os = std::env::consts::OS;
     let arch = std::env::consts::ARCH;
@@ -506,6 +532,67 @@ fn handle_client(mut stream: TcpStream) {
             }
         }
         ("200 OK", "application/json", serde_json::json!({ "success": ok }).to_string())
+    } else if uri.starts_with("/workspace/repomap") {
+        let target_path = query_map.get("path")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+        let max_chars = query_map.get("max_chars")
+            .and_then(|s| s.parse::<usize>().ok())
+            .unwrap_or(3000);
+        let map = omw_harness::RepoMap::build(&target_path, max_chars);
+        ("200 OK", "application/json", serde_json::json!({ "repomap": map, "chars": map.len() }).to_string())
+    } else if uri.starts_with("/workspace/search") {
+        let q = query_map.get("q").map(|s| s.as_str()).unwrap_or("");
+        let cwd = query_map.get("path")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+        let res = omw_harness::ToolEngine::execute("search", &serde_json::json!({ "query": q }), &cwd);
+        ("200 OK", "application/json", serde_json::json!({ "query": q, "results": res.output, "error": res.error }).to_string())
+    } else if uri.starts_with("/agent/tool_exec") && method == "POST" {
+        let mut tool_res = omw_harness::ToolResult {
+            success: false,
+            output: String::new(),
+            error: Some("Invalid payload".to_string()),
+        };
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let tool = val["tool"].as_str().unwrap_or("");
+            let args = val.get("args").unwrap_or(&serde_json::json!({})).clone();
+            let cwd = val["cwd"].as_str()
+                .map(PathBuf::from)
+                .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+            tool_res = omw_harness::ToolEngine::execute(tool, &args, &cwd);
+        }
+        ("200 OK", "application/json", serde_json::json!({
+            "success": tool_res.success,
+            "output": tool_res.output,
+            "error": tool_res.error
+        }).to_string())
+    } else if uri.starts_with("/agent/pipeline/verify") && method == "POST" {
+        let mut passed = false;
+        let mut output = String::new();
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let cmd = val["test_command"].as_str().unwrap_or("cargo test");
+            let cwd = val["cwd"].as_str()
+                .map(PathBuf::from)
+                .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+            let (ok, out) = omw_harness::PipelineExecution::run_verification(cmd, &cwd);
+            passed = ok;
+            output = out;
+        }
+        ("200 OK", "application/json", serde_json::json!({ "passed": passed, "output": output }).to_string())
+    } else if uri.starts_with("/agent/pipeline/commit") && method == "POST" {
+        let mut success = false;
+        let mut output = String::new();
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let msg = val["message"].as_str().unwrap_or("chore: auto-commit by OMW agent");
+            let cwd = val["cwd"].as_str()
+                .map(PathBuf::from)
+                .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+            let (ok, out) = omw_harness::PipelineExecution::auto_commit(msg, &cwd);
+            success = ok;
+            output = out;
+        }
+        ("200 OK", "application/json", serde_json::json!({ "success": success, "output": output }).to_string())
     } else if uri.starts_with("/terminal/exec") && method == "POST" {
         let mut cmd_output = String::new();
         let mut exit_code = 0;
@@ -682,6 +769,168 @@ fn handle_client(mut stream: TcpStream) {
         let sessions = SessionHarvester::scan_all(&home_dir());
         let s = serde_json::to_string(&sessions).unwrap_or_else(|_| "[]".to_string());
         ("200 OK", "application/json", s)
+    } else if uri == "/dashboard" || uri == "/panel" || (uri == "/" && req_header_str.to_ascii_lowercase().contains("accept: text/html")) {
+        ("200 OK", "text/html; charset=utf-8", include_str!("panel.html").to_string())
+    } else if uri.starts_with("/deploy/list") {
+        let mut list = Vec::new();
+        if let Ok(mut projects) = DEPLOYED_PROJECTS.lock() {
+            for p in projects.iter_mut() {
+                let alive = is_process_alive(p.pid);
+                if !alive && p.status == "running" {
+                    p.status = "stopped".to_string();
+                }
+                let rss = if alive { get_process_rss_mb(p.pid) } else { 0.0 };
+                list.push(serde_json::json!({
+                    "name": p.name,
+                    "repo_url": p.repo_url,
+                    "port": p.port,
+                    "pid": p.pid,
+                    "command": p.command,
+                    "status": p.status,
+                    "rss_mb": rss,
+                    "started_at": p.started_at,
+                }));
+            }
+        }
+        ("200 OK", "application/json", serde_json::json!({ "projects": list }).to_string())
+    } else if uri.starts_with("/deploy/spawn") && method == "POST" {
+        if let Ok((HealthLevel::Critical, _)) = Guardian::assess() {
+            let err_json = serde_json::json!({
+                "success": false,
+                "error": "Anti-OOM Guardian: Host memory pressure CRITICAL. Deployment aborted to prevent crash."
+            });
+            ("200 OK", "application/json", err_json.to_string())
+        } else if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let name = val["name"].as_str().unwrap_or("project").to_string();
+            let repo = val["repo_url"].as_str().unwrap_or("").to_string();
+            let build = val["build_cmd"].as_str().unwrap_or("").to_string();
+            let start = val["start_cmd"].as_str().unwrap_or("").to_string();
+            let port = val["port"].as_u64().unwrap_or(0) as u16;
+
+            let proj_dir = omw.join("projects").join(&name);
+            let _ = fs::create_dir_all(&proj_dir);
+            let log_file = proj_dir.join("app.log");
+
+            if !repo.is_empty() {
+                if !proj_dir.join(".git").exists() {
+                    let _ = Command::new("git")
+                        .args(["clone", &repo, "."])
+                        .current_dir(&proj_dir)
+                        .output();
+                } else {
+                    let _ = Command::new("git")
+                        .args(["pull"])
+                        .current_dir(&proj_dir)
+                        .output();
+                }
+            }
+
+            if !build.is_empty() {
+                let _ = Command::new("bash")
+                    .arg("-c")
+                    .arg(&build)
+                    .current_dir(&proj_dir)
+                    .output();
+            }
+
+            let out_file = fs::File::create(&log_file).unwrap_or_else(|_| fs::File::create("/dev/null").unwrap());
+            let err_file = out_file.try_clone().unwrap_or_else(|_| fs::File::create("/dev/null").unwrap());
+
+            match Command::new("bash")
+                .arg("-c")
+                .arg(&start)
+                .current_dir(&proj_dir)
+                .stdout(out_file)
+                .stderr(err_file)
+                .spawn()
+            {
+                Ok(child) => {
+                    let pid = child.id();
+                    if let Ok(mut projs) = DEPLOYED_PROJECTS.lock() {
+                        projs.retain(|p| p.name != name);
+                        projs.push(DeployedProject {
+                            name: name.clone(),
+                            repo_url: repo,
+                            port,
+                            pid,
+                            command: start,
+                            status: "running".to_string(),
+                            log_path: log_file,
+                            started_at: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
+                        });
+                    }
+                    ("200 OK", "application/json", serde_json::json!({ "success": true, "pid": pid, "name": name }).to_string())
+                }
+                Err(e) => {
+                    ("200 OK", "application/json", serde_json::json!({ "success": false, "error": e.to_string() }).to_string())
+                }
+            }
+        } else {
+            ("400 Bad Request", "application/json", serde_json::json!({ "success": false, "error": "Invalid payload" }).to_string())
+        }
+    } else if uri.starts_with("/deploy/kill") && method == "POST" {
+        let mut ok = false;
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let pid = val["pid"].as_u64().unwrap_or(0) as u32;
+            let name = val["name"].as_str().unwrap_or("");
+            if pid > 0 {
+                let _ = Command::new("kill").args(["-15", &pid.to_string()]).output();
+                if let Ok(mut projs) = DEPLOYED_PROJECTS.lock() {
+                    for p in projs.iter_mut() {
+                        if p.pid == pid || p.name == name {
+                            p.status = "stopped".to_string();
+                            ok = true;
+                        }
+                    }
+                }
+            }
+        }
+        ("200 OK", "application/json", serde_json::json!({ "success": ok }).to_string())
+    } else if uri.starts_with("/deploy/logs") {
+        let name = query_map.get("name").map(|s| s.as_str()).unwrap_or("");
+        let mut logs = String::new();
+        if let Ok(projs) = DEPLOYED_PROJECTS.lock() {
+            if let Some(p) = projs.iter().find(|p| p.name == name) {
+                if let Ok(c) = fs::read_to_string(&p.log_path) {
+                    let lines: Vec<&str> = c.lines().collect();
+                    let start = lines.len().saturating_sub(100);
+                    logs = lines[start..].join("\n");
+                }
+            }
+        }
+        ("200 OK", "application/json", serde_json::json!({ "name": name, "logs": logs }).to_string())
+    } else if uri.starts_with("/api/keys") {
+        let keys_file = omw.join("keys.json");
+        if method == "POST" {
+            let _ = fs::write(&keys_file, payload);
+            ("200 OK", "application/json", serde_json::json!({ "success": true }).to_string())
+        } else {
+            let content = fs::read_to_string(&keys_file).unwrap_or_else(|_| "{}".to_string());
+            ("200 OK", "application/json", content)
+        }
+    } else if uri.starts_with("/v1/models") || uri.starts_with("/api/models") {
+        let models = serde_json::json!({
+            "object": "list",
+            "data": [
+                { "id": "ag/gemini-3.8-flash-high", "object": "model", "owned_by": "omw" },
+                { "id": "mux/glm-5.3-flash", "object": "model", "owned_by": "omw" },
+                { "id": "cbcn/deepseek-v4-pro", "object": "model", "owned_by": "omw" },
+                { "id": "anthropic/claude-3-5-sonnet", "object": "model", "owned_by": "omw" },
+                { "id": "meta-llama/llama-3.3-70b", "object": "model", "owned_by": "omw" },
+                { "id": "openrouter/auto", "object": "model", "owned_by": "omw" }
+            ]
+        });
+        ("200 OK", "application/json", models.to_string())
+    } else if uri.starts_with("/v1/chat/completions") && method == "POST" {
+        let target_router = "http://127.0.0.1:20128/api/v1/chat/completions";
+        let mut forward_res = serde_json::json!({ "error": "Router bridge inactive" }).to_string();
+        if let Ok(output) = Command::new("curl")
+            .args(["-s", "-X", "POST", target_router, "-H", "Content-Type: application/json", "-d", payload])
+            .output()
+        {
+            forward_res = String::from_utf8_lossy(&output.stdout).to_string();
+        }
+        ("200 OK", "application/json", forward_res)
     } else {
         let (status_str, pressure) = match Guardian::assess() {
             Ok((level, p)) => {
@@ -731,7 +980,8 @@ fn chrono_like_now() -> String {
 
 fn main() {
     let port = std::env::var("OMW_DAEMON_PORT").unwrap_or_else(|_| "9180".to_string());
-    let addr = format!("127.0.0.1:{}", port);
+    let host = std::env::var("OMW_DAEMON_HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
+    let addr = format!("{}:{}", host, port);
 
     println!("OMW End-to-End Server Daemon listening on http://{}", addr);
 

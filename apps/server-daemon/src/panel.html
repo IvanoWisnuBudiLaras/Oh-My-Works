@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oh My Works - Cloud Control Panel</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #181a1f;
+      --bg-surface: #1e1f22;
+      --bg-elevated: #2b2d30;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: #3574F0;
+      --accent: #00F5A0;
+      --accent-blue: #3574F0;
+      --text: #c4c7c5;
+      --text-bright: #ffffff;
+      --text-muted: #8b949e;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --success: #34d399;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-base);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .topbar {
+      height: 48px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .topbar-left, .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text-bright); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .badge-safe { color: var(--accent); border-color: rgba(0, 245, 160, 0.3); }
+    .badge-warn { color: var(--warning); border-color: rgba(251, 191, 36, 0.3); }
+    .badge-danger { color: var(--danger); border-color: rgba(248, 113, 113, 0.3); }
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .tab-btn {
+      padding: 8px 14px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { color: var(--text-bright); }
+    .tab-btn.active {
+      color: var(--text-bright);
+      border-bottom-color: var(--accent-blue);
+      background: rgba(53, 116, 240, 0.05);
+    }
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 800px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    .metric-box {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+    }
+    .metric-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+    .metric-value { font-size: 20px; font-weight: 700; color: var(--text-bright); font-family: 'JetBrains Mono', monospace; }
+    .input-group { margin-bottom: 12px; }
+    .input-label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+    .input-text {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: var(--text-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      outline: none;
+    }
+    .input-text:focus { border-color: var(--accent-blue); }
+    .btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text-bright);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .btn:hover { background: rgba(255, 255, 255, 0.1); }
+    .btn-primary { background: var(--accent-blue); border-color: transparent; }
+    .btn-primary:hover { background: #2b61cb; }
+    .btn-accent { background: rgba(0, 245, 160, 0.15); color: var(--accent); border-color: rgba(0, 245, 160, 0.3); }
+    .btn-accent:hover { background: rgba(0, 245, 160, 0.25); }
+    .btn-danger { background: rgba(248, 113, 113, 0.15); color: var(--danger); border-color: rgba(248, 113, 113, 0.3); }
+    .table-container { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+    th { background: var(--bg-elevated); padding: 8px 12px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    .log-viewer {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      max-height: 250px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand">
+        <svg viewBox="0 0 512 512" width="16" height="16">
+          <rect x="24" y="24" width="464" height="464" rx="100" fill="#181A1F" stroke="#3574F0" stroke-width="20"/>
+          <polygon points="256,120 370,256 256,392 142,256" fill="#00F5A0"/>
+        </svg>
+        <span>OMW Cloud Panel</span>
+      </div>
+      <span class="badge" id="hostBadge">Linux | 2 Cores | 2 GB RAM</span>
+    </div>
+    <div class="topbar-right">
+      <span class="badge badge-safe" id="guardianBadge">Guardian: SAFE (0% PSI)</span>
+      <button type="button" class="btn" id="btnRefreshAll" title="Refresh Telemetry">
+        <span class="material-symbols-outlined" style="font-size:14px;">refresh</span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="nav-tabs">
+    <button type="button" class="tab-btn active" data-tab="overview">
+      <span class="material-symbols-outlined" style="font-size:15px;">dashboard</span>Overview
+    </button>
+    <button type="button" class="tab-btn" data-tab="omniroute">
+      <span class="material-symbols-outlined" style="font-size:15px;">alt_route</span>OmniRoute Hub
+    </button>
+    <button type="button" class="tab-btn" data-tab="deployer">
+      <span class="material-symbols-outlined" style="font-size:15px;">rocket_launch</span>Project Deployer
+    </button>
+    <button type="button" class="tab-btn" data-tab="harness">
+      <span class="material-symbols-outlined" style="font-size:15px;">bolt</span>Autonomous Harness
+    </button>
+  </nav>
+
+  <main class="main-content">
+    <!-- Tab 1: Overview -->
+    <div class="tab-pane active" id="pane-overview">
+      <div class="grid-3" style="margin-bottom:16px;">
+        <div class="metric-box">
+          <div class="metric-label">RAM Available</div>
+          <div class="metric-value" id="valRamAvail">-- %</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">PSI Stall (avg10)</div>
+          <div class="metric-value" id="valPsiStall">0.00 %</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Active Deployments</div>
+          <div class="metric-value" id="valDeployCount">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>System Environment &amp; Anti-OOM Guardian</span>
+          <span class="badge" id="daemonVerBadge">v0.1.0-ultra</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+          Optimized strictly for 2-core / 2GB RAM Linux VPS. Replaces heavy Node.js/Next.js runtimes with a single native Rust binary consuming less than 10MB RAM.
+        </div>
+        <div class="grid-2">
+          <div class="metric-box">
+            <div class="metric-label">Memory Allocation Guard</div>
+            <div style="font-size:12px;color:var(--accent);" id="guardInfo">Active - Spawns throttled if RAM &lt; 300MB</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Process Memory Track</div>
+            <div style="font-size:12px;color:#fff;" id="procInfo">Linux /proc/[pid]/statm zero-overhead sampling</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: OmniRoute Hub -->
+    <div class="tab-pane" id="pane-omniroute">
+      <div class="card">
+        <div class="card-title">
+          <span>OmniRoute API Keys &amp; Model Providers</span>
+          <button type="button" class="btn btn-primary" id="btnSaveKeys">Save Keys</button>
+        </div>
+        <div class="grid-2">
+          <div class="input-group">
+            <label class="input-label">OpenRouter API Key</label>
+            <input type="password" class="input-text" id="keyOpenRouter" placeholder="sk-or-v1-...">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Google Gemini API Key</label>
+            <input type="password" class="input-text" id="keyGemini" placeholder="AIzaSy...">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Anthropic API Key</label>
+            <input type="password" class="input-text" id="keyAnthropic" placeholder="sk-ant-api...">
+          </div>
+          <div class="input-group">
+            <label class="input-label">DeepSeek API Key</label>
+            <input type="password" class="input-text" id="keyDeepSeek" placeholder="sk-...">
+          </div>
+          <div class="input-group">
+            <label class="input-label">OpenAI API Key</label>
+            <input type="password" class="input-text" id="keyOpenAi" placeholder="sk-proj-...">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Groq API Key</label>
+            <input type="password" class="input-text" id="keyGroq" placeholder="gsk_...">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Model Routing Endpoints</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+          Compatible with any OpenAI/Claude SDK client:
+        </div>
+        <pre class="log-viewer" style="margin-bottom:12px;">Base URL: http://&lt;server-ip&gt;:9180/v1
+Endpoints:
+  GET  /v1/models            (List all aggregated models)
+  POST /v1/chat/completions  (OpenAI-compatible chat completion proxy)
+Headers:
+  Authorization: Bearer &lt;any-key-or-token&gt;</pre>
+      </div>
+    </div>
+
+    <!-- Tab 3: Project Deployer -->
+    <div class="tab-pane" id="pane-deployer">
+      <div class="card">
+        <div class="card-title">
+          <span>Deploy Project (Zero-PM2 Native Linux Supervisor)</span>
+        </div>
+        <div class="grid-2">
+          <div class="input-group">
+            <label class="input-label">Project Name</label>
+            <input type="text" class="input-text" id="deployName" placeholder="my-app">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Git Repo URL or Working Dir</label>
+            <input type="text" class="input-text" id="deployRepo" placeholder="https://github.com/... or /path/to/dir">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Build Command (Optional)</label>
+            <input type="text" class="input-text" id="deployBuild" placeholder="cargo build --release or npm run build">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Start Command</label>
+            <input type="text" class="input-text" id="deployStart" placeholder="./target/release/my-app or node server.js">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+          <div style="font-size:11px;color:var(--text-muted);">
+            Anti-OOM checks run automatically before building or spawning.
+          </div>
+          <button type="button" class="btn btn-accent" id="btnLaunchProject">
+            <span class="material-symbols-outlined" style="font-size:14px;">rocket_launch</span>Deploy &amp; Supervise
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Active Supervised Projects</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Project Name</th>
+                <th>PID</th>
+                <th>Status</th>
+                <th>Memory (RSS)</th>
+                <th>Port</th>
+                <th>Command</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="projectsTableBody">
+              <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:16px;">No projects deployed yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="logsCard" style="display:none;">
+        <div class="card-title">
+          <span id="logsTitle">Project Logs</span>
+          <button type="button" class="btn" onclick="document.getElementById('logsCard').style.display='none'">Close</button>
+        </div>
+        <pre class="log-viewer" id="logsContent">Loading...</pre>
+      </div>
+    </div>
+
+    <!-- Tab 4: Autonomous Harness -->
+    <div class="tab-pane" id="pane-harness">
+      <div class="card">
+        <div class="card-title">
+          <span>Autonomous ReAct Agent Loop</span>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Task Objective</label>
+          <input type="text" class="input-text" id="harnessTask" placeholder="e.g. Audit repository, check memory leaks, or verify tests">
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <button type="button" class="btn btn-primary" id="btnRunHarnessTask">
+            <span class="material-symbols-outlined" style="font-size:14px;">bolt</span>Execute Autonomous Task
+          </button>
+        </div>
+        <div id="harnessStreamBox" style="margin-top:12px;display:none;">
+          <div class="metric-label">Execution Stream:</div>
+          <pre class="log-viewer" id="harnessStreamLog" style="max-height:300px;"></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Codebase AST RepoMap</span>
+          <button type="button" class="btn" id="btnRefreshRepoMap">Refresh Map</button>
+        </div>
+        <pre class="log-viewer" id="repoMapBox">Loading RepoMap...</pre>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const target = document.getElementById('pane-' + btn.getAttribute('data-tab'));
+        if (target) target.classList.add('active');
+      });
+    });
+
+    async function fetchTelemetry() {
+      try {
+        const [telem, prof] = await Promise.all([
+          fetch('/').then(r => r.json()).catch(() => null),
+          fetch('/system/profile').then(r => r.json()).catch(() => null)
+        ]);
+        if (telem) {
+          document.getElementById('valRamAvail').textContent = (telem.available_percent || 0).toFixed(1) + '%';
+          document.getElementById('valPsiStall').textContent = (telem.full_avg10 || 0).toFixed(2) + '%';
+          const gBadge = document.getElementById('guardianBadge');
+          if (telem.status === 'Safe') {
+            gBadge.className = 'badge badge-safe';
+            gBadge.textContent = `Guardian: SAFE (${telem.full_avg10}% PSI)`;
+          } else if (telem.status === 'Warning') {
+            gBadge.className = 'badge badge-warn';
+            gBadge.textContent = `Guardian: WARN (${telem.full_avg10}% PSI)`;
+          } else {
+            gBadge.className = 'badge badge-danger';
+            gBadge.textContent = `Guardian: CRITICAL (${telem.full_avg10}% PSI)`;
+          }
+        }
+        if (prof) {
+          const m = prof.memory || {};
+          const freeG = Math.round((m.available_mb || 0)/1024);
+          const totG = Math.round((m.total_mb || 0)/1024);
+          document.getElementById('hostBadge').textContent = `${prof.os || 'Linux'} | ${prof.cores || 2} Cores | ${totG} GB RAM (${freeG} GB free)`;
+        }
+      } catch (e) {}
+    }
+
+    async function loadProjects() {
+      try {
+        const res = await fetch('/deploy/list').then(r => r.json());
+        const tbody = document.getElementById('projectsTableBody');
+        if (res && res.projects && res.projects.length > 0) {
+          document.getElementById('valDeployCount').textContent = res.projects.length;
+          tbody.innerHTML = res.projects.map(p => `
+            <tr>
+              <td style="font-weight:600;color:#fff;">${p.name}</td>
+              <td style="font-family:monospace;">${p.pid}</td>
+              <td><span class="badge ${p.status === 'running' ? 'badge-safe' : 'badge-danger'}">${p.status}</span></td>
+              <td style="font-family:monospace;">${(p.rss_mb || 0).toFixed(1)} MB</td>
+              <td style="font-family:monospace;">${p.port || '-'}</td>
+              <td style="font-family:monospace;color:var(--text-muted);">${p.command}</td>
+              <td>
+                <button type="button" class="btn btn-danger" onclick="killProject('${p.name}', ${p.pid})" style="padding:2px 8px;font-size:11px;">Stop</button>
+                <button type="button" class="btn" onclick="viewLogs('${p.name}')" style="padding:2px 8px;font-size:11px;">Logs</button>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          document.getElementById('valDeployCount').textContent = '0';
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:16px;">No projects deployed yet</td></tr>';
+        }
+      } catch (_) {}
+    }
+
+    async function killProject(name, pid) {
+      if (!confirm(`Stop project ${name} (PID ${pid})?`)) return;
+      await fetch('/deploy/kill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, pid })
+      });
+      loadProjects();
+    }
+
+    async function viewLogs(name) {
+      const card = document.getElementById('logsCard');
+      const title = document.getElementById('logsTitle');
+      const content = document.getElementById('logsContent');
+      card.style.display = 'block';
+      title.textContent = `Logs: ${name}`;
+      content.textContent = 'Loading logs...';
+      try {
+        const res = await fetch(`/deploy/logs?name=${encodeURIComponent(name)}`).then(r => r.json());
+        content.textContent = res.logs || 'No logs available.';
+      } catch (e) {
+        content.textContent = 'Error fetching logs: ' + e.message;
+      }
+    }
+
+    document.getElementById('btnLaunchProject').addEventListener('click', async () => {
+      const name = document.getElementById('deployName').value.trim();
+      const repo = document.getElementById('deployRepo').value.trim();
+      const build = document.getElementById('deployBuild').value.trim();
+      const start = document.getElementById('deployStart').value.trim();
+
+      if (!name || !start) {
+        alert('Please provide at least Project Name and Start Command');
+        return;
+      }
+
+      const btn = document.getElementById('btnLaunchProject');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;animation:spin 1s linear infinite;">sync</span> Deploying...';
+
+      try {
+        const res = await fetch('/deploy/spawn', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, repo_url: repo, build_cmd: build, start_cmd: start })
+        }).then(r => r.json());
+
+        if (res.success) {
+          alert(`Project '${name}' deployed successfully! PID: ${res.pid}`);
+          loadProjects();
+        } else {
+          alert('Deployment failed: ' + (res.error || 'Unknown error'));
+        }
+      } catch (e) {
+        alert('Network error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">rocket_launch</span>Deploy &amp; Supervise';
+      }
+    });
+
+    async function loadRepoMap() {
+      try {
+        const res = await fetch('/workspace/repomap?max_chars=3500').then(r => r.json());
+        document.getElementById('repoMapBox').textContent = res.repomap || 'Empty repomap.';
+      } catch (e) {
+        document.getElementById('repoMapBox').textContent = 'Error loading repomap: ' + e.message;
+      }
+    }
+    document.getElementById('btnRefreshRepoMap').addEventListener('click', loadRepoMap);
+
+    // Initial load
+    fetchTelemetry();
+    loadProjects();
+    loadRepoMap();
+    setInterval(fetchTelemetry, 3000);
+    setInterval(loadProjects, 5000);
+  </script>
+</body>
+</html>

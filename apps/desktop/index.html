@@ -1573,7 +1573,16 @@
       overflow-x: auto;
       margin: 0;
     }
-  </style>
+  
+    body.companion-mode .sidebar { display: none !important; }
+    body.companion-mode .side-canvas { display: none !important; }
+    body.companion-mode .topbar { padding: 4px 10px !important; }
+    body.companion-mode .topbar-right button:not(#btnToggleCompanion) { display: none !important; }
+    body.companion-mode .brand-badge { display: none !important; }
+    body.companion-mode .combo-badge { display: none !important; }
+    body.companion-mode .chat-pane { padding: 6px !important; }
+    body.companion-mode .prompt-container { padding: 6px 8px !important; }
+</style>
 </head>
 <body>
 
@@ -1589,6 +1598,10 @@
       <div class="sidebar-btn-row">
         <button type="button" class="btn-new" id="btnNewRootSession" style="background:var(--accent);color:#fff;border-color:transparent;font-weight:600;">+ New Chat</button>
         <button type="button" class="btn-new" id="btnNewBranchThread" title="Branch thread from active chat">+ Branch</button>
+      </div>
+      <div class="chat-search-bar" style="margin:6px 0 8px 0;position:relative;">
+        <span class="material-symbols-outlined" style="position:absolute;left:8px;top:7px;font-size:14px;color:var(--text-muted);pointer-events:none;">search</span>
+        <input type="text" id="chatSearchInput" placeholder="Search chats (Ctrl+K)..." style="width:100%;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:6px 8px 6px 28px;color:#fff;font-size:11px;outline:none;box-sizing:border-box;">
       </div>
       <div id="hierarchicalSessionsList" style="display:flex;flex-direction:column;gap:6px;"></div>
     </div>
@@ -1646,6 +1659,7 @@
         <span class="combo-badge" id="tokenSaverBadge" style="display:inline-flex;align-items:center;gap:4px;background:rgba(0,245,160,0.08);color:var(--accent);border:1px solid rgba(0,245,160,0.22);font-family:monospace;font-size:11px;padding:2px 7px;border-radius:4px;" title="Token Optimizer: Sliding context window + historical code compaction"><span class="material-symbols-outlined" style="font-size:13px;">compress</span><span id="tokenSaverText">Tokens: Optimized</span></span>
       </div>
       <div class="topbar-right">
+        <button type="button" class="btn-topbar" id="btnToggleCompanion" title="Toggle Compact Companion Mini-Mode (Ctrl+Shift+M)"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:3px;">picture_in_picture_alt</span>Mini</button>
         <button type="button" class="btn-topbar" id="btnToggleSideCanvas" title="Toggle right side canvas (show/hide preview & terminal)">
           Canvas &RightArrowBar;
         </button>
@@ -1672,7 +1686,15 @@
               <button type="button" class="chip-btn" data-agent="@guardian">@guardian</button>
               <button type="button" class="chip-btn" data-agent="@cindy">@cindy</button>
             </div>
-            <button type="button" class="btn-submit" id="btnSubmit">Send</button>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <button type="button" class="btn-prompt-action" id="btnCaptureScreen" title="Attach Screen Context (Ctrl+Shift+S)" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);border-radius:6px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;">
+                <span class="material-symbols-outlined" style="font-size:16px;">screenshot_monitor</span>
+              </button>
+              <button type="button" class="btn-prompt-action" id="btnVoiceInput" title="Dictate / Voice Mode" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);border-radius:6px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;">
+                <span class="material-symbols-outlined" style="font-size:16px;">mic</span>
+              </button>
+              <button type="button" class="btn-submit" id="btnSubmit">Send</button>
+            </div>
           </div>
         </div>
       </section>
@@ -3143,12 +3165,15 @@ const FIGMA_PALETTES = {
 
       async function renderHierarchicalSessions() {
         hierarchicalSessionsList.innerHTML = '';
-        if (rootSessions.length === 0) {
-          hierarchicalSessionsList.innerHTML = '<div style="color:var(--text-muted);font-size:11px;padding:8px;text-align:center;">Belum ada riwayat obrolan. Klik + New Chat untuk memulai.</div>';
+        const searchVal = (document.getElementById('chatSearchInput')?.value || '').trim().toLowerCase();
+        const displayRoots = searchVal ? rootSessions.filter(r => (r.title || '').toLowerCase().includes(searchVal)) : rootSessions;
+
+        if (displayRoots.length === 0) {
+          hierarchicalSessionsList.innerHTML = `<div style="color:var(--text-muted);font-size:11px;padding:8px;text-align:center;">${searchVal ? 'Tidak ada sesi yang cocok.' : 'Belum ada riwayat obrolan. Klik + New Chat untuk memulai.'}</div>`;
           return;
         }
 
-        for (const root of rootSessions) {
+        for (const root of displayRoots) {
           const group = document.createElement('div');
           group.className = `root-session-group ${root.id === currentSessionId ? 'active' : ''}`;
 
@@ -4745,6 +4770,111 @@ RULES:
           }
         });
       }
+
+      // Instant Chat Search Filter
+      const chatSearchInput = document.getElementById('chatSearchInput');
+      if (chatSearchInput) {
+        chatSearchInput.addEventListener('input', () => {
+          renderHierarchicalSessions();
+        });
+      }
+
+      // Companion Mini-Mode
+      const btnCompanion = document.getElementById('btnToggleCompanion');
+      if (btnCompanion) {
+        btnCompanion.addEventListener('click', () => {
+          document.body.classList.toggle('companion-mode');
+          const isComp = document.body.classList.contains('companion-mode');
+          btnCompanion.style.color = isComp ? 'var(--accent)' : 'var(--text-bright)';
+          btnCompanion.style.borderColor = isComp ? 'rgba(0,245,160,0.4)' : 'var(--border)';
+        });
+      }
+
+      // Screen Context Capture
+      const btnCapture = document.getElementById('btnCaptureScreen');
+      if (btnCapture) {
+        btnCapture.addEventListener('click', async () => {
+          btnCapture.disabled = true;
+          btnCapture.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;animation:spin 1s linear infinite;">sync</span>';
+          try {
+            const prof = await fetch(`${config.daemonUrl}/system/profile`).then(r => r.json()).catch(() => null);
+            const ctxText = prof ? `[Active Window: ${prof.compositor || 'hyprland'}, OS: ${prof.os || 'Linux'}]` : '[Screen Context Attached]';
+            promptInput.value = (promptInput.value ? promptInput.value + '\n' : '') + ctxText + ' ';
+            promptInput.focus();
+          } catch (_) {
+            promptInput.value += '\n[Screen Context Attached] ';
+          } finally {
+            btnCapture.disabled = false;
+            btnCapture.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">screenshot_monitor</span>';
+          }
+        });
+      }
+
+      // Voice Input UI
+      const btnVoice = document.getElementById('btnVoiceInput');
+      if (btnVoice) {
+        let isListening = false;
+        let recognition = null;
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+          const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+          recognition = new SpeechRec();
+          recognition.continuous = false;
+          recognition.interimResults = true;
+          recognition.onresult = (ev) => {
+            let transcript = '';
+            for (let i = ev.resultIndex; i < ev.results.length; ++i) {
+              transcript += ev.results[i][0].transcript;
+            }
+            promptInput.value = (promptInput.value ? promptInput.value + ' ' : '') + transcript;
+          };
+          recognition.onend = () => {
+            isListening = false;
+            btnVoice.style.color = 'var(--text-muted)';
+            btnVoice.style.borderColor = 'rgba(255,255,255,0.1)';
+          };
+        }
+        btnVoice.addEventListener('click', () => {
+          if (!recognition) {
+            alert('Voice recognition not supported in this runtime.');
+            return;
+          }
+          if (isListening) {
+            recognition.stop();
+            isListening = false;
+            btnVoice.style.color = 'var(--text-muted)';
+          } else {
+            try {
+              recognition.start();
+              isListening = true;
+              btnVoice.style.color = 'var(--accent)';
+              btnVoice.style.borderColor = 'var(--accent)';
+            } catch (err) {
+              console.error(err);
+            }
+          }
+        });
+      }
+
+      // Global ChatGPT Desktop Shortcuts (Ctrl+K, Ctrl+M, Ctrl+Shift+M, Ctrl+Shift+S)
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          if (chatSearchInput) {
+            chatSearchInput.focus();
+            chatSearchInput.select();
+          }
+        } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'm') {
+          e.preventDefault();
+          if (btnCompanion) btnCompanion.click();
+        } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 's') {
+          e.preventDefault();
+          if (btnCapture) btnCapture.click();
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
+          e.preventDefault();
+          const btnPicker = document.getElementById('btnModelPicker');
+          if (btnPicker) btnPicker.click();
+        }
+      });
 
       // Canvas show/hide toggle button
       const btnToggleSideCanvas = document.getElementById('btnToggleSideCanvas');
