@@ -407,9 +407,29 @@
       font-weight: 600;
       color: var(--text-muted);
       font-family: 'JetBrains Mono', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .msg-author.ai { color: var(--accent); }
+
+    .btn-copy-msg {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 1px 4px;
+      border-radius: 4px;
+      opacity: 0.6;
+      transition: opacity 0.15s, color 0.15s;
+    }
+    .btn-copy-msg:hover {
+      opacity: 1;
+      color: var(--accent);
+      border-color: var(--border-color);
+      background: rgba(255, 255, 255, 0.04);
+    }
 
     .msg-content {
       font-size: 13.5px;
@@ -1615,6 +1635,7 @@
             <button type="button" class="canvas-tab-btn" data-canvas="terminal">Terminal</button>
             <button type="button" class="canvas-tab-btn" data-canvas="harness">Harnesses</button>
             <button type="button" class="canvas-tab-btn" data-canvas="editor">Editor</button>
+            <button type="button" class="canvas-tab-btn" data-canvas="jobs">Jobs &amp; System</button>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
             <div style="display:flex;gap:3px;align-items:center;" title="Resize side canvas for desktop inspection">
@@ -1715,6 +1736,56 @@ $ </div>
           <!-- Pane 4: Editor / File Viewer -->
           <div class="canvas-view-pane" id="paneEditor">
             <div class="editor-view" id="editorContent">Select a file from Worktree &amp; Files to view or edit.</div>
+          </div>
+
+          <!-- Pane 5: Jobs & System (Background Tasks, Host OS Capabilities, Self-Construct) -->
+          <div class="canvas-view-pane" id="paneJobs" style="padding:16px;overflow-y:auto;gap:16px;display:none;flex-direction:column;height:100%;box-sizing:border-box;">
+            <!-- Self Construct Card -->
+            <div style="background:var(--bg-pane);border:1px solid var(--border-color);border-radius:10px;padding:14px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;">
+                  <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent);">build</span>
+                  Self-Construct Engine
+                </span>
+                <button type="button" class="btn-code-action" id="btnSelfConstructRebuild" style="background:var(--accent);color:#090D16;border:none;font-weight:600;">
+                  <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">refresh</span>
+                  Recompile &amp; Reload
+                </button>
+              </div>
+              <div style="font-size:11.5px;color:var(--text-muted);line-height:1.5;">
+                Rebuild binary Rust desktop dan terapkan perubahan arsitektur aplikasi secara langsung.
+              </div>
+              <div id="selfConstructLog" style="font-family:monospace;font-size:11px;background:#05070c;padding:8px;border-radius:6px;margin-top:8px;display:none;white-space:pre-wrap;max-height:120px;overflow-y:auto;"></div>
+            </div>
+
+            <!-- Host System Profile Card -->
+            <div style="background:var(--bg-pane);border:1px solid var(--border-color);border-radius:10px;padding:14px;">
+              <div style="font-weight:600;font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+                <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent);">devices</span>
+                Host Environment &amp; Device Capabilities
+              </div>
+              <div id="systemProfileContent" style="font-size:11.5px;line-height:1.6;color:var(--text-muted);">
+                Memuat profil perangkat...
+              </div>
+            </div>
+
+            <!-- Background Jobs Card -->
+            <div style="background:var(--bg-pane);border:1px solid var(--border-color);border-radius:10px;padding:14px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <span style="font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;">
+                  <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent);">hourglass_top</span>
+                  Background Jobs
+                </span>
+                <button type="button" class="btn-code-action" id="btnRefreshJobs" style="padding:2px 8px;">Refresh</button>
+              </div>
+              <div style="display:flex;gap:6px;margin-bottom:10px;">
+                <input type="text" id="inputSpawnJob" placeholder="Command (misal: cargo watch, npm run dev)..." style="flex:1;background:#05070c;border:1px solid var(--border-color);color:var(--text);padding:6px 10px;border-radius:6px;font-size:11.5px;" />
+                <button type="button" class="btn-code-action" id="btnSpawnJob" style="white-space:nowrap;">Run Detached</button>
+              </div>
+              <div id="jobsListTable" style="font-size:11.5px;">
+                <div style="color:var(--text-muted);font-style:italic;">Tidak ada background job aktif.</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2587,6 +2658,36 @@ const FIGMA_PALETTES = {
 
       // Interactive Action Delegation for Code Blocks (Apply to Workspace / Run in Terminal)
       messagesList.addEventListener('click', async (e) => {
+        // Copy Code Block Button
+        const copyBtn = e.target.closest('.btn-copy-code');
+        if (copyBtn) {
+          const raw = decodeURIComponent(copyBtn.getAttribute('data-code') || '');
+          if (raw) {
+            try {
+              await navigator.clipboard.writeText(raw);
+              const orig = copyBtn.innerHTML;
+              copyBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">check</span>Copied!';
+              setTimeout(() => { copyBtn.innerHTML = orig; }, 1500);
+            } catch (_) {}
+          }
+          return;
+        }
+
+        // Copy Message Card Button
+        const copyMsgBtn = e.target.closest('.btn-copy-msg');
+        if (copyMsgBtn) {
+          const row = copyMsgBtn.closest('.msg-row');
+          const content = row ? row.querySelector('.msg-content') : null;
+          if (content) {
+            try {
+              await navigator.clipboard.writeText(content.innerText);
+              const orig = copyMsgBtn.innerHTML;
+              copyMsgBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;">check</span>';
+              setTimeout(() => { copyMsgBtn.innerHTML = orig; }, 1500);
+            } catch (_) {}
+          }
+          return;
+        }
         const btnApply = e.target.closest('.btn-apply-file');
         if (btnApply) {
           const relPath = btnApply.getAttribute('data-path');
@@ -2736,13 +2837,24 @@ const FIGMA_PALETTES = {
         }
       });
 
+      let systemProfile = null;
+      async function syncSystemProfile() {
+        try {
+          const res = await fetch(`${config.daemonUrl}/system/profile`);
+          if (res.ok) systemProfile = await res.json();
+        } catch (_) {}
+      }
+
       function switchCanvasTab(tabName) {
         canvasTabBtns.forEach(b => {
           if (b.getAttribute('data-canvas') === tabName) b.classList.add('active');
           else b.classList.remove('active');
         });
 
-        canvasViewPanes.forEach(p => p.classList.remove('active'));
+        canvasViewPanes.forEach(p => {
+          p.classList.remove('active');
+          if (p.id === 'paneJobs') p.style.display = 'none';
+        });
         if (tabName === 'web') {
           document.getElementById('paneWeb').classList.add('active');
         }
@@ -2752,10 +2864,133 @@ const FIGMA_PALETTES = {
           loadHarnessObserver();
         }
         if (tabName === 'editor') document.getElementById('paneEditor').classList.add('active');
+        if (tabName === 'jobs') {
+          const pj = document.getElementById('paneJobs');
+          if (pj) {
+            pj.classList.add('active');
+            pj.style.display = 'flex';
+          }
+          loadSystemProfileAndJobs();
+        }
 
         sideCanvas.classList.add('open');
         updateCanvasLayout();
       }
+
+      async function loadSystemProfileAndJobs() {
+        // 1. Host System Profile
+        try {
+          const res = await fetch(`${config.daemonUrl}/system/profile`);
+          if (res.ok) {
+            systemProfile = await res.json();
+            const profEl = document.getElementById('systemProfileContent');
+            if (profEl && systemProfile) {
+              const mem = systemProfile.memory || {};
+              const tools = systemProfile.tools || {};
+              const availGb = (mem.available_mb / 1024).toFixed(1);
+              const totalGb = (mem.total_mb / 1024).toFixed(1);
+              const toolBadges = Object.entries(tools)
+                .map(([k, v]) => `<span style="display:inline-block;padding:2px 6px;border-radius:4px;margin:2px;font-size:10px;background:${v ? 'rgba(0,245,160,0.12)' : 'rgba(255,255,255,0.05)'};color:${v ? 'var(--accent)' : 'var(--text-muted)'}">${k}</span>`)
+                .join(' ');
+              profEl.innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                  <div><strong>OS / Arch:</strong> ${escapeHtml(systemProfile.os)} (${escapeHtml(systemProfile.arch)})</div>
+                  <div><strong>Display:</strong> ${escapeHtml(systemProfile.display_server)} (${escapeHtml(systemProfile.compositor)})</div>
+                  <div><strong>RAM Headroom:</strong> ${availGb} GB free / ${totalGb} GB</div>
+                  <div><strong>Status:</strong> <span style="color:var(--accent);">Active</span></div>
+                </div>
+                <div style="margin-top:6px;"><strong>Detected Host Tools:</strong><div style="margin-top:4px;">${toolBadges}</div></div>
+              `;
+            }
+          }
+        } catch (_) {}
+
+        // 2. Load Jobs
+        loadJobsList();
+      }
+
+      async function loadJobsList() {
+        try {
+          const res = await fetch(`${config.daemonUrl}/jobs/list`);
+          if (res.ok) {
+            const data = await res.json();
+            const jobs = data.jobs || [];
+            const tbl = document.getElementById('jobsListTable');
+            if (!tbl) return;
+            if (jobs.length === 0) {
+              tbl.innerHTML = '<div style="color:var(--text-muted);font-style:italic;">Tidak ada background job aktif.</div>';
+              return;
+            }
+            tbl.innerHTML = jobs.map(j => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:#05070c;border:1px solid var(--border-color);border-radius:6px;margin-bottom:4px;">
+                <div>
+                  <strong style="font-family:monospace;color:var(--accent);">${escapeHtml(j.command)}</strong>
+                  <span style="color:var(--text-muted);margin-left:8px;font-size:10.5px;">PID: ${j.pid} &bull; ${escapeHtml(j.status)}</span>
+                </div>
+                <button type="button" class="btn-code-action btn-kill-job" data-id="${j.id}" style="color:#F43F5E;border-color:rgba(244,63,94,0.3);padding:2px 6px;">Kill</button>
+              </div>
+            `).join('');
+          }
+        } catch (_) {}
+      }
+
+      // Self Construct Engine Rebuild
+      document.getElementById('btnSelfConstructRebuild').addEventListener('click', async () => {
+        const btn = document.getElementById('btnSelfConstructRebuild');
+        const logEl = document.getElementById('selfConstructLog');
+        btn.textContent = 'Compiling...';
+        btn.disabled = true;
+        logEl.style.display = 'block';
+        logEl.textContent = 'Menjalankan cargo build -p omw-desktop-app...';
+        try {
+          const res = await fetch(`${config.daemonUrl}/app/rebuild`, { method: 'POST' });
+          if (res.ok) {
+            const data = await res.json();
+            logEl.textContent = data.log || (data.success ? 'Rebuild berhasil!' : 'Rebuild gagal.');
+            if (data.success) {
+              btn.textContent = 'Reloading...';
+              setTimeout(() => { location.reload(); }, 1000);
+              return;
+            }
+          }
+        } catch (e) {
+          logEl.textContent = 'Error: ' + e.toString();
+        }
+        btn.textContent = 'Recompile & Reload';
+        btn.disabled = false;
+      });
+
+      // Spawn Job
+      document.getElementById('btnSpawnJob').addEventListener('click', async () => {
+        const input = document.getElementById('inputSpawnJob');
+        const cmd = input.value.trim();
+        if (!cmd) return;
+        input.value = '';
+        try {
+          await fetch(`${config.daemonUrl}/jobs/spawn`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command: cmd })
+          });
+          loadJobsList();
+        } catch (_) {}
+      });
+
+      document.getElementById('btnRefreshJobs').addEventListener('click', loadJobsList);
+
+      document.getElementById('jobsListTable').addEventListener('click', async (e) => {
+        const btn = e.target.closest('.btn-kill-job');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        try {
+          await fetch(`${config.daemonUrl}/jobs/kill`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+          });
+          loadJobsList();
+        } catch (_) {}
+      });
 
       btnCloseCanvas.addEventListener('click', () => {
         sideCanvas.classList.remove('open');
@@ -3182,6 +3417,15 @@ const FIGMA_PALETTES = {
         appendMessage('user', text, 'USER');
         promptInput.value = '';
 
+        // Prompt history persistence
+        if (text && (promptHistory.length === 0 || promptHistory[promptHistory.length - 1] !== text)) {
+          promptHistory.push(text);
+          if (promptHistory.length > 50) promptHistory.shift();
+          localStorage.setItem('omw_prompt_history', JSON.stringify(promptHistory));
+        }
+        promptHistoryIdx = -1;
+        promptDraft = '';
+
         // Save user turn to SQLite
         try {
           await fetch(`${config.daemonUrl}/sessions/save_turn`, {
@@ -3226,6 +3470,10 @@ const FIGMA_PALETTES = {
 [ACTIVE PREVIEW CONFIG]
 * Palette: ${activePaletteKey} (Primary: ${previewColor}, Bg: ${FIGMA_PALETTES[activePaletteKey]?.bg || 'Auto'}, CardBg: ${FIGMA_PALETTES[activePaletteKey]?.cardBg || 'Auto'}, Text: ${FIGMA_PALETTES[activePaletteKey]?.text || 'Auto'})
 * Archetype Layout: ${previewLayout}`;
+
+        if (systemProfile) {
+          sysPrompt += `\n[HOST PROFILE: OS=${systemProfile.os}, Display=${systemProfile.display_server}, WM=${systemProfile.compositor}, RAM=${systemProfile.memory?.available_mb}MB free / ${systemProfile.memory?.total_mb}MB total, Tools=hyprctl:${systemProfile.tools?.hyprctl}, grim:${systemProfile.tools?.grim}, wtype:${systemProfile.tools?.wtype}, wl_copy:${systemProfile.tools?.wl_copy}]`;
+        }
         try {
           const [telem, refl] = await Promise.all([
             fetch(`${config.daemonUrl}`).then(r => r.json()).catch(() => null),
@@ -3251,6 +3499,27 @@ const FIGMA_PALETTES = {
             userMsgs.push({ role: m.role, content: m.content });
           }
         }
+
+        // Token Minimization: Sliding Context Window (last 6 messages max)
+        const MAX_WINDOW_TURNS = 6;
+        const windowedMsgs = userMsgs.slice(-MAX_WINDOW_TURNS);
+
+        // Historical Code Compaction: in older assistant turns, compact giant code blocks into 1-line metadata summaries
+        const compactMsgs = windowedMsgs.map((m, idx) => {
+          if (idx < windowedMsgs.length - 1 && m.role === 'assistant') {
+            const compacted = m.content.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]{120,}?)```/g, (match, lang, code) => {
+              const lines = code.split('\n');
+              if (lines.length > 12) {
+                const fMatch = code.match(/^(?:\/\/|#|<!--)\s*(?:FILE:\s*)?([^\n\r]+)/m);
+                const tag = fMatch ? fMatch[1].trim() : (lang || 'code');
+                return `\n\`\`\`${lang}\n// [OMW Context: ${tag} (${lines.length} lines) persisted to workspace]\n\`\`\`\n`;
+              }
+              return match;
+            });
+            return { role: m.role, content: compacted };
+          }
+          return m;
+        });
 
         const isEnsemble = text.startsWith('@all') || activeModel === 'auto' || activeModel === 'all' || activeModel.includes('combo');
         const cleanText = text.replace(/^@all\s*/i, '');
@@ -3323,7 +3592,7 @@ const FIGMA_PALETTES = {
             aiBody.innerHTML = formatMarkdown(aiMsg.content);
             const planPayload = [
               { role: 'system', content: sysPrompt + '\n[ROLE: LEAD ARCHITECT]\nAnalyze the requirement, formulate system architecture, specify required files, and determine execution sequence.' },
-              ...userMsgs.slice(0, -1),
+              ...compactMsgs.slice(0, -1),
               { role: 'user', content: cleanText }
             ];
 
@@ -3340,7 +3609,7 @@ const FIGMA_PALETTES = {
             aiBody.innerHTML = formatMarkdown(aiMsg.content);
             const coderPayload = [
               { role: 'system', content: sysPrompt + '\n[ROLE: SPECIALIST CODER]\nImplement complete, production-ready code. For EVERY file created or edited, start the code block with `// FILE: path/to/file` (or `# FILE:` or `<!-- FILE: -->`). Provide shell check commands in ```bash code blocks.' },
-              ...userMsgs.slice(0, -1),
+              ...compactMsgs.slice(0, -1),
               { role: 'user', content: cleanText },
               { role: 'assistant', content: stage1Plan },
               { role: 'user', content: 'Generate the complete implementation files and verification commands following the Architectural Plan above.' }
@@ -3353,7 +3622,7 @@ const FIGMA_PALETTES = {
               checkAiAutoSplit(aiMsg.content);
             });
           } else {
-            const apiPayload = [{ role: 'system', content: sysPrompt }, ...userMsgs];
+            const apiPayload = [{ role: 'system', content: sysPrompt }, ...compactMsgs];
             await streamChatCompletion(activeModel, apiPayload, (delta) => {
               aiMsg.content += delta;
               aiBody.innerHTML = formatMarkdown(aiMsg.content);
@@ -3428,7 +3697,7 @@ const FIGMA_PALETTES = {
 
         const auth = document.createElement('div');
         auth.className = `msg-author ${role === 'user' ? 'user' : 'ai'}`;
-        auth.textContent = author || (role === 'user' ? 'USER' : activeModel);
+        auth.innerHTML = `<span>${escapeHtml(author || (role === 'user' ? 'USER' : activeModel))}</span><button type="button" class="btn-copy-msg" title="Salin pesan"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;">content_copy</span></button>`;
 
         const body = document.createElement('div');
         body.className = 'msg-content';
@@ -3466,15 +3735,16 @@ const FIGMA_PALETTES = {
         let s = escapeHtml(text);
         s = s.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (m, lang, code) => {
           const rawCode = unescapeHtml(code);
+          const copyBtn = `<button type="button" class="btn-code-action btn-copy-code" data-code="${encodeURIComponent(rawCode)}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">content_copy</span>Copy</button>`;
           const fileMatch = rawCode.match(/^(?:\/\/|#|<!--)\s*(?:FILE:\s*)?([a-zA-Z0-9_\-\.\/]+\.[a-zA-Z0-9_-]+)(?:\s*-->)?$/m);
           if (fileMatch) {
             const filePath = fileMatch[1].trim();
-            return `<div class="code-container"><div class="code-header"><span class="code-filepath"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">description</span>${filePath}</span><button type="button" class="btn-code-action btn-apply-file" data-path="${escapeHtml(filePath)}" data-code="${encodeURIComponent(rawCode)}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">save</span>Apply to Workspace</button></div><pre class="code-block"><code>${code}</code></pre></div>`;
+            return `<div class="code-container"><div class="code-header"><span class="code-filepath"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">description</span>${filePath}</span><div style="display:flex;gap:6px;">${copyBtn}<button type="button" class="btn-code-action btn-apply-file" data-path="${escapeHtml(filePath)}" data-code="${encodeURIComponent(rawCode)}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">save</span>Apply to Workspace</button></div></div><pre class="code-block"><code>${code}</code></pre></div>`;
           }
           if (lang === 'bash' || lang === 'sh') {
-            return `<div class="code-container"><div class="code-header"><span class="code-filepath"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">terminal</span>Terminal</span><button type="button" class="btn-code-action btn-run-cmd" data-cmd="${encodeURIComponent(rawCode.trim())}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">play_arrow</span>Run in Terminal</button></div><pre class="code-block"><code>${code}</code></pre></div>`;
+            return `<div class="code-container"><div class="code-header"><span class="code-filepath"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">terminal</span>Terminal</span><div style="display:flex;gap:6px;">${copyBtn}<button type="button" class="btn-code-action btn-run-cmd" data-cmd="${encodeURIComponent(rawCode.trim())}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">play_arrow</span>Run in Terminal</button></div></div><pre class="code-block"><code>${code}</code></pre></div>`;
           }
-          return `<div class="code-container"><div class="code-header"><span class="code-filepath">${lang || 'code'}</span></div><pre class="code-block"><code>${code}</code></pre></div>`;
+          return `<div class="code-container"><div class="code-header"><span class="code-filepath">${lang || 'code'}</span><div style="display:flex;gap:6px;">${copyBtn}</div></div><pre class="code-block"><code>${code}</code></pre></div>`;
         });
         s = s.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
         s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -3497,10 +3767,41 @@ const FIGMA_PALETTES = {
       });
 
       btnSubmit.addEventListener('click', handleSend);
+
+      // Terminal-Style Prompt History Navigation (Up/Down Arrow)
+      let promptHistory = JSON.parse(localStorage.getItem('omw_prompt_history') || '[]');
+      let promptHistoryIdx = -1;
+      let promptDraft = '';
+
       promptInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           handleSend();
+        } else if (e.key === 'ArrowUp') {
+          if ((promptInput.selectionStart === 0 || promptHistoryIdx !== -1) && promptHistory.length > 0) {
+            e.preventDefault();
+            if (promptHistoryIdx === -1) {
+              promptDraft = promptInput.value;
+              promptHistoryIdx = promptHistory.length - 1;
+            } else if (promptHistoryIdx > 0) {
+              promptHistoryIdx--;
+            }
+            promptInput.value = promptHistory[promptHistoryIdx];
+          }
+        } else if (e.key === 'ArrowDown') {
+          if (promptHistoryIdx !== -1) {
+            e.preventDefault();
+            if (promptHistoryIdx < promptHistory.length - 1) {
+              promptHistoryIdx++;
+              promptInput.value = promptHistory[promptHistoryIdx];
+            } else {
+              promptHistoryIdx = -1;
+              promptInput.value = promptDraft;
+            }
+          }
+        } else if (e.key === 'Escape') {
+          promptHistoryIdx = -1;
+          promptInput.value = '';
         }
       });
 
@@ -4403,6 +4704,7 @@ const FIGMA_PALETTES = {
       updatePreviewPalette(activePaletteKey);
       updatePreviewFont(previewFont);
 
+      syncSystemProfile();
       loadHierarchicalSessions();
       loadWorktreesAndFiles();
       syncModels();

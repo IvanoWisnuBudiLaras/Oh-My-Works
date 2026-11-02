@@ -5,7 +5,77 @@ use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::Mutex;
+use std::time::{SystemTime, UNIX_EPOCH};
 use omw_guardian::{Guardian, HealthLevel};
+
+struct BackgroundJob {
+    id: String,
+    pid: u32,
+    command: String,
+    started_at: u64,
+    child: std::process::Child,
+}
+
+static BACKGROUND_JOBS: Mutex<Vec<BackgroundJob>> = Mutex::new(Vec::new());
+
+fn detect_system_profile() -> serde_json::Value {
+    let os = std::env::consts::OS;
+    let arch = std::env::consts::ARCH;
+    let is_wayland = std::env::var("WAYLAND_DISPLAY").is_ok();
+    let is_hyprland = std::env::var("HYPRLAND_INSTANCE_SIGNATURE").is_ok();
+
+    let check_tool = |name: &str| -> bool {
+        Command::new("which")
+            .arg(name)
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .map(|s| s.success())
+            .unwrap_or(false)
+    };
+
+    let tools = serde_json::json!({
+        "hyprctl": check_tool("hyprctl"),
+        "grim": check_tool("grim"),
+        "slurp": check_tool("slurp"),
+        "tesseract": check_tool("tesseract"),
+        "wtype": check_tool("wtype"),
+        "wl_copy": check_tool("wl-copy"),
+        "git": check_tool("git"),
+        "cargo": check_tool("cargo"),
+        "node": check_tool("node"),
+        "mise": check_tool("mise"),
+        "pacman": check_tool("pacman"),
+    });
+
+    let mut mem_total_mb = 0;
+    let mut mem_avail_mb = 0;
+    if let Ok(meminfo) = fs::read_to_string("/proc/meminfo") {
+        for line in meminfo.lines() {
+            if line.starts_with("MemTotal:") {
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                if parts.len() >= 2 { mem_total_mb = parts[1].parse::<u64>().unwrap_or(0) / 1024; }
+            } else if line.starts_with("MemAvailable:") {
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                if parts.len() >= 2 { mem_avail_mb = parts[1].parse::<u64>().unwrap_or(0) / 1024; }
+            }
+        }
+    }
+
+    serde_json::json!({
+        "os": os,
+        "arch": arch,
+        "display_server": if is_wayland { "wayland" } else { "x11" },
+        "compositor": if is_hyprland { "hyprland" } else { "generic" },
+        "memory": {
+            "total_mb": mem_total_mb,
+            "available_mb": mem_avail_mb
+        },
+        "tools": tools
+    })
+}
+
 use omw_memory::{CodeGraphStore, SessionTreeItem, ChatTurn};
 use omw_session::SessionHarvester;
 
@@ -467,6 +537,83 @@ fn handle_client(mut stream: TcpStream) {
             }
         }
         ("200 OK", "application/json", serde_json::json!({ "output": cmd_output, "exit_code": exit_code }).to_string())
+    } else if uri.starts_with("/jobs/spawn") && method == "POST" {
+        let mut ok = false;
+        let mut job_id = String::new();
+        let mut pid = 0;
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let cmd = val["command"].as_str().unwrap_or("sleep 1").to_string();
+            let cwd = val["cwd"].as_str().map(PathBuf::from).unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+
+            if let Ok(child) = Command::new("bash")
+                .arg("-c")
+                .arg(&cmd)
+                .current_dir(cwd)
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::null())
+                .spawn()
+            {
+                pid = child.id();
+                job_id = format!("job-{}", SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis());
+                if let Ok(mut jobs) = BACKGROUND_JOBS.lock() {
+                    jobs.push(BackgroundJob {
+                        id: job_id.clone(),
+                        pid,
+                        command: cmd,
+                        started_at: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
+                        child,
+                    });
+                    ok = true;
+                }
+            }
+        }
+        ("200 OK", "application/json", serde_json::json!({ "success": ok, "job_id": job_id, "pid": pid }).to_string())
+    } else if uri.starts_with("/jobs/list") {
+        let mut res = Vec::new();
+        if let Ok(mut jobs) = BACKGROUND_JOBS.lock() {
+            for j in jobs.iter_mut() {
+                let status = match j.child.try_wait() {
+                    Ok(Some(status)) => format!("exit: {}", status.code().unwrap_or(0)),
+                    Ok(None) => "running".to_string(),
+                    Err(e) => format!("error: {}", e),
+                };
+                res.push(serde_json::json!({
+                    "id": j.id,
+                    "pid": j.pid,
+                    "command": j.command,
+                    "started_at": j.started_at,
+                    "status": status,
+                }));
+            }
+        }
+        ("200 OK", "application/json", serde_json::json!({ "jobs": res }).to_string())
+    } else if uri.starts_with("/jobs/kill") && method == "POST" {
+        let mut killed = false;
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let target_id = val["id"].as_str().unwrap_or("");
+            if let Ok(mut jobs) = BACKGROUND_JOBS.lock() {
+                if let Some(pos) = jobs.iter().position(|j| j.id == target_id) {
+                    let mut j = jobs.remove(pos);
+                    let _ = j.child.kill();
+                    let _ = j.child.wait();
+                    killed = true;
+                }
+            }
+        }
+        ("200 OK", "application/json", serde_json::json!({ "success": killed }).to_string())
+    } else if uri.starts_with("/system/profile") {
+        ("200 OK", "application/json", detect_system_profile().to_string())
+    } else if uri.starts_with("/app/rebuild") && method == "POST" {
+        let out = Command::new("cargo")
+            .args(&["build", "-p", "omw-desktop-app"])
+            .current_dir(std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")))
+            .output();
+        let (success, log) = match out {
+            Ok(o) => (o.status.success(), format!("{}
+{}", String::from_utf8_lossy(&o.stdout), String::from_utf8_lossy(&o.stderr))),
+            Err(e) => (false, format!("Failed to invoke cargo: {}", e)),
+        };
+        ("200 OK", "application/json", serde_json::json!({ "success": success, "log": log }).to_string())
     } else if uri.starts_with("/agent/inbox") {
         let inbox_file = omw.join("agent_inbox.json");
         if method == "POST" {
