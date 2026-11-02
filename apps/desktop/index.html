@@ -2107,7 +2107,7 @@ $ </div>
 [ACTIVE DESIGN PREVIEW SETTINGS]
 * Figma Harmonious Palette: ${activePaletteKey} (${FIGMA_PALETTES[activePaletteKey]?.name || 'Custom'}) - Primary: ${previewColor}, Bg: ${FIGMA_PALETTES[activePaletteKey]?.bg || 'Auto'}, CardBg: ${FIGMA_PALETTES[activePaletteKey]?.cardBg || 'Auto'}, Text: ${FIGMA_PALETTES[activePaletteKey]?.text || 'Auto'}
 * Typography: ${previewFont}
-* Selected Archetype Layout: ${previewLayout} (When outputting HTML/CSS in ```html ... ```, strictly adopt this color palette, typography and layout structure).`;
+* Selected Archetype Layout: ${previewLayout} (When outputting HTML/CSS in html code blocks, strictly adopt this color palette, typography and layout structure).`;
         try {
           const [telem, refl] = await Promise.all([
             fetch(`${config.daemonUrl}`).then(r => r.json()).catch(() => null),
@@ -2733,9 +2733,94 @@ $ </div>
         } catch (e) {}
       }
 
-      // Agent Inbox Poller for Live Testing & Headless Control
+      // Agent Test Harness & Live Inspection Bridge (No Computer-Use needed)
+      // Periodically syncs active UI state to daemon (/agent/state) and executes commands from (/agent/action)
+      async function syncAgentState() {
+        try {
+          const sidebarEl = document.querySelector('.sidebar');
+          const statePayload = {
+            activeSessionId: currentSessionId,
+            activeModel: activeModel,
+            sidebarCollapsed: sidebarEl ? sidebarEl.classList.contains('collapsed') : false,
+            sideCanvasOpen: sideCanvas ? sideCanvas.classList.contains('open') : false,
+            canvasSize: canvasSize,
+            previewPalette: activePaletteKey,
+            previewColor: previewColor,
+            previewFont: previewFont,
+            previewLayout: previewLayout,
+            messagesCount: currentMessages.length,
+            latestMessage: currentMessages.length > 0 ? currentMessages[currentMessages.length - 1] : null,
+            previewHtmlLength: currentRawHtml ? currentRawHtml.length : 0,
+            timestamp: Date.now()
+          };
+          await fetch(`${config.daemonUrl}/agent/state`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(statePayload)
+          });
+        } catch (e) {}
+      }
+
+      setInterval(syncAgentState, 1500);
+
+      // Agent Action Runner & Inbox Poller
       setInterval(async () => {
         try {
+          // 1. Process Actions (switchTab, toggleSidebar, toggleCanvas, setCanvasSize, setPalette, setLayout, setFont, eval)
+          const actRes = await fetch(`${config.daemonUrl}/agent/action?consume=true`);
+          if (actRes.ok) {
+            const actData = await actRes.json();
+            if (actData && actData.type) {
+              const sidebarEl = document.querySelector('.sidebar');
+              switch (actData.type) {
+                case 'toggleSidebar':
+                  if (sidebarEl) {
+                    const isCol = sidebarEl.classList.toggle('collapsed');
+                    const icon = document.getElementById('sidebarIcon');
+                    if (icon) icon.innerHTML = isCol ? '&RightArrowBar;' : '&LeftArrowBar;';
+                  }
+                  break;
+                case 'toggleCanvas':
+                  if (sideCanvas.classList.contains('open')) sideCanvas.classList.remove('open');
+                  else switchCanvasTab(actData.tab || 'web');
+                  break;
+                case 'switchCanvasTab':
+                  switchCanvasTab(actData.tab || 'web');
+                  break;
+                case 'setCanvasSize':
+                  if (actData.size) setCanvasSize(actData.size);
+                  break;
+                case 'setPalette':
+                  if (actData.palette) updatePreviewPalette(actData.palette);
+                  break;
+                case 'setLayout':
+                  if (actData.layout) updatePreviewLayout(actData.layout);
+                  break;
+                case 'setFont':
+                  if (actData.font) updatePreviewFont(actData.font);
+                  break;
+                case 'syncToAi':
+                  const btnSync = document.getElementById('btnSyncToAi');
+                  if (btnSync) btnSync.click();
+                  break;
+                case 'openSettings':
+                  openSettingsModal();
+                  break;
+                case 'closeSettings':
+                  closeSettingsModal();
+                  break;
+                case 'sendPrompt':
+                  if (actData.prompt) {
+                    promptInput.value = actData.prompt;
+                    handleSend();
+                  }
+                  break;
+              }
+              await syncAgentState();
+            }
+          }
+
+          // 2. Process legacy Inbox Prompts
           const res = await fetch(`${config.daemonUrl}/agent/inbox?consume=true`);
           if (res.ok) {
             const data = await res.json();
@@ -3115,7 +3200,7 @@ $ </div>
           const layoutName = previewLayoutSelect ? previewLayoutSelect.options[previewLayoutSelect.selectedIndex].text : previewLayout;
           const fontName = previewFontSelect ? previewFontSelect.options[previewFontSelect.selectedIndex].text : previewFont;
           const pal = FIGMA_PALETTES[activePaletteKey] || { name: 'Custom Hex', primary: previewColor, bg: '#0F172A', cardBg: '#1E293B', text: '#F8FAFC' };
-          const syncPrompt = `Perbarui desain komponen web ini: terapkan Figma color palette '${pal.name}' (Primary: ${pal.primary}, Background: ${pal.bg}, Card: ${pal.cardBg}, Text: ${pal.text}), tipografi '${fontName}', dan tata letak struktur '${layoutName}'. Tulis kode HTML & CSS lengkapnya dalam tag ```html ... ```.`;
+          const syncPrompt = `Perbarui desain komponen web ini: terapkan Figma color palette '${pal.name}' (Primary: ${pal.primary}, Background: ${pal.bg}, Card: ${pal.cardBg}, Text: ${pal.text}), tipografi '${fontName}', dan tata letak struktur '${layoutName}'. Tulis kode HTML & CSS lengkapnya dalam tag html codeblock.`;
           promptInput.value = syncPrompt;
           handleSend();
         });

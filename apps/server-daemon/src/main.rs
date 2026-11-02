@@ -453,6 +453,32 @@ fn handle_client(mut stream: TcpStream) {
             };
             ("200 OK", "application/json", res)
         }
+    } else if uri.starts_with("/agent/action") {
+        let action_file = omw.join("agent_action.json");
+        if method == "POST" {
+            let _ = fs::write(&action_file, payload);
+            ("200 OK", "application/json", serde_json::json!({ "status": "queued" }).to_string())
+        } else {
+            let consume = query_map.get("consume").map(|s| s.as_str()) == Some("true");
+            let res = if let Ok(content) = fs::read_to_string(&action_file) {
+                if consume {
+                    let _ = fs::remove_file(&action_file);
+                }
+                content
+            } else {
+                r#"{"action":null}"#.to_string()
+            };
+            ("200 OK", "application/json", res)
+        }
+    } else if uri.starts_with("/agent/state") {
+        let state_file = omw.join("agent_state.json");
+        if method == "POST" {
+            let _ = fs::write(&state_file, payload);
+            ("200 OK", "application/json", serde_json::json!({ "status": "saved" }).to_string())
+        } else {
+            let res = fs::read_to_string(&state_file).unwrap_or_else(|_| r#"{"state":"offline"}"#.to_string());
+            ("200 OK", "application/json", res)
+        }
     } else if uri.starts_with("/harness/observer") {
         let observer_data = check_harness_observer();
         ("200 OK", "application/json", observer_data.to_string())
