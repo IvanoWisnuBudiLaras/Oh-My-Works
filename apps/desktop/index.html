@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Epilogue:wght@400;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;600;700&family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <style>
     /* JetBrains New UI / Antigravity Theme System */
     :root[data-theme="dark"] {
@@ -490,8 +491,21 @@
       border-radius: 3px;
     }
 
+    select, .appearance-select, .worktree-select, .setting-select {
+      color-scheme: dark !important;
+      background-color: var(--panel) !important;
+      color: var(--text-bright) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 5px;
+      outline: none;
+    }
+    select option, .appearance-select option, .worktree-select option, .setting-select option {
+      background-color: #1e1f22 !important;
+      color: #dfe1e5 !important;
+    }
+
     .appearance-select {
-      background: var(--bg);
+      background: var(--panel);
       color: var(--text-bright);
       border: 1px solid var(--border);
       border-radius: 4px;
@@ -620,8 +634,9 @@
     }
 
     .side-canvas.open.size-full {
-      width: 1040px !important;
-      max-width: 85vw !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 1 !important;
     }
 
     /* Responsive Adaptation for Compact & Tiled Windows (< 850px) */
@@ -1472,7 +1487,7 @@
               <button type="button" class="canvas-size-btn" data-size="wide" title="Wide width (780px)">Wide</button>
               <button type="button" class="canvas-size-btn" data-size="full" title="Ultra Desktop width (1040px)">Max</button>
             </div>
-            <button type="button" class="btn-close-canvas" id="btnCloseCanvas" title="Close canvas">[Close]</button>
+            <button type="button" class="btn-close-canvas" id="btnCloseCanvas" title="Close side canvas"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">close</span></button>
           </div>
         </div>
 
@@ -1491,15 +1506,14 @@
                 <div class="styler-group">
                   <span class="styler-label">Figma Palette:</span>
                   <div class="color-presets">
-                    <span class="preview-color-dot active" data-palette="tech-blue" style="background:linear-gradient(135deg, #0D99FF 50%, #0F172A 50%);" title="Figma Tech Blue (#0D99FF primary, #0F172A bg)"></span>
-                    <span class="preview-color-dot" data-palette="jade-pebble" style="background:linear-gradient(135deg, #14AE5C 50%, #F4FBF6 50%); border-color:#aaa;" title="Jade Pebble Morning (#14AE5C primary, #F4FBF6 bg)"></span>
-                    <span class="preview-color-dot" data-palette="lapis-pearl" style="background:linear-gradient(135deg, #7B61FF 50%, #161224 50%);" title="Lapis Velvet Evening (#7B61FF primary, #161224 bg)"></span>
+                    <span class="preview-color-dot active" data-palette="awwwards-emerald" style="background:linear-gradient(135deg, #00F5A0 50%, #090D16 50%);" title="Awwwards Emerald (#00F5A0 accent, #090D16 dark void)"></span>
+                    <span class="preview-color-dot" data-palette="cyber-minimal" style="background:linear-gradient(135deg, #6366F1 50%, #0B0F19 50%);" title="Cyber Minimal / Midnight (#6366F1 indigo, #0B0F19 midnight)"></span>
+                    <span class="preview-color-dot" data-palette="modern-fintech" style="background:linear-gradient(135deg, #3B82F6 50%, #0F172A 50%);" title="Modern Fintech (#3B82F6 royal, #0F172A slate navy)"></span>
+                    <span class="preview-color-dot" data-palette="bento-organic" style="background:linear-gradient(135deg, #D97706 50%, #FAF7F2 50%); border-color:#bbb;" title="Bento Organic Alabaster (#D97706 amber, #FAF7F2 cream)"></span>
+                    <span class="preview-color-dot" data-palette="tech-blue" style="background:linear-gradient(135deg, #0D99FF 50%, #0F172A 50%);" title="Figma Tech Blue (#0D99FF primary, #0F172A bg)"></span>
                     <span class="preview-color-dot" data-palette="copper-sunset" style="background:linear-gradient(135deg, #FF7237 50%, #1C1917 50%);" title="Copper Sunset (#FF7237 primary, #1C1917 bg)"></span>
                     <span class="preview-color-dot" data-palette="woodland" style="background:linear-gradient(135deg, #A3E635 50%, #141E15 50%);" title="Woodland Lime (#A3E635 primary, #141E15 bg)"></span>
-                    <span class="preview-color-dot" data-palette="amethyst-mint" style="background:linear-gradient(135deg, #24CB71 50%, #181124 50%);" title="Amethyst Mint (#24CB71 primary, #181124 bg)"></span>
-                    <span class="preview-color-dot" data-palette="seashell-garnet" style="background:linear-gradient(135deg, #FF3737 50%, #FFF1F2 50%); border-color:#aaa;" title="Seashell Garnet (#FF3737 primary, #FFF1F2 bg)"></span>
-                    <span class="preview-color-dot" data-palette="ink-wash" style="background:linear-gradient(135deg, #252D41 50%, #F8FAFC 50%); border-color:#aaa;" title="Ink Wash Minimal (#252D41 primary, #F8FAFC bg)"></span>
-                    <input type="color" id="previewCustomColor" class="color-picker-input" value="#0D99FF" title="Custom Accent Color" />
+                    <input type="color" id="previewCustomColor" class="color-picker-input" value="#00F5A0" title="Custom Accent Color" />
                   </div>
                 </div>
 
@@ -1524,14 +1538,15 @@
                 <div class="styler-group">
                   <span class="styler-label">Layout:</span>
                   <select id="previewLayoutSelect" class="appearance-select" title="Interactive Archetype Layout">
-                    <option value="dashboard">Executive Dashboard (Sidebar Nav + KPI Metrics + Data Canvas)</option>
+                    <option value="bento">Bento Grid (Modular Asymmetric Compartments)</option>
+                    <option value="golden-ratio">Golden Ratio (1.618:1 Asymmetric Editorial)</option>
+                    <option value="dashboard">Executive Dashboard (Sidebar + KPI Metrics + SVG Canvas)</option>
+                    <option value="blueprint">Blueprint / Spaceship Manual (Grid + Monospace Schematics)</option>
+                    <option value="tactile">Tactile Neo-Brutalism (Bold Borders + High Contrast)</option>
                     <option value="full">Default Fluid Canvas</option>
                     <option value="saas-hero">SaaS Architecture (Sticky Nav + Hero CTA + Feature Cards)</option>
-                    <option value="ecom-grid">E-Commerce Grid (Navbar + Hero Banner + Product Grid)</option>
-                    <option value="ecom-sidebar">Filtered Catalog (Filter Sidebar + Product Catalog)</option>
                     <option value="responsive">Responsive Tablet (768px)</option>
                     <option value="mobile">Mobile View (375x667)</option>
-                    <option value="card">Centered Card / Modal</option>
                   </select>
                 </div>
 
@@ -1671,9 +1686,9 @@ $ </div>
             <label class="setting-label">Algoritma Pembagian Token (OmniRoute Combo Algorithm)</label>
             <select class="setting-select" id="cfgComboAlgo">
               <option value="dynamic">Dynamic Complexity Allocation (Auto Context Sizing)</option>
-              <option value="reasoning-split">Reasoning Split Pipeline (Lead Planner ➔ Specialist Coder)</option>
+              <option value="reasoning-split">Reasoning Split Pipeline (Lead Planner -> Specialist Coder)</option>
               <option value="weighted-lb">Weighted Token Load Balancer (70% Provider A / 30% Provider B)</option>
-              <option value="cascade">Cascade Tiered Fallback (Fast Flash ➔ Pro on Timeout/OOM)</option>
+              <option value="cascade">Cascade Tiered Fallback (Fast Flash -> Pro on Timeout/OOM)</option>
             </select>
           </div>
         </div>
@@ -1884,6 +1899,24 @@ $ </div>
             chatPane.style.display = 'flex';
           }
         }
+        if (sideCanvas) {
+          if (isOpen && isFull) {
+            sideCanvas.style.flex = '1';
+            sideCanvas.style.width = '100%';
+            sideCanvas.style.maxWidth = '100%';
+          } else if (isOpen && canvasSize === 'wide') {
+            sideCanvas.style.flex = '';
+            sideCanvas.style.width = '780px';
+            sideCanvas.style.maxWidth = '75vw';
+          } else if (isOpen) {
+            sideCanvas.style.flex = '';
+            sideCanvas.style.width = '560px';
+            sideCanvas.style.maxWidth = '65vw';
+          } else {
+            sideCanvas.style.flex = '';
+            sideCanvas.style.width = '0';
+          }
+        }
       }
 
       window.addEventListener('resize', () => {
@@ -2022,7 +2055,7 @@ $ </div>
           header.className = 'root-session-header';
           header.innerHTML = `
             <div style="display:flex;align-items:center;gap:6px;overflow:hidden;flex:1;min-width:0;">
-              <span>💬</span>
+              <span class="material-symbols-outlined" style="font-size:14px;color:var(--accent);vertical-align:middle;margin-right:2px;">chat_bubble</span>
               <span class="session-title-text" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px;">${escapeHtml(root.title)}</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
@@ -2249,7 +2282,7 @@ $ </div>
 
           if (node.is_dir) {
             const hasChildren = node.children && node.children.length > 0;
-            div.innerHTML = `<span class="dir-icon">${hasChildren ? '▾' : '▸'}</span><span>📁</span><span style="font-weight:600;">${escapeHtml(node.name)}</span>`;
+            div.innerHTML = `<span class="dir-icon">${hasChildren ? '<span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">expand_more</span>' : '<span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">chevron_right</span>'}</span><span class="material-symbols-outlined" style="font-size:14px;color:#facc15;vertical-align:middle;margin:0 2px;">folder</span><span style="font-weight:600;">${escapeHtml(node.name)}</span>`;
             container.appendChild(div);
 
             if (hasChildren) {
@@ -2267,7 +2300,7 @@ $ </div>
               });
             }
           } else {
-            div.innerHTML = `<span style="width:12px;display:inline-block;"></span><span>📄</span><span>${escapeHtml(node.name)}</span>`;
+            div.innerHTML = `<span style="width:12px;display:inline-block;"></span><span class="material-symbols-outlined" style="font-size:14px;color:#94a3b8;vertical-align:middle;margin-right:2px;">description</span><span>${escapeHtml(node.name)}</span>`;
             div.addEventListener('click', async (e) => {
               e.stopPropagation();
               document.querySelectorAll('.file-node.file').forEach(f => f.classList.remove('active'));
@@ -2333,12 +2366,13 @@ $ </div>
 
         // Fetch Live CodeGraph Reflections & Telemetry
         let sysPrompt = `You are Oh My Works (OMW), an AI workspace orchestrator with terminal, anti-OOM guardian, and multi-harness sessions.
-[CRITICAL DESIGN & AESTHETIC DIRECTIVES - AWWWARDS EDITORIAL STANDARD]
-1. ZERO EMOJIS: STRICTLY NEVER USE EMOJIS ANYWHERE. No coffee icons, no rockets, no faces, no chart emojis, no symbols from Unicode emoji blocks. Use clean SVG vector paths (<svg>) or concise typographic text labels instead.
-2. RESTRAINED MINIMAL PALETTE: Use at most 2-3 colors (Background, Card/Surface, 1 Accent). High editorial contrast, subtle hairline borders (1px solid rgba(255,255,255,0.08)), deep atmospheric backgrounds.
-3. TYPOGRAPHY DISCIPLINE: Single restrained font family (${previewFont}). Tabular numbers (font-variant-numeric: tabular-nums) for all metrics and data.
-4. HIGH-IMPACT DATA & CHARTS: When asked for dashboards or telemetry, craft bespoke inline crisp vector SVG charts (smooth cubic bezier spline area graphs with gradient fill, sparklines, bar matrices, time-series grids) directly in the HTML.
-5. NO GENERIC AI SLOP: Never produce generic centered pill buttons with emojis or cookie-cutter template cards. Build bespoke, architecturally sound layouts that look worthy of an Awwwards Site of the Day.
+[CRITICAL DESIGN & AESTHETIC DIRECTIVES - ANTI-AI SLOP & AWWWARDS EDITORIAL STANDARD]
+1. ZERO EMOJIS: STRICTLY NEVER USE EMOJIS ANYWHERE. No coffee icons, no rockets, no faces, no chart emojis. When icons are needed, use Google Material Symbols: "<span class=\"material-symbols-outlined\">icon_name</span>" (link already provided) or crisp vector <svg>.
+2. RESTRAINED HUMAN PALETTE: Use at most 2-3 colors (Background, Card/Surface, 1 Accent). High editorial contrast, subtle hairline borders (1px solid rgba(255,255,255,0.08)), deep atmospheric backgrounds.
+3. ARCHETYPE LAYOUTS (BENTO / GOLDEN RATIO): Adopt modern Bento Grid modular compartments (asymmetric cards, Apple/Linear style) or Golden Ratio (1.618fr 1fr). Never produce repetitive generic e-commerce templates unless specifically asked.
+4. TYPOGRAPHY DISCIPLINE: Single restrained font family (${previewFont}). Tabular numbers (font-variant-numeric: tabular-nums) for all metrics, stats, and financial tables.
+5. MODERN CHARTS & TELEMETRY: Build bespoke, crisp inline vector SVG charts (smooth cubic bezier spline area graphs with linearGradient fill, sparklines, bar distributions, real-time telemetry counters) directly in the HTML.
+6. NO GENERIC AI SLOP: Never produce generic centered pill buttons with emojis or cookie-cutter template cards. Build bespoke, architecturally sound layouts that look worthy of an Awwwards Site of the Day.
 [ACTIVE PREVIEW CONFIG]
 * Palette: ${activePaletteKey} (Primary: ${previewColor}, Bg: ${FIGMA_PALETTES[activePaletteKey]?.bg || 'Auto'}, CardBg: ${FIGMA_PALETTES[activePaletteKey]?.cardBg || 'Auto'}, Text: ${FIGMA_PALETTES[activePaletteKey]?.text || 'Auto'})
 * Archetype Layout: ${previewLayout}`;
@@ -3093,6 +3127,42 @@ $ </div>
 
             // Figma Color Harmonious Palettes (Multi-color schemes from Figma Resource Library)
       const FIGMA_PALETTES = {
+        'awwwards-emerald': {
+          name: 'Awwwards Dark Emerald',
+          primary: '#00F5A0',
+          secondary: '#38BDF8',
+          bg: '#090D16',
+          cardBg: '#111827',
+          text: '#94A3B8',
+          accent: '#00F5A0'
+        },
+        'cyber-minimal': {
+          name: 'Cyber Minimal / Midnight',
+          primary: '#6366F1',
+          secondary: '#38BDF8',
+          bg: '#0B0F19',
+          cardBg: '#1E293B',
+          text: '#94A3B8',
+          accent: '#6366F1'
+        },
+        'modern-fintech': {
+          name: 'Modern Fintech / Royal',
+          primary: '#3B82F6',
+          secondary: '#10B981',
+          bg: '#0F172A',
+          cardBg: '#1E293B',
+          text: '#94A3B8',
+          accent: '#3B82F6'
+        },
+        'bento-organic': {
+          name: 'Bento Humble Organic',
+          primary: '#D97706',
+          secondary: '#78350F',
+          bg: '#FAF7F2',
+          cardBg: '#FFFFFF',
+          text: '#1C1917',
+          accent: '#D97706'
+        },
         'tech-blue': {
           name: 'Figma Tech Blue',
           primary: '#0D99FF',
@@ -3101,24 +3171,6 @@ $ </div>
           cardBg: '#1E293B',
           text: '#F8FAFC',
           accent: '#0D99FF'
-        },
-        'jade-pebble': {
-          name: 'Jade Pebble Morning',
-          primary: '#14AE5C',
-          secondary: '#CFF7D3',
-          bg: '#F4FBF6',
-          cardBg: '#FFFFFF',
-          text: '#133E26',
-          accent: '#14AE5C'
-        },
-        'lapis-pearl': {
-          name: 'Lapis Velvet Evening',
-          primary: '#7B61FF',
-          secondary: '#F1E5FF',
-          bg: '#161224',
-          cardBg: '#231D38',
-          text: '#F5F3FF',
-          accent: '#7B61FF'
         },
         'copper-sunset': {
           name: 'Copper Sunset',
@@ -3137,33 +3189,6 @@ $ </div>
           cardBg: '#1E2D20',
           text: '#F7FEE7',
           accent: '#A3E635'
-        },
-        'amethyst-mint': {
-          name: 'Amethyst Mint',
-          primary: '#24CB71',
-          secondary: '#D946EF',
-          bg: '#181124',
-          cardBg: '#251B38',
-          text: '#FDF4FF',
-          accent: '#24CB71'
-        },
-        'seashell-garnet': {
-          name: 'Seashell Garnet',
-          primary: '#FF3737',
-          secondary: '#FFE4E6',
-          bg: '#FFF1F2',
-          cardBg: '#FFFFFF',
-          text: '#4C0519',
-          accent: '#FF3737'
-        },
-        'ink-wash': {
-          name: 'Ink Wash Minimal',
-          primary: '#252D41',
-          secondary: '#536383',
-          bg: '#F8FAFC',
-          cardBg: '#FFFFFF',
-          text: '#1E293B',
-          accent: '#252D41'
         }
       };
 
@@ -3374,11 +3399,11 @@ $ </div>
       <span>OMW TELEMETRY</span>
     </div>
     <nav>
-      <a href="#" class="active">Overview <span class="nav-tag">Live</span></a>
-      <a href="#">Throughput</a>
-      <a href="#">Memory Matrix</a>
-      <a href="#">CodeGraph Nodes</a>
-      <a href="#">Guard PSI</a>
+      <a href="#" class="active"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;">dashboard</span>Overview <span class="nav-tag">Live</span></a>
+      <a href="#"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;">monitoring</span>Throughput</a>
+      <a href="#"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;">memory</span>Memory Matrix</a>
+      <a href="#"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;">hub</span>CodeGraph Nodes</a>
+      <a href="#"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;">shield</span>Guard PSI</a>
     </nav>
   </aside>
   <main>
@@ -3481,49 +3506,52 @@ $ </div>
 </body>
 </html>`;
 
-      let activePaletteKey = localStorage.getItem('omw_preview_palette') || 'tech-blue';
-      let previewColor = localStorage.getItem('omw_preview_color') || FIGMA_PALETTES[activePaletteKey]?.primary || '#0D99FF';
-      let previewFont = localStorage.getItem('omw_preview_font') || "'Plus Jakarta Sans', sans-serif";
-      let previewLayout = localStorage.getItem('omw_preview_layout') || 'full';
+      let activePaletteKey = localStorage.getItem('omw_preview_palette') || 'awwwards-emerald';
+      let previewColor = localStorage.getItem('omw_preview_color') || FIGMA_PALETTES[activePaletteKey]?.primary || '#00F5A0';
+      let previewFont = localStorage.getItem('omw_preview_font') || "'JetBrains Mono', monospace";
+      let previewLayout = localStorage.getItem('omw_preview_layout') || 'bento';
       let canvasSize = localStorage.getItem('omw_canvas_size') || 'default';
-      if (canvasSize === 'full' && window.innerWidth < 1200) canvasSize = 'default';
 
-      // Layout CSS Templates for Web Preview
       const layoutStyles = {
         'full': '',
-        'ecom-grid': `
-          body { display: flex !important; flex-direction: column !important; min-height: 100vh !important; margin: 0 !important; }
-          .navbar, header, nav { width: 100% !important; position: sticky !important; top: 0 !important; z-index: 99 !important; }
-          .hero, .banner { width: 100% !important; min-height: 180px !important; }
-          .products, .grid, .catalog, main, [class*="list"], [class*="grid"] { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important; gap: 16px !important; padding: 16px !important; }
-          .card, .item, .product { border-radius: 8px !important; border: 1px solid rgba(0,0,0,0.1) !important; padding: 12px !important; }
+        'bento': `
+          body { display: grid !important; grid-template-columns: 200px 1fr !important; min-height: 100vh !important; margin: 0 !important; gap: 0 !important; }
+          aside, .sidebar { grid-column: 1 !important; border-right: 1px solid rgba(255,255,255,0.08) !important; padding: 20px 14px !important; }
+          main { grid-column: 2 !important; padding: 24px !important; display: flex !important; flex-direction: column !important; gap: 20px !important; }
+          .kpi-row { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 14px !important; }
+          .kpi-card { border-radius: 12px !important; }
+          .grid-panels { display: grid !important; grid-template-columns: 1.6fr 1fr !important; gap: 16px !important; }
+          .panel { border-radius: 14px !important; }
         `,
-        'ecom-carousel': `
-          body { display: flex !important; flex-direction: column !important; min-height: 100vh !important; margin: 0 !important; }
-          .search-bar, nav, header { position: sticky !important; top: 0 !important; z-index: 100 !important; }
-          .carousel, .slider, .featured { display: flex !important; overflow-x: auto !important; scroll-snap-type: x mandatory !important; gap: 12px !important; padding: 12px !important; }
-          .carousel > *, .slider > * { scroll-snap-align: start !important; flex: 0 0 260px !important; }
+        'golden-ratio': `
+          body { display: grid !important; grid-template-columns: 1.618fr 1fr !important; min-height: 100vh !important; margin: 0 !important; padding: 28px !important; gap: 24px !important; }
+          main { grid-column: 1 !important; padding: 0 !important; }
+          aside, .secondary-panel { grid-column: 2 !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px !important; padding: 20px !important; }
+          .grid-panels { display: flex !important; flex-direction: column !important; gap: 20px !important; }
         `,
-        'ecom-sidebar': `
+        'dashboard': `
           body { display: grid !important; grid-template-columns: 220px 1fr !important; min-height: 100vh !important; margin: 0 !important; }
-          aside, .sidebar, .filters { grid-column: 1 !important; border-right: 1px solid rgba(0,0,0,0.1) !important; padding: 16px !important; }
-          main, .content, .catalog { grid-column: 2 !important; padding: 16px !important; display: grid !important; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important; gap: 16px !important; }
+          aside, .sidebar { grid-column: 1 !important; border-right: 1px solid rgba(255,255,255,0.08) !important; }
+          main { grid-column: 2 !important; padding: 28px 36px !important; }
+        `,
+        'blueprint': `
+          * { font-family: 'JetBrains Mono', monospace !important; border-radius: 0 !important; }
+          body { background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px) !important; background-size: 16px 16px !important; }
+          .card, .panel, .kpi-card, aside, header { border: 1px dashed rgba(255,255,255,0.18) !important; background: rgba(0,0,0,0.6) !important; }
+          h1, h2, h3, .brand { text-transform: uppercase !important; letter-spacing: 0.1em !important; font-size: 13px !important; }
+        `,
+        'tactile': `
+          * { border-radius: 0 !important; }
+          .card, .panel, .kpi-card, button, aside { border: 2px solid rgba(255,255,255,0.2) !important; box-shadow: 4px 4px 0 var(--accent, #00F5A0) !important; }
+          button:hover { transform: translate(-2px, -2px) !important; box-shadow: 6px 6px 0 var(--accent, #00F5A0) !important; }
         `,
         'saas-hero': `
           body { display: flex !important; flex-direction: column !important; align-items: center !important; margin: 0 !important; }
           nav, header { width: 100% !important; max-width: 1100px !important; }
           .hero, header + section, main > section:first-child { text-align: center !important; padding: 60px 20px !important; max-width: 800px !important; margin: 0 auto !important; }
-          .features, .grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 20px !important; max-width: 1000px !important; margin: 0 auto !important; }
-        `,
-        'dashboard': `
-          body { display: grid !important; grid-template-columns: 240px 1fr !important; grid-template-rows: 56px 1fr !important; min-height: 100vh !important; margin: 0 !important; }
-          nav, .sidebar { grid-column: 1 !important; grid-row: 1 / -1 !important; border-right: 1px solid rgba(0,0,0,0.1) !important; }
-          header, .topbar { grid-column: 2 !important; grid-row: 1 !important; border-bottom: 1px solid rgba(0,0,0,0.1) !important; }
-          main, .content { grid-column: 2 !important; grid-row: 2 !important; padding: 20px !important; }
         `,
         'responsive': ``,
-        'mobile': ``,
-        'card': `body { display: flex !important; justify-content: center !important; align-items: center !important; min-height: 100vh !important; }`
+        'mobile': ``
       };
 
       function renderWebPreview(rawHtml) {
@@ -3536,27 +3564,36 @@ $ </div>
         const pal = FIGMA_PALETTES[activePaletteKey] || {
           primary: previewColor,
           secondary: previewColor,
-          bg: '#0F172A',
-          cardBg: '#1E293B',
-          text: '#F8FAFC',
+          bg: '#090D16',
+          cardBg: '#111827',
+          text: '#94A3B8',
           accent: previewColor
         };
 
-        // Custom style injection with Figma Full Harmonious Palettes + Awwwards Typography + Archetype Layouts
+        const isLight = pal.bg.toLowerCase() === '#faf7f2' || pal.bg.toLowerCase() === '#f4fbf6' || pal.bg.toLowerCase() === '#f8fafc' || pal.cardBg.toLowerCase() === '#ffffff';
+        const borderColor = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)';
+        const textBright = isLight ? '#1C1917' : '#F8FAFC';
         const extraLayoutCss = layoutStyles[previewLayout] || '';
+
         const styleTag = `
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Epilogue:wght@400;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;600;700&family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <style id="omw-preview-injected-style">
   :root {
-    --primary: ${pal.primary} !important;
-    --secondary: ${pal.secondary} !important;
+    --bg: ${pal.bg} !important;
     --bg-page: ${pal.bg} !important;
     --card-bg: ${pal.cardBg} !important;
+    --panel-bg: ${pal.cardBg} !important;
+    --border: ${borderColor} !important;
+    --text: ${pal.text} !important;
     --text-color: ${pal.text} !important;
-    --accent: ${pal.accent} !important;
-    --color-primary: ${pal.primary} !important;
+    --text-bright: ${textBright} !important;
+    --accent: ${pal.primary} !important;
+    --primary: ${pal.primary} !important;
+    --accent-dim: ${pal.secondary || 'rgba(0, 245, 160, 0.12)'} !important;
+    --accent-cyan: ${pal.secondary || '#38BDF8'} !important;
   }
   * {
     font-family: ${previewFont} !important;
@@ -3566,27 +3603,62 @@ $ </div>
     color: ${pal.text} !important;
     transition: background-color 0.2s ease, color 0.2s ease !important;
   }
-  header, nav, .navbar, .topbar {
+  header, nav, .navbar, .topbar, aside, .sidebar {
     background-color: ${pal.cardBg} !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: ${borderColor} !important;
   }
-  .card, .item, .product, aside, .sidebar, [class*="box"], [class*="panel"] {
+  .card, .item, .product, .panel, .kpi-card, [class*="box"], [class*="panel"] {
     background-color: ${pal.cardBg} !important;
     color: ${pal.text} !important;
-    border-color: rgba(255,255,255,0.1) !important;
+    border-color: ${borderColor} !important;
+  }
+  h1, h2, h3, h4, .brand, .kpi-val, .panel-title, [class*="title"], [class*="heading"] {
+    color: ${textBright} !important;
   }
   a, .accent, [data-accent] {
     color: ${pal.primary} !important;
   }
   .btn-primary, button.primary, .btn-fill, [class*="btn-primary"], input[type="submit"] {
     background-color: ${pal.primary} !important;
-    color: #ffffff !important;
+    color: ${isLight ? '#FFFFFF' : '#090D16'} !important;
     border-color: ${pal.primary} !important;
+  }
+  .brand-mark, .status-dot {
+    border-color: ${pal.primary} !important;
+    background-color: ${pal.primary} !important;
+  }
+  .kpi-delta, nav a.active {
+    color: ${pal.primary} !important;
+  }
+  nav a.active {
+    border-left-color: ${pal.primary} !important;
+  }
+  svg stop[offset="0%"] {
+    stop-color: ${pal.primary} !important;
+  }
+  svg path[stroke] {
+    stroke: ${pal.primary} !important;
+  }
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
   }
   ${extraLayoutCss}
 </style>`;
 
-        let modifiedHtml = currentRawHtml;
+        // Strip previous injected style if present
+        let cleanHtml = currentRawHtml.replace(/<style id="omw-preview-injected-style">[\s\S]*?<\/style>/gi, '');
+        let modifiedHtml = cleanHtml;
         if (modifiedHtml.includes('</head>')) {
           modifiedHtml = modifiedHtml.replace('</head>', styleTag + '</head>');
         } else if (modifiedHtml.includes('<body>')) {
