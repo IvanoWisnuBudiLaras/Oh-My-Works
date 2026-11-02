@@ -343,7 +343,8 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      min-width: 360px;
+      min-width: 0;
+      overflow: hidden;
       position: relative;
     }
 
@@ -571,28 +572,104 @@
 
     .side-canvas {
       width: 0;
+      min-width: 0;
       border-left: 0 solid var(--border);
       background: var(--panel);
       display: flex;
       flex-direction: column;
-      transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s ease;
       overflow: hidden;
       box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
       position: relative;
+      flex-shrink: 0;
     }
 
     .side-canvas.open {
       width: 560px;
+      max-width: 65vw;
       border-left: 1px solid var(--border);
     }
 
     .side-canvas.open.size-wide {
       width: 780px !important;
+      max-width: 75vw !important;
     }
 
     .side-canvas.open.size-full {
       width: 1040px !important;
-      max-width: 90vw !important;
+      max-width: 85vw !important;
+    }
+
+    /* Responsive Adaptation for Compact & Tiled Windows (< 850px) */
+    @media (max-width: 850px) {
+      .sidebar {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 50;
+        height: 100vh;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.6);
+      }
+      .sidebar.collapsed {
+        transform: translateX(-100%);
+        width: 280px !important;
+        visibility: hidden;
+      }
+      .sidebar:not(.collapsed) {
+        transform: translateX(0);
+        width: 280px !important;
+        visibility: visible;
+      }
+
+      .topbar {
+        padding: 0 8px;
+        gap: 4px;
+      }
+      .combo-badge {
+        display: none !important;
+      }
+      #btnModelPicker span {
+        max-width: 95px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: bottom;
+        white-space: nowrap;
+      }
+      .btn-topbar {
+        padding: 3px 6px;
+        font-size: 11px;
+        gap: 3px;
+      }
+
+      .side-canvas.open {
+        position: absolute !important;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        z-index: 35;
+        border-left: none;
+        box-shadow: none;
+      }
+
+      .canvas-size-switcher {
+        display: none !important;
+      }
+
+      .web-preview-footer {
+        padding: 4px 8px;
+      }
+      .preview-styler-row {
+        gap: 6px;
+      }
+      .color-presets {
+        gap: 4px;
+      }
     }
 
     .canvas-size-btn {
@@ -849,11 +926,15 @@
       justify-content: space-between;
       padding-top: 4px;
       border-top: 1px solid var(--border);
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .chips-group {
       display: flex;
-      gap: 6px;
+      gap: 4px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
     .chip-btn {
@@ -1768,6 +1849,28 @@ $ </div>
         });
       });
 
+      function updateCanvasLayout() {
+        const isOpen = sideCanvas && sideCanvas.classList.contains('open');
+        const isFull = (canvasSize === 'full');
+        const isNarrow = window.innerWidth < 850;
+        const chatPane = document.querySelector('.chat-pane');
+        if (chatPane) {
+          if (isOpen && (isFull || isNarrow)) {
+            chatPane.style.display = 'none';
+          } else {
+            chatPane.style.display = 'flex';
+          }
+        }
+      }
+
+      window.addEventListener('resize', () => {
+        updateCanvasLayout();
+        if (window.innerWidth < 850 && sidebarEl && !sidebarEl.classList.contains('collapsed')) {
+          sidebarEl.classList.add('collapsed');
+          if (sidebarIcon) sidebarIcon.innerHTML = '&RightArrowBar;';
+        }
+      });
+
       function switchCanvasTab(tabName) {
         canvasTabBtns.forEach(b => {
           if (b.getAttribute('data-canvas') === tabName) b.classList.add('active');
@@ -1786,9 +1889,13 @@ $ </div>
         if (tabName === 'editor') document.getElementById('paneEditor').classList.add('active');
 
         sideCanvas.classList.add('open');
+        updateCanvasLayout();
       }
 
-      btnCloseCanvas.addEventListener('click', () => sideCanvas.classList.remove('open'));
+      btnCloseCanvas.addEventListener('click', () => {
+        sideCanvas.classList.remove('open');
+        updateCanvasLayout();
+      });
 
       // Terminal Execution
       async function runTerminalCmd(cmd) {
@@ -2751,6 +2858,9 @@ $ </div>
             messagesCount: currentMessages.length,
             latestMessage: currentMessages.length > 0 ? currentMessages[currentMessages.length - 1] : null,
             previewHtmlLength: currentRawHtml ? currentRawHtml.length : 0,
+            evalResult: window.__lastEvalResult || null,
+            windowInnerWidth: window.innerWidth,
+            windowInnerHeight: window.innerHeight,
             timestamp: Date.now()
           };
           await fetch(`${config.daemonUrl}/agent/state`, {
@@ -2773,6 +2883,13 @@ $ </div>
             if (actData && actData.type) {
               const sidebarEl = document.querySelector('.sidebar');
               switch (actData.type) {
+                case 'eval':
+                  try {
+                    window.__lastEvalResult = eval(actData.code);
+                  } catch (e) {
+                    window.__lastEvalResult = { error: e.toString() };
+                  }
+                  break;
                 case 'toggleSidebar':
                   if (sidebarEl) {
                     const isCol = sidebarEl.classList.toggle('collapsed');
@@ -2781,8 +2898,12 @@ $ </div>
                   }
                   break;
                 case 'toggleCanvas':
-                  if (sideCanvas.classList.contains('open')) sideCanvas.classList.remove('open');
-                  else switchCanvasTab(actData.tab || 'web');
+                  if (sideCanvas.classList.contains('open')) {
+                    sideCanvas.classList.remove('open');
+                    updateCanvasLayout();
+                  } else {
+                    switchCanvasTab(actData.tab || 'web');
+                  }
                   break;
                 case 'switchCanvasTab':
                   switchCanvasTab(actData.tab || 'web');
@@ -2964,6 +3085,7 @@ $ </div>
       let previewFont = localStorage.getItem('omw_preview_font') || "'Plus Jakarta Sans', sans-serif";
       let previewLayout = localStorage.getItem('omw_preview_layout') || 'full';
       let canvasSize = localStorage.getItem('omw_canvas_size') || 'default';
+      if (canvasSize === 'full' && window.innerWidth < 1200) canvasSize = 'default';
 
       // Layout CSS Templates for Web Preview
       const layoutStyles = {
@@ -3136,6 +3258,7 @@ $ </div>
           if (b.getAttribute('data-size') === size) b.classList.add('active');
           else b.classList.remove('active');
         });
+        updateCanvasLayout();
       }
 
       // Event listeners for Web Preview Toolbar & Layouts
@@ -3187,6 +3310,7 @@ $ </div>
         btnToggleSideCanvas.addEventListener('click', () => {
           if (sideCanvas.classList.contains('open')) {
             sideCanvas.classList.remove('open');
+            updateCanvasLayout();
           } else {
             switchCanvasTab('web');
           }
@@ -3204,6 +3328,12 @@ $ </div>
           promptInput.value = syncPrompt;
           handleSend();
         });
+      }
+
+      // Auto-collapse sidebar on narrow / tiled viewports (< 850px)
+      if (window.innerWidth < 850 && sidebarEl && !sidebarEl.classList.contains('collapsed')) {
+        sidebarEl.classList.add('collapsed');
+        if (sidebarIcon) sidebarIcon.innerHTML = '&RightArrowBar;';
       }
 
       // Initialize preview controls on boot
