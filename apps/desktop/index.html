@@ -761,20 +761,62 @@
     }
 
     .side-canvas.open {
-      width: 560px;
-      max-width: 65vw;
+      width: 420px;
+      max-width: 90vw;
       border-left: 1px solid var(--border);
     }
 
-    .side-canvas.open.size-wide {
-      width: 780px !important;
-      max-width: 75vw !important;
+    .side-canvas.open.size-mobile {
+      width: 420px !important;
+      max-width: 90vw !important;
     }
 
-    .side-canvas.open.size-full {
+    .side-canvas.open.size-tablet {
+      width: 780px !important;
+      max-width: 80vw !important;
+    }
+
+    .side-canvas.open.size-desktop {
       width: 100% !important;
       max-width: 100% !important;
       flex: 1 !important;
+    }
+
+    /* Device Mockups inside Web Preview Container */
+    .side-canvas.size-mobile #previewContainer {
+      padding: 16px 8px;
+    }
+    .side-canvas.size-mobile .preview-view {
+      width: 375px;
+      max-width: 100%;
+      height: 667px;
+      max-height: 96%;
+      border-radius: 18px;
+      border: 2px solid var(--border);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+    }
+
+    .side-canvas.size-tablet #previewContainer {
+      padding: 14px;
+    }
+    .side-canvas.size-tablet .preview-view {
+      width: 768px;
+      max-width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .side-canvas.size-desktop #previewContainer {
+      padding: 0;
+    }
+    .side-canvas.size-desktop .preview-view {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
     }
 
     /* Responsive Adaptation for Compact & Tiled Windows (< 850px) */
@@ -2399,10 +2441,10 @@
             <button type="button" class="canvas-tab-btn" data-canvas="jobs">Jobs &amp; System</button>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
-            <div style="display:flex;gap:3px;align-items:center;" title="Resize side canvas for desktop inspection">
-              <button type="button" class="canvas-size-btn active" data-size="default" title="Standard width (560px)">Standard</button>
-              <button type="button" class="canvas-size-btn" data-size="wide" title="Wide width (780px)">Wide</button>
-              <button type="button" class="canvas-size-btn" data-size="full" title="Ultra Desktop width (1040px)">Max</button>
+            <div style="display:flex;gap:3px;align-items:center;" title="Ukuran Layar (Mobile / Tablet / Desktop)">
+              <button type="button" class="canvas-size-btn" data-size="mobile" title="Mobile viewport (375px)"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:2px;">smartphone</span>Mobile</button>
+              <button type="button" class="canvas-size-btn" data-size="tablet" title="Tablet viewport (768px)"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:2px;">tablet</span>Tablet</button>
+              <button type="button" class="canvas-size-btn active" data-size="desktop" title="Desktop viewport (100% Full)"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:2px;">desktop_windows</span>Desktop</button>
             </div>
             <button type="button" class="btn-close-canvas" id="btnCloseCanvas" title="Close side canvas"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">close</span></button>
           </div>
@@ -3261,7 +3303,10 @@ const FIGMA_PALETTES = {
       let previewColor = localStorage.getItem('omw_preview_color') || FIGMA_PALETTES[activePaletteKey]?.primary || '#00F5A0';
       let previewFont = localStorage.getItem('omw_preview_font') || "'JetBrains Mono', monospace";
       let previewLayout = localStorage.getItem('omw_preview_layout') || 'bento';
-      let canvasSize = localStorage.getItem('omw_canvas_size') || 'default';
+      let rawCanvasSize = localStorage.getItem('omw_canvas_size') || 'desktop';
+      let canvasSize = (rawCanvasSize === 'mobile' || rawCanvasSize === 'tablet' || rawCanvasSize === 'desktop')
+        ? rawCanvasSize
+        : (rawCanvasSize === 'full' ? 'desktop' : (rawCanvasSize === 'wide' ? 'tablet' : 'mobile'));
 
       const layoutStyles = {
         'full': `
@@ -3713,29 +3758,30 @@ const FIGMA_PALETTES = {
 
       function updateCanvasLayout() {
         const isOpen = sideCanvas && sideCanvas.classList.contains('open');
-        const isFull = (canvasSize === 'full');
+        const isDesktop = (canvasSize === 'desktop' || canvasSize === 'full');
+        const isTablet = (canvasSize === 'tablet' || canvasSize === 'wide');
         const isNarrow = window.innerWidth < 850;
         const chatPane = document.querySelector('.chat-pane');
         if (chatPane) {
-          if (isOpen && (isFull || isNarrow)) {
+          if (isOpen && (isDesktop || isNarrow)) {
             chatPane.style.display = 'none';
           } else {
             chatPane.style.display = 'flex';
           }
         }
         if (sideCanvas) {
-          if (isOpen && (isFull || isNarrow)) {
+          if (isOpen && (isDesktop || isNarrow)) {
             sideCanvas.style.flex = '1';
             sideCanvas.style.width = '100%';
             sideCanvas.style.maxWidth = '100%';
-          } else if (isOpen && canvasSize === 'wide') {
+          } else if (isOpen && isTablet) {
             sideCanvas.style.flex = '';
             sideCanvas.style.width = '780px';
-            sideCanvas.style.maxWidth = '75vw';
+            sideCanvas.style.maxWidth = '80vw';
           } else if (isOpen) {
             sideCanvas.style.flex = '';
-            sideCanvas.style.width = '560px';
-            sideCanvas.style.maxWidth = '65vw';
+            sideCanvas.style.width = '420px';
+            sideCanvas.style.maxWidth = '90vw';
           } else {
             sideCanvas.style.flex = '';
             sideCanvas.style.width = '0';
@@ -5926,11 +5972,13 @@ RULES:
       }
 
       function setCanvasSize(size) {
+        if (size === 'default') size = 'mobile';
+        if (size === 'wide') size = 'tablet';
+        if (size === 'full') size = 'desktop';
         canvasSize = size;
         localStorage.setItem('omw_canvas_size', size);
-        sideCanvas.classList.remove('size-wide', 'size-full');
-        if (size === 'wide') sideCanvas.classList.add('size-wide');
-        if (size === 'full') sideCanvas.classList.add('size-full');
+        sideCanvas.classList.remove('size-mobile', 'size-tablet', 'size-desktop', 'size-wide', 'size-full');
+        sideCanvas.classList.add(`size-${size}`);
 
         document.querySelectorAll('.canvas-size-btn').forEach(b => {
           if (b.getAttribute('data-size') === size) b.classList.add('active');
