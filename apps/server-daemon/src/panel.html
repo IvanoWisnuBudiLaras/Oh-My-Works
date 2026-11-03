@@ -3,551 +3,1498 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oh My Works - Cloud Control Panel</title>
+  <title>Oh My Works - 1Panel Lite & OmniRoute Hub</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-base: #181a1f;
-      --bg-surface: #1e1f22;
-      --bg-elevated: #2b2d30;
+      --bg-base: #141518;
+      --bg-sidebar: #1a1c20;
+      --bg-surface: #202227;
+      --bg-elevated: #282a30;
       --border: rgba(255, 255, 255, 0.08);
       --border-focus: #3574F0;
       --accent: #00F5A0;
       --accent-blue: #3574F0;
+      --accent-hover: #4682f7;
       --text: #c4c7c5;
       --text-bright: #ffffff;
       --text-muted: #8b949e;
       --danger: #f87171;
       --warning: #fbbf24;
-      --success: #34d399;
+      --code-bg: #101114;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       background: var(--bg-base);
       color: var(--text);
       font-family: 'Inter', sans-serif;
       font-size: 13px;
       line-height: 1.5;
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* 1Panel Layout: Left Sidebar + Main View */
+    .sidebar {
+      width: 230px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
+      flex-shrink: 0;
+      z-index: 20;
     }
-    .topbar {
-      height: 48px;
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border);
+
+    .brand-header {
+      padding: 16px 18px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      flex-shrink: 0;
-    }
-    .topbar-left, .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text-bright); }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-family: 'JetBrains Mono', monospace;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.03);
-    }
-    .badge-safe { color: var(--accent); border-color: rgba(0, 245, 160, 0.3); }
-    .badge-warn { color: var(--warning); border-color: rgba(251, 191, 36, 0.3); }
-    .badge-danger { color: var(--danger); border-color: rgba(248, 113, 113, 0.3); }
-    .nav-tabs {
-      display: flex;
-      gap: 4px;
-      background: var(--bg-surface);
+      gap: 10px;
       border-bottom: 1px solid var(--border);
-      padding: 0 16px;
-      flex-shrink: 0;
     }
-    .tab-btn {
-      padding: 8px 14px;
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-bright);
+      letter-spacing: 0.3px;
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.15s;
     }
-    .tab-btn:hover { color: var(--text-bright); }
-    .tab-btn.active {
-      color: var(--text-bright);
-      border-bottom-color: var(--accent-blue);
-      background: rgba(53, 116, 240, 0.05);
+
+    .badge-sub {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(0, 245, 160, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(0, 245, 160, 0.25);
+      font-weight: 600;
+      text-transform: uppercase;
     }
-    .main-content {
+
+    .sidebar-menu {
       flex: 1;
       overflow-y: auto;
-      padding: 16px 20px;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .tab-pane { display: none; }
-    .tab-pane.active { display: block; }
-    .card {
+
+    .menu-group-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      padding: 8px 10px 4px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid transparent;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      width: 100%;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-bright);
+    }
+
+    .nav-btn.active {
+      background: rgba(53, 116, 240, 0.15);
+      color: var(--accent-blue);
+      border-color: rgba(53, 116, 240, 0.3);
+      font-weight: 600;
+    }
+
+    .nav-btn .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    .sidebar-footer {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.15);
+      font-size: 11px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    .metric-bar-bg {
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .metric-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Main Container */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .topbar {
+      height: 48px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .dot-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .dot-status.warning {
+      background: var(--warning);
+      box-shadow: 0 0 8px var(--warning);
+    }
+
+    .dot-status.danger {
+      background: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--accent-blue);
+      color: #fff;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-action:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-bright);
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* Card Panels */
+    .card-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 16px;
-      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .card-title {
-      font-size: 14px;
-      font-weight: 600;
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .stat-val {
+      font-size: 22px;
+      font-weight: 700;
       color: var(--text-bright);
-      margin-bottom: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .panel-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-box-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    @media (max-width: 800px) {
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    }
-    .metric-box {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 12px;
-    }
-    .metric-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-    .metric-value { font-size: 20px; font-weight: 700; color: var(--text-bright); font-family: 'JetBrains Mono', monospace; }
-    .input-group { margin-bottom: 12px; }
-    .input-label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-    .input-text {
-      width: 100%;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 7px 10px;
-      color: var(--text-bright);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      outline: none;
-    }
-    .input-text:focus { border-color: var(--accent-blue); }
-    .btn {
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 12px;
+
+    .panel-box-title {
+      font-size: 14px;
       font-weight: 600;
-      border: 1px solid var(--border);
-      background: var(--bg-elevated);
       color: var(--text-bright);
-      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Table Styles (1Panel standard) */
+    .data-table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-base);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 12px;
+    }
+
+    .data-table th {
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .status-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.15s;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
     }
-    .btn:hover { background: rgba(255, 255, 255, 0.1); }
-    .btn-primary { background: var(--accent-blue); border-color: transparent; }
-    .btn-primary:hover { background: #2b61cb; }
-    .btn-accent { background: rgba(0, 245, 160, 0.15); color: var(--accent); border-color: rgba(0, 245, 160, 0.3); }
-    .btn-accent:hover { background: rgba(0, 245, 160, 0.25); }
-    .btn-danger { background: rgba(248, 113, 113, 0.15); color: var(--danger); border-color: rgba(248, 113, 113, 0.3); }
-    .table-container { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
-    th { background: var(--bg-elevated); padding: 8px 12px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-    td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
-    tr:last-child td { border-bottom: none; }
-    .log-viewer {
-      background: #0d1117;
+
+    .status-pill.running {
+      background: rgba(0, 245, 160, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0, 245, 160, 0.25);
+    }
+
+    .status-pill.stopped {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    /* SQL Studio Split View */
+    .sql-studio-grid {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 16px;
+      height: 620px;
+    }
+
+    .sql-sidebar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sql-sidebar-header {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sql-db-select {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      outline: none;
+      width: 100%;
+    }
+
+    .sql-table-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .sql-table-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      border-radius: 4px;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .sql-table-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-bright);
+    }
+
+    .sql-table-item.active {
+      background: rgba(53, 116, 240, 0.15);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .sql-main-editor {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .sql-editor-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sql-toolbar {
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sql-textarea {
+      width: 100%;
+      height: 140px;
+      background: var(--code-bg);
+      border: none;
+      color: #e6edf3;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      padding: 12px;
+      resize: vertical;
+      outline: none;
+      line-height: 1.6;
+    }
+
+    .sql-results-box {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sql-results-header {
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .sql-results-scroll {
+      flex: 1;
+      overflow: auto;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      place-items: center;
+    }
+
+    .modal-backdrop.show {
+      display: grid;
+    }
+
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 500px;
+      max-width: 90vw;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-input, .form-select {
+      background: var(--bg-base);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 10px;
+      padding: 8px 10px;
+      color: var(--text-bright);
+      font-size: 12.5px;
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--border-focus);
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    /* Terminal output */
+    .term-window {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      max-height: 250px;
+      font-size: 12px;
+      color: #7ee787;
+      height: 480px;
       overflow-y: auto;
       white-space: pre-wrap;
-      color: #cbd5e1;
     }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-left">
-      <div class="brand">
-        <svg viewBox="0 0 512 512" width="16" height="16">
-          <rect x="24" y="24" width="464" height="464" rx="100" fill="#181A1F" stroke="#3574F0" stroke-width="20"/>
-          <polygon points="256,120 370,256 256,392 142,256" fill="#00F5A0"/>
-        </svg>
-        <span>OMW Cloud Panel</span>
+
+  <!-- Left Sidebar (1Panel structure) -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <svg viewBox="0 0 512 512" width="22" height="22">
+        <defs>
+          <linearGradient id="pLogo" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#3574F0"/>
+            <stop offset="100%" stop-color="#00F5A0"/>
+          </linearGradient>
+        </defs>
+        <rect x="24" y="24" width="464" height="464" rx="100" fill="#181A1F" stroke="#3574F0" stroke-width="24"/>
+        <polygon points="256,120 370,256 256,392 142,256" fill="url(#pLogo)"/>
+        <circle cx="256" cy="256" r="34" fill="#00F5A0"/>
+      </svg>
+      <div class="brand-title">
+        <span>OMW</span>
+        <span class="badge-sub">1Panel Lite</span>
       </div>
-      <span class="badge" id="hostBadge">Linux | 2 Cores | 2 GB RAM</span>
     </div>
-    <div class="topbar-right">
-      <span class="badge badge-safe" id="guardianBadge">Guardian: SAFE (0% PSI)</span>
-      <button type="button" class="btn" id="btnRefreshAll" title="Refresh Telemetry">
-        <span class="material-symbols-outlined" style="font-size:14px;">refresh</span>
+
+    <div class="sidebar-menu">
+      <div class="menu-group-label">Management</div>
+      <button type="button" class="nav-btn active" data-tab="tab-overview">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span>Dashboard</span>
+      </button>
+      <button type="button" class="nav-btn" data-tab="tab-websites">
+        <span class="material-symbols-outlined">language</span>
+        <span>Websites</span>
+      </button>
+      <button type="button" class="nav-btn" data-tab="tab-sql">
+        <span class="material-symbols-outlined">database</span>
+        <span>SQL Studio</span>
+      </button>
+
+      <div class="menu-group-label">AI & Routing</div>
+      <button type="button" class="nav-btn" data-tab="tab-omniroute">
+        <span class="material-symbols-outlined">alt_route</span>
+        <span>OmniRoute AI</span>
+      </button>
+
+      <div class="menu-group-label">System</div>
+      <button type="button" class="nav-btn" data-tab="tab-supervisor">
+        <span class="material-symbols-outlined">vital_signs</span>
+        <span>Supervisor</span>
+      </button>
+      <button type="button" class="nav-btn" data-tab="tab-terminal">
+        <span class="material-symbols-outlined">terminal</span>
+        <span>Web Terminal</span>
       </button>
     </div>
-  </header>
 
-  <nav class="nav-tabs">
-    <button type="button" class="tab-btn active" data-tab="overview">
-      <span class="material-symbols-outlined" style="font-size:15px;">dashboard</span>Overview
-    </button>
-    <button type="button" class="tab-btn" data-tab="omniroute">
-      <span class="material-symbols-outlined" style="font-size:15px;">alt_route</span>OmniRoute Hub
-    </button>
-    <button type="button" class="tab-btn" data-tab="deployer">
-      <span class="material-symbols-outlined" style="font-size:15px;">rocket_launch</span>Project Deployer
-    </button>
-    <button type="button" class="tab-btn" data-tab="harness">
-      <span class="material-symbols-outlined" style="font-size:15px;">bolt</span>Autonomous Harness
-    </button>
-  </nav>
-
-  <main class="main-content">
-    <!-- Tab 1: Overview -->
-    <div class="tab-pane active" id="pane-overview">
-      <div class="grid-3" style="margin-bottom:16px;">
-        <div class="metric-box">
-          <div class="metric-label">RAM Available</div>
-          <div class="metric-value" id="valRamAvail">-- %</div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-label">PSI Stall (avg10)</div>
-          <div class="metric-value" id="valPsiStall">0.00 %</div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-label">Active Deployments</div>
-          <div class="metric-value" id="valDeployCount">0</div>
-        </div>
+    <div class="sidebar-footer">
+      <div class="metric-row">
+        <span>Available RAM</span>
+        <span id="sbRamPct">--%</span>
       </div>
-
-      <div class="card">
-        <div class="card-title">
-          <span>System Environment &amp; Anti-OOM Guardian</span>
-          <span class="badge" id="daemonVerBadge">v0.1.0-ultra</span>
-        </div>
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
-          Optimized strictly for 2-core / 2GB RAM Linux VPS. Replaces heavy Node.js/Next.js runtimes with a single native Rust binary consuming less than 10MB RAM.
-        </div>
-        <div class="grid-2">
-          <div class="metric-box">
-            <div class="metric-label">Memory Allocation Guard</div>
-            <div style="font-size:12px;color:var(--accent);" id="guardInfo">Active - Spawns throttled if RAM &lt; 300MB</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-label">Process Memory Track</div>
-            <div style="font-size:12px;color:#fff;" id="procInfo">Linux /proc/[pid]/statm zero-overhead sampling</div>
-          </div>
-        </div>
+      <div class="metric-bar-bg">
+        <div class="metric-bar-fill" id="sbRamBar"></div>
+      </div>
+      <div class="metric-row" style="margin-bottom:0;">
+        <span>Daemon Footprint</span>
+        <span style="color:var(--accent);font-family:'JetBrains Mono';">~5.7 MB</span>
       </div>
     </div>
+  </aside>
 
-    <!-- Tab 2: OmniRoute Hub -->
-    <div class="tab-pane" id="pane-omniroute">
-      <div class="card">
-        <div class="card-title">
-          <span>OmniRoute API Keys &amp; Model Providers</span>
-          <button type="button" class="btn btn-primary" id="btnSaveKeys">Save Keys</button>
+  <!-- Main View -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="page-title" id="pageHeaderTitle">Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <div class="pill-badge" id="psiPill" title="Kernel Pressure Stall Information (PSI)">
+          <div class="dot-status" id="psiDot"></div>
+          <span id="psiStatusText">PSI: SAFE</span>
         </div>
-        <div class="grid-2">
-          <div class="input-group">
-            <label class="input-label">OpenRouter API Key</label>
-            <input type="password" class="input-text" id="keyOpenRouter" placeholder="sk-or-v1-...">
+        <div class="pill-badge" id="hostSpecPill">Linux / Hyprland</div>
+        <button type="button" class="btn-action btn-secondary" id="btnRefreshAll" title="Refresh Telemetry">
+          <span class="material-symbols-outlined" style="font-size:16px;">refresh</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="content-area">
+
+      <!-- TAB 1: OVERVIEW / DASHBOARD -->
+      <section class="tab-content active" id="tab-overview">
+        <div class="card-grid-4">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>RAM AVAILABLE</span>
+              <span class="material-symbols-outlined" style="font-size:16px;">memory</span>
+            </div>
+            <div class="stat-val" id="dashRamVal">-- MB</div>
+            <div style="font-size:11px;color:var(--text-muted);" id="dashRamSub">Calculating pressure...</div>
           </div>
-          <div class="input-group">
-            <label class="input-label">Google Gemini API Key</label>
-            <input type="password" class="input-text" id="keyGemini" placeholder="AIzaSy...">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>PSI MEMORY (SOME)</span>
+              <span class="material-symbols-outlined" style="font-size:16px;">speed</span>
+            </div>
+            <div class="stat-val" id="dashPsiSome">0.00%</div>
+            <div style="font-size:11px;color:var(--accent);">Zero OOM risk</div>
           </div>
-          <div class="input-group">
-            <label class="input-label">Anthropic API Key</label>
-            <input type="password" class="input-text" id="keyAnthropic" placeholder="sk-ant-api...">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>ACTIVE WEBSITES</span>
+              <span class="material-symbols-outlined" style="font-size:16px;">public</span>
+            </div>
+            <div class="stat-val" id="dashWebsitesCount">--</div>
+            <div style="font-size:11px;color:var(--text-muted);">Deployed Web Services</div>
           </div>
-          <div class="input-group">
-            <label class="input-label">DeepSeek API Key</label>
-            <input type="password" class="input-text" id="keyDeepSeek" placeholder="sk-...">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>OMNIROUTE MODELS</span>
+              <span class="material-symbols-outlined" style="font-size:16px;">hub</span>
+            </div>
+            <div class="stat-val" id="dashModelsCount">3 Active</div>
+            <div style="font-size:11px;color:var(--accent);">2-Stage Cascade</div>
           </div>
-          <div class="input-group">
-            <label class="input-label">OpenAI API Key</label>
-            <input type="password" class="input-text" id="keyOpenAi" placeholder="sk-proj-...">
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <div class="panel-box-title">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent);">rocket_launch</span>
+              <span>Quick Deployment & Actions</span>
+            </div>
           </div>
-          <div class="input-group">
-            <label class="input-label">Groq API Key</label>
-            <input type="password" class="input-text" id="keyGroq" placeholder="gsk_...">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <button type="button" class="btn-action" id="btnQuickDeploy">
+              <span class="material-symbols-outlined" style="font-size:16px;">add_circle</span>
+              <span>Deploy New Website</span>
+            </button>
+            <button type="button" class="btn-action btn-secondary" id="btnQuickSql">
+              <span class="material-symbols-outlined" style="font-size:16px;">table_view</span>
+              <span>Open SQL Studio</span>
+            </button>
+            <button type="button" class="btn-action btn-secondary" id="btnQuickOmni">
+              <span class="material-symbols-outlined" style="font-size:16px;">model_training</span>
+              <span>Test OmniRoute Cascade</span>
+            </button>
           </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <div class="panel-box-title">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-blue);">info</span>
+              <span>System & Environment Profile</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:12px;font-size:12px;">
+            <div style="background:var(--bg-base);padding:10px 14px;border-radius:6px;border:1px solid var(--border);">
+              <div style="color:var(--text-muted);margin-bottom:2px;">Compositor / OS</div>
+              <div style="font-weight:600;color:var(--text-bright);" id="profCompositor">Hyprland (Wayland) / Linux</div>
+            </div>
+            <div style="background:var(--bg-base);padding:10px 14px;border-radius:6px;border:1px solid var(--border);">
+              <div style="color:var(--text-muted);margin-bottom:2px;">Daemon Architecture</div>
+              <div style="font-weight:600;color:var(--text-bright);">Native Rust (Single Binary ~5.7MB RAM)</div>
+            </div>
+            <div style="background:var(--bg-base);padding:10px 14px;border-radius:6px;border:1px solid var(--border);">
+              <div style="color:var(--text-muted);margin-bottom:2px;">Daemon Port & Hub</div>
+              <div style="font-weight:600;color:var(--accent);font-family:'JetBrains Mono';">http://127.0.0.1:9180</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: WEBSITES (1Panel Web Deployer) -->
+      <section class="tab-content" id="tab-websites">
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <div class="panel-box-title">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent);">language</span>
+              <span>Web Applications & Reverse Proxy</span>
+            </div>
+            <button type="button" class="btn-action" id="btnOpenCreateWebModal">
+              <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+              <span>Add Website</span>
+            </button>
+          </div>
+
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>NAME</th>
+                  <th>DOMAIN</th>
+                  <th>TYPE</th>
+                  <th>PORT</th>
+                  <th>STATUS</th>
+                  <th>MEMORY (RSS)</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="websitesTableBody">
+                <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted);">Loading websites...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: SQL STUDIO (1Panel Database) -->
+      <section class="tab-content" id="tab-sql">
+        <div class="sql-studio-grid">
+          <!-- Left: Databases & Tables -->
+          <div class="sql-sidebar">
+            <div class="sql-sidebar-header">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Database</span>
+                <button type="button" id="btnRefreshDbs" style="background:none;border:none;color:var(--text-muted);cursor:pointer;" title="Refresh databases">
+                  <span class="material-symbols-outlined" style="font-size:15px;">refresh</span>
+                </button>
+              </div>
+              <select class="sql-db-select" id="sqlDbSelect"></select>
+            </div>
+            <div style="padding:8px 12px 4px;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">
+              Tables & Views
+            </div>
+            <div class="sql-table-list" id="sqlTableList">
+              <div style="padding:10px;text-align:center;color:var(--text-muted);font-size:11px;">Scanning tables...</div>
+            </div>
+          </div>
+
+          <!-- Right: SQL Editor & Results -->
+          <div class="sql-main-editor">
+            <div class="sql-editor-box">
+              <div class="sql-toolbar">
+                <div style="display:flex;gap:6px;">
+                  <button type="button" class="btn-action btn-secondary" id="btnSqlTplSelect" style="padding:3px 8px;font-size:11px;">SELECT *</button>
+                  <button type="button" class="btn-action btn-secondary" id="btnSqlTplCount" style="padding:3px 8px;font-size:11px;">COUNT(*)</button>
+                  <button type="button" class="btn-action btn-secondary" id="btnSqlTplClear" style="padding:3px 8px;font-size:11px;">Clear</button>
+                </div>
+                <button type="button" class="btn-action" id="btnRunQuery" style="padding:5px 12px;">
+                  <span class="material-symbols-outlined" style="font-size:15px;">play_arrow</span>
+                  <span>Run Query (Ctrl+Enter)</span>
+                </button>
+              </div>
+              <textarea class="sql-textarea" id="sqlQueryInput" placeholder="SELECT * FROM sessions LIMIT 50;"></textarea>
+            </div>
+
+            <div class="sql-results-box">
+              <div class="sql-results-header">
+                <span id="sqlExecutionStatus">Ready</span>
+                <span id="sqlExecutionTime" style="font-family:'JetBrains Mono';"></span>
+              </div>
+              <div class="sql-results-scroll" id="sqlResultsScroll">
+                <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:12px;">Run a query or click a table on the left to inspect records.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: OMNIROUTE AI HUB -->
+      <section class="tab-content" id="tab-omniroute">
+        <div class="card-grid-4">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>STAGE 1 LEAD ARCHITECT</span>
+              <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent);">psychology</span>
+            </div>
+            <div class="stat-val" style="font-size:16px;">Gemini 3.8 Flash</div>
+            <div style="font-size:11px;color:var(--accent);">High Speed / Reasoning</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>STAGE 2 SPECIALIST CODER</span>
+              <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent-blue);">code</span>
+            </div>
+            <div class="stat-val" style="font-size:16px;">GLM 5.3 Flash</div>
+            <div style="font-size:11px;color:var(--accent-blue);">Precision Code Synthesizer</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>VERIFIER & REVIEWER</span>
+              <span class="material-symbols-outlined" style="font-size:16px;color:#a855f7;">fact_check</span>
+            </div>
+            <div class="stat-val" style="font-size:16px;">DeepSeek v4 Pro</div>
+            <div style="font-size:11px;color:#a855f7;">AST & Cargo Audit</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>TOKEN OPTIMIZER</span>
+              <span class="material-symbols-outlined" style="font-size:16px;color:var(--warning);">compress</span>
+            </div>
+            <div class="stat-val" style="font-size:16px;">85-95% Saved</div>
+            <div style="font-size:11px;color:var(--warning);">Sliding 4-Turn Window</div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <div class="panel-box-title">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent);">hub</span>
+              <span>OpenAI-Compatible OmniRoute Endpoint</span>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">
+            Oh-My-Works server daemon exposes a standardized OpenAI proxy endpoint with automatic failover and token optimization:
+          </p>
+          <div style="background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="color:#00F5A0;">POST http://127.0.0.1:9180/v1/chat/completions</span>
+            <button type="button" class="btn-action btn-secondary" onclick="navigator.clipboard.writeText('http://127.0.0.1:9180/v1/chat/completions');alert('Copied endpoint!');" style="padding:4px 8px;font-size:11px;">Copy URL</button>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <div class="panel-box-title">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-blue);">terminal</span>
+              <span>OmniRoute Live Test Playground</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:10px;">
+              <select class="form-select" id="omniModelSelect" style="flex:1;">
+                <option value="ag/gemini-3.8-flash-high">Stage 1: ag/gemini-3.8-flash-high</option>
+                <option value="mux/glm-5.3-flash">Stage 2: mux/glm-5.3-flash</option>
+                <option value="cbcn/deepseek-v4-pro">Specialist: cbcn/deepseek-v4-pro</option>
+              </select>
+              <button type="button" class="btn-action" id="btnTestOmniRoute">
+                <span class="material-symbols-outlined" style="font-size:15px;">send</span>
+                <span>Send Test Prompt</span>
+              </button>
+            </div>
+            <textarea class="form-input" id="omniTestInput" style="height:60px;resize:none;" placeholder="Say hello in 1 sentence..."></textarea>
+            <div style="background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:12px;min-height:80px;font-family:'JetBrains Mono',monospace;font-size:12px;white-space:pre-wrap;" id="omniTestOutput">Response preview will appear here...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: SUPERVISOR -->
+      <section class="tab-content" id="tab-supervisor">
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <div class="panel-box-title">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent);">vital_signs</span>
+              <span>Process Supervisor & Background Jobs</span>
+            </div>
+            <button type="button" class="btn-action btn-secondary" id="btnRefreshJobs">
+              <span class="material-symbols-outlined" style="font-size:15px;">refresh</span>
+              <span>Refresh PIDs</span>
+            </button>
+          </div>
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>JOB ID</th>
+                  <th>PID</th>
+                  <th>COMMAND</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="jobsTableBody">
+                <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted);">No active background jobs</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: TERMINAL -->
+      <section class="tab-content" id="tab-terminal">
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <div class="panel-box-title">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-blue);">terminal</span>
+              <span>Server Web Terminal</span>
+            </div>
+          </div>
+          <div class="term-window" id="termOutput">OMW Web Terminal (Pure Rust Daemon)
+Type a bash command below and press Enter...
+$ </div>
+          <div style="display:flex;gap:8px;">
+            <input type="text" class="form-input" id="termInput" placeholder="uptime; free -m; ps aux | grep omw" style="flex:1;font-family:'JetBrains Mono';">
+            <button type="button" class="btn-action" id="btnRunTerm">Execute</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Modal: Create Website -->
+  <div class="modal-backdrop" id="modalCreateWeb">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>Deploy New Website</span>
+        <button type="button" onclick="document.getElementById('modalCreateWeb').classList.remove('show')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Project / Site Name</label>
+          <input type="text" class="form-input" id="webNameInput" placeholder="e.g. My Web App">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Domain or Subdomain</label>
+          <input type="text" class="form-input" id="webDomainInput" placeholder="e.g. app.local or ivanowisnubudilaras.web.id">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-select" id="webTypeInput">
+              <option value="proxy">Reverse Proxy</option>
+              <option value="node">Node.js / Vite</option>
+              <option value="rust">Rust Binary</option>
+              <option value="python">Python / FastAPI</option>
+              <option value="static">Static HTML</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Port</label>
+            <input type="number" class="form-input" id="webPortInput" placeholder="e.g. 3000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Root Directory (Optional)</label>
+          <input type="text" class="form-input" id="webRootDirInput" placeholder="e.g. /home/ivano/my-project">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Start Command (Optional)</label>
+          <input type="text" class="form-input" id="webStartCmdInput" placeholder="e.g. npm run preview">
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-title">
-          <span>Model Routing Endpoints</span>
-        </div>
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
-          Compatible with any OpenAI/Claude SDK client:
-        </div>
-        <pre class="log-viewer" style="margin-bottom:12px;">Base URL: http://&lt;server-ip&gt;:9180/v1
-Endpoints:
-  GET  /v1/models            (List all aggregated models)
-  POST /v1/chat/completions  (OpenAI-compatible chat completion proxy)
-Headers:
-  Authorization: Bearer &lt;any-key-or-token&gt;</pre>
+      <div class="modal-footer">
+        <button type="button" class="btn-action btn-secondary" onclick="document.getElementById('modalCreateWeb').classList.remove('show')">Cancel</button>
+        <button type="button" class="btn-action" id="btnSubmitCreateWeb">Deploy Website</button>
       </div>
     </div>
-
-    <!-- Tab 3: Project Deployer -->
-    <div class="tab-pane" id="pane-deployer">
-      <div class="card">
-        <div class="card-title">
-          <span>Deploy Project (Zero-PM2 Native Linux Supervisor)</span>
-        </div>
-        <div class="grid-2">
-          <div class="input-group">
-            <label class="input-label">Project Name</label>
-            <input type="text" class="input-text" id="deployName" placeholder="my-app">
-          </div>
-          <div class="input-group">
-            <label class="input-label">Git Repo URL or Working Dir</label>
-            <input type="text" class="input-text" id="deployRepo" placeholder="https://github.com/... or /path/to/dir">
-          </div>
-          <div class="input-group">
-            <label class="input-label">Build Command (Optional)</label>
-            <input type="text" class="input-text" id="deployBuild" placeholder="cargo build --release or npm run build">
-          </div>
-          <div class="input-group">
-            <label class="input-label">Start Command</label>
-            <input type="text" class="input-text" id="deployStart" placeholder="./target/release/my-app or node server.js">
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
-          <div style="font-size:11px;color:var(--text-muted);">
-            Anti-OOM checks run automatically before building or spawning.
-          </div>
-          <button type="button" class="btn btn-accent" id="btnLaunchProject">
-            <span class="material-symbols-outlined" style="font-size:14px;">rocket_launch</span>Deploy &amp; Supervise
-          </button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">
-          <span>Active Supervised Projects</span>
-        </div>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Project Name</th>
-                <th>PID</th>
-                <th>Status</th>
-                <th>Memory (RSS)</th>
-                <th>Port</th>
-                <th>Command</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="projectsTableBody">
-              <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:16px;">No projects deployed yet</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card" id="logsCard" style="display:none;">
-        <div class="card-title">
-          <span id="logsTitle">Project Logs</span>
-          <button type="button" class="btn" onclick="document.getElementById('logsCard').style.display='none'">Close</button>
-        </div>
-        <pre class="log-viewer" id="logsContent">Loading...</pre>
-      </div>
-    </div>
-
-    <!-- Tab 4: Autonomous Harness -->
-    <div class="tab-pane" id="pane-harness">
-      <div class="card">
-        <div class="card-title">
-          <span>Autonomous ReAct Agent Loop</span>
-        </div>
-        <div class="input-group">
-          <label class="input-label">Task Objective</label>
-          <input type="text" class="input-text" id="harnessTask" placeholder="e.g. Audit repository, check memory leaks, or verify tests">
-        </div>
-        <div style="display:flex;justify-content:flex-end;">
-          <button type="button" class="btn btn-primary" id="btnRunHarnessTask">
-            <span class="material-symbols-outlined" style="font-size:14px;">bolt</span>Execute Autonomous Task
-          </button>
-        </div>
-        <div id="harnessStreamBox" style="margin-top:12px;display:none;">
-          <div class="metric-label">Execution Stream:</div>
-          <pre class="log-viewer" id="harnessStreamLog" style="max-height:300px;"></pre>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">
-          <span>Codebase AST RepoMap</span>
-          <button type="button" class="btn" id="btnRefreshRepoMap">Refresh Map</button>
-        </div>
-        <pre class="log-viewer" id="repoMapBox">Loading RepoMap...</pre>
-      </div>
-    </div>
-  </main>
+  </div>
 
   <script>
-    // Tab switching
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    const API_BASE = window.location.origin;
+
+    // Navigation & Tabs
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const pageHeaderTitle = document.getElementById('pageHeaderTitle');
+
+    const tabTitles = {
+      'tab-overview': 'Dashboard',
+      'tab-websites': 'Websites & Deployment',
+      'tab-sql': 'SQL Studio',
+      'tab-omniroute': 'OmniRoute AI Hub',
+      'tab-supervisor': 'Process Supervisor',
+      'tab-terminal': 'Web Terminal'
+    };
+
+    navButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        const target = document.getElementById('pane-' + btn.getAttribute('data-tab'));
-        if (target) target.classList.add('active');
+        const targetId = btn.getAttribute('data-tab');
+        switchTab(targetId);
       });
     });
 
-    async function fetchTelemetry() {
-      try {
-        const [telem, prof] = await Promise.all([
-          fetch('/').then(r => r.json()).catch(() => null),
-          fetch('/system/profile').then(r => r.json()).catch(() => null)
-        ]);
-        if (telem) {
-          document.getElementById('valRamAvail').textContent = (telem.available_percent || 0).toFixed(1) + '%';
-          document.getElementById('valPsiStall').textContent = (telem.full_avg10 || 0).toFixed(2) + '%';
-          const gBadge = document.getElementById('guardianBadge');
-          if (telem.status === 'Safe') {
-            gBadge.className = 'badge badge-safe';
-            gBadge.textContent = `Guardian: SAFE (${telem.full_avg10}% PSI)`;
-          } else if (telem.status === 'Warning') {
-            gBadge.className = 'badge badge-warn';
-            gBadge.textContent = `Guardian: WARN (${telem.full_avg10}% PSI)`;
-          } else {
-            gBadge.className = 'badge badge-danger';
-            gBadge.textContent = `Guardian: CRITICAL (${telem.full_avg10}% PSI)`;
-          }
-        }
-        if (prof) {
-          const m = prof.memory || {};
-          const freeG = Math.round((m.available_mb || 0)/1024);
-          const totG = Math.round((m.total_mb || 0)/1024);
-          document.getElementById('hostBadge').textContent = `${prof.os || 'Linux'} | ${prof.cores || 2} Cores | ${totG} GB RAM (${freeG} GB free)`;
-        }
-      } catch (e) {}
+    function switchTab(tabId) {
+      navButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tabId));
+      tabContents.forEach(tc => tc.classList.toggle('active', tc.id === tabId));
+      pageHeaderTitle.textContent = tabTitles[tabId] || 'Dashboard';
+
+      if (tabId === 'tab-websites') loadWebsites();
+      if (tabId === 'tab-sql') loadDatabases();
+      if (tabId === 'tab-supervisor') loadJobs();
     }
 
-    async function loadProjects() {
+    // Quick Action button shortcuts
+    document.getElementById('btnQuickDeploy')?.addEventListener('click', () => {
+      switchTab('tab-websites');
+      document.getElementById('modalCreateWeb').classList.add('show');
+    });
+    document.getElementById('btnQuickSql')?.addEventListener('click', () => switchTab('tab-sql'));
+    document.getElementById('btnQuickOmni')?.addEventListener('click', () => switchTab('tab-omniroute'));
+
+    // Telemetry Sync
+    async function fetchTelemetry() {
       try {
-        const res = await fetch('/deploy/list').then(r => r.json());
-        const tbody = document.getElementById('projectsTableBody');
-        if (res && res.projects && res.projects.length > 0) {
-          document.getElementById('valDeployCount').textContent = res.projects.length;
-          tbody.innerHTML = res.projects.map(p => `
-            <tr>
-              <td style="font-weight:600;color:#fff;">${p.name}</td>
-              <td style="font-family:monospace;">${p.pid}</td>
-              <td><span class="badge ${p.status === 'running' ? 'badge-safe' : 'badge-danger'}">${p.status}</span></td>
-              <td style="font-family:monospace;">${(p.rss_mb || 0).toFixed(1)} MB</td>
-              <td style="font-family:monospace;">${p.port || '-'}</td>
-              <td style="font-family:monospace;color:var(--text-muted);">${p.command}</td>
-              <td>
-                <button type="button" class="btn btn-danger" onclick="killProject('${p.name}', ${p.pid})" style="padding:2px 8px;font-size:11px;">Stop</button>
-                <button type="button" class="btn" onclick="viewLogs('${p.name}')" style="padding:2px 8px;font-size:11px;">Logs</button>
-              </td>
-            </tr>
-          `).join('');
-        } else {
-          document.getElementById('valDeployCount').textContent = '0';
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:16px;">No projects deployed yet</td></tr>';
+        const res = await fetch(`${API_BASE}/`);
+        if (!res.ok) return;
+        const d = await res.json();
+
+        // PSI status
+        const psiPill = document.getElementById('psiPill');
+        const psiDot = document.getElementById('psiDot');
+        const psiText = document.getElementById('psiStatusText');
+        if (psiDot && psiText) {
+          psiText.textContent = `PSI: ${d.status || 'SAFE'}`;
+          psiDot.className = 'dot-status ' + (d.status === 'WARNING' ? 'warning' : d.status === 'CRITICAL' ? 'danger' : '');
+        }
+
+        // RAM stats
+        const availPct = (d.available_percent || 0).toFixed(1);
+        const dashRamVal = document.getElementById('dashRamVal');
+        const dashRamSub = document.getElementById('dashRamSub');
+        const sbRamPct = document.getElementById('sbRamPct');
+        const sbRamBar = document.getElementById('sbRamBar');
+        const dashPsiSome = document.getElementById('dashPsiSome');
+
+        if (dashRamVal) dashRamVal.textContent = `${availPct}% Avail`;
+        if (dashRamSub) dashRamSub.textContent = `Pressure some avg10: ${(d.some_avg10 || 0).toFixed(2)}%`;
+        if (sbRamPct) sbRamPct.textContent = `${availPct}%`;
+        if (sbRamBar) sbRamBar.style.width = `${Math.min(100, Math.max(0, availPct))}%`;
+        if (dashPsiSome) dashPsiSome.textContent = `${(d.some_avg10 || 0).toFixed(2)}%`;
+      } catch (_) {}
+    }
+
+    // ------------------------------------------------------------------
+    // WEBSITES MANAGER (1Panel Style)
+    // ------------------------------------------------------------------
+    const websitesTableBody = document.getElementById('websitesTableBody');
+    const modalCreateWeb = document.getElementById('modalCreateWeb');
+    document.getElementById('btnOpenCreateWebModal')?.addEventListener('click', () => modalCreateWeb.classList.add('show'));
+
+    async function loadWebsites() {
+      try {
+        const res = await fetch(`${API_BASE}/websites/list`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = data.websites || [];
+
+        const dashCount = document.getElementById('dashWebsitesCount');
+        if (dashCount) dashCount.textContent = `${list.length} Sites`;
+
+        if (list.length === 0) {
+          websitesTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted);">No websites configured yet. Click "+ Add Website" to deploy your first app.</td></tr>`;
+          return;
+        }
+
+        websitesTableBody.innerHTML = list.map(site => `
+          <tr>
+            <td style="font-weight:600;color:var(--text-bright);">${site.name}</td>
+            <td>
+              <a href="http://${site.domain.includes(':') ? site.domain : site.domain + (site.port ? ':' + site.port : '')}" target="_blank" style="color:var(--accent-blue);text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+                ${site.domain}
+                <span class="material-symbols-outlined" style="font-size:12px;">open_in_new</span>
+              </a>
+            </td>
+            <td><span style="font-size:11px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.06);">${site.site_type}</span></td>
+            <td style="font-family:'JetBrains Mono';">${site.port || '-'}</td>
+            <td>
+              <span class="status-pill ${site.status === 'running' ? 'running' : 'stopped'}">
+                <span class="dot-status ${site.status === 'running' ? '' : 'warning'}" style="width:5px;height:5px;"></span>
+                ${site.status}
+              </span>
+            </td>
+            <td style="font-family:'JetBrains Mono';">${(site.rss_mb || 0).toFixed(1)} MB</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <button type="button" class="btn-action btn-secondary" onclick="toggleWebsite('${site.id}')" style="padding:4px 8px;font-size:11px;">
+                  ${site.status === 'running' ? 'Stop' : 'Start'}
+                </button>
+                <button type="button" class="btn-action btn-secondary" onclick="deleteWebsite('${site.id}')" style="padding:4px 8px;font-size:11px;color:var(--danger);">
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        websitesTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--danger);">Failed to load websites: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function toggleWebsite(id) {
+      await fetch(`${API_BASE}/websites/toggle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      loadWebsites();
+    }
+
+    async function deleteWebsite(id) {
+      if (!confirm('Are you sure you want to delete this website?')) return;
+      await fetch(`${API_BASE}/websites/delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      loadWebsites();
+    }
+
+    document.getElementById('btnSubmitCreateWeb')?.addEventListener('click', async () => {
+      const name = document.getElementById('webNameInput').value.trim();
+      const domain = document.getElementById('webDomainInput').value.trim();
+      const site_type = document.getElementById('webTypeInput').value;
+      const port = parseInt(document.getElementById('webPortInput').value) || 8080;
+      const root_dir = document.getElementById('webRootDirInput').value.trim();
+      const start_cmd = document.getElementById('webStartCmdInput').value.trim();
+
+      if (!name) { alert('Project name is required'); return; }
+
+      await fetch(`${API_BASE}/websites/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, domain, site_type, port, root_dir, start_cmd })
+      });
+
+      modalCreateWeb.classList.remove('show');
+      loadWebsites();
+    });
+
+    // ------------------------------------------------------------------
+    // SQL STUDIO (1Panel Database Style)
+    // ------------------------------------------------------------------
+    const sqlDbSelect = document.getElementById('sqlDbSelect');
+    const sqlTableList = document.getElementById('sqlTableList');
+    const sqlQueryInput = document.getElementById('sqlQueryInput');
+    const sqlResultsScroll = document.getElementById('sqlResultsScroll');
+    const sqlExecutionStatus = document.getElementById('sqlExecutionStatus');
+    const sqlExecutionTime = document.getElementById('sqlExecutionTime');
+
+    async function loadDatabases() {
+      try {
+        const res = await fetch(`${API_BASE}/sql/databases`);
+        if (!res.ok) return;
+        const d = await res.json();
+        const dbs = d.databases || [];
+
+        sqlDbSelect.innerHTML = dbs.map(db => `
+          <option value="${db.path}">${db.name} (${db.size_kb} KB)</option>
+        `).join('');
+
+        if (dbs.length > 0) {
+          loadTables(sqlDbSelect.value);
         }
       } catch (_) {}
     }
 
-    async function killProject(name, pid) {
-      if (!confirm(`Stop project ${name} (PID ${pid})?`)) return;
-      await fetch('/deploy/kill', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, pid })
-      });
-      loadProjects();
-    }
+    sqlDbSelect?.addEventListener('change', () => loadTables(sqlDbSelect.value));
+    document.getElementById('btnRefreshDbs')?.addEventListener('click', loadDatabases);
 
-    async function viewLogs(name) {
-      const card = document.getElementById('logsCard');
-      const title = document.getElementById('logsTitle');
-      const content = document.getElementById('logsContent');
-      card.style.display = 'block';
-      title.textContent = `Logs: ${name}`;
-      content.textContent = 'Loading logs...';
+    async function loadTables(dbPath) {
       try {
-        const res = await fetch(`/deploy/logs?name=${encodeURIComponent(name)}`).then(r => r.json());
-        content.textContent = res.logs || 'No logs available.';
-      } catch (e) {
-        content.textContent = 'Error fetching logs: ' + e.message;
-      }
-    }
-
-    document.getElementById('btnLaunchProject').addEventListener('click', async () => {
-      const name = document.getElementById('deployName').value.trim();
-      const repo = document.getElementById('deployRepo').value.trim();
-      const build = document.getElementById('deployBuild').value.trim();
-      const start = document.getElementById('deployStart').value.trim();
-
-      if (!name || !start) {
-        alert('Please provide at least Project Name and Start Command');
-        return;
-      }
-
-      const btn = document.getElementById('btnLaunchProject');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;animation:spin 1s linear infinite;">sync</span> Deploying...';
-
-      try {
-        const res = await fetch('/deploy/spawn', {
+        sqlTableList.innerHTML = '<div style="padding:10px;text-align:center;color:var(--text-muted);font-size:11px;">Loading tables...</div>';
+        const res = await fetch(`${API_BASE}/sql/tables`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, repo_url: repo, build_cmd: build, start_cmd: start })
-        }).then(r => r.json());
+          body: JSON.stringify({ db_path: dbPath })
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        const tables = data.tables || [];
 
-        if (res.success) {
-          alert(`Project '${name}' deployed successfully! PID: ${res.pid}`);
-          loadProjects();
-        } else {
-          alert('Deployment failed: ' + (res.error || 'Unknown error'));
+        if (tables.length === 0) {
+          sqlTableList.innerHTML = '<div style="padding:10px;text-align:center;color:var(--text-muted);font-size:11px;">No user tables found</div>';
+          return;
         }
-      } catch (e) {
-        alert('Network error: ' + e.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">rocket_launch</span>Deploy &amp; Supervise';
+
+        sqlTableList.innerHTML = tables.map(t => `
+          <div class="sql-table-item" onclick="selectTable('${t.name}')">
+            <span style="font-weight:500;">${t.name}</span>
+            <span style="font-size:10px;padding:1px 5px;background:rgba(255,255,255,0.06);border-radius:3px;font-family:'JetBrains Mono';">${t.row_count}</span>
+          </div>
+        `).join('');
+      } catch (err) {
+        sqlTableList.innerHTML = `<div style="padding:10px;color:var(--danger);font-size:11px;">${err.message}</div>`;
+      }
+    }
+
+    function selectTable(tableName) {
+      document.querySelectorAll('.sql-table-item').forEach(el => {
+        el.classList.toggle('active', el.textContent.includes(tableName));
+      });
+      sqlQueryInput.value = `SELECT * FROM "${tableName}" LIMIT 50;`;
+      runSqlQuery();
+    }
+
+    async function runSqlQuery() {
+      const dbPath = sqlDbSelect.value;
+      const query = sqlQueryInput.value.trim();
+      if (!query) return;
+
+      sqlExecutionStatus.textContent = 'Executing query...';
+      sqlExecutionTime.textContent = '';
+      sqlResultsScroll.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:12px;">Query in flight...</div>';
+
+      try {
+        const res = await fetch(`${API_BASE}/sql/query`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ db_path: dbPath, query })
+        });
+        const d = await res.json();
+
+        if (d.error) {
+          sqlExecutionStatus.textContent = 'Error';
+          sqlResultsScroll.innerHTML = `<div style="padding:16px;color:var(--danger);font-family:'JetBrains Mono';font-size:12px;white-space:pre-wrap;">${d.error}</div>`;
+          return;
+        }
+
+        if (d.columns && d.rows) {
+          sqlExecutionStatus.textContent = `${d.row_count} row(s) returned`;
+          sqlExecutionTime.textContent = `${d.execution_time_ms.toFixed(2)} ms`;
+
+          if (d.rows.length === 0) {
+            sqlResultsScroll.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:12px;">No rows matched the query.</div>';
+            return;
+          }
+
+          const thHtml = d.columns.map(c => `<th>${c}</th>`).join('');
+          const trHtml = d.rows.map(row => `
+            <tr>
+              ${row.map(val => `<td>${val === null ? '<span style="color:var(--text-muted);font-style:italic;">NULL</span>' : String(val)}</td>`).join('')}
+            </tr>
+          `).join('');
+
+          sqlResultsScroll.innerHTML = `
+            <table class="data-table">
+              <thead><tr>${thHtml}</tr></thead>
+              <tbody>${trHtml}</tbody>
+            </table>
+          `;
+        } else {
+          sqlExecutionStatus.textContent = `Executed successfully (${d.rows_affected || 0} rows affected)`;
+          sqlExecutionTime.textContent = `${d.execution_time_ms.toFixed(2)} ms`;
+          sqlResultsScroll.innerHTML = `<div style="padding:24px;text-align:center;color:var(--accent);font-size:13px;font-weight:600;">Query succeeded. Rows affected: ${d.rows_affected || 0}</div>`;
+        }
+      } catch (err) {
+        sqlExecutionStatus.textContent = 'Network Failure';
+        sqlResultsScroll.innerHTML = `<div style="padding:16px;color:var(--danger);font-size:12px;">${err.message}</div>`;
+      }
+    }
+
+    document.getElementById('btnRunQuery')?.addEventListener('click', runSqlQuery);
+    sqlQueryInput?.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runSqlQuery();
       }
     });
 
-    async function loadRepoMap() {
+    document.getElementById('btnSqlTplSelect')?.addEventListener('click', () => {
+      sqlQueryInput.value = 'SELECT * FROM sessions LIMIT 50;';
+    });
+    document.getElementById('btnSqlTplCount')?.addEventListener('click', () => {
+      sqlQueryInput.value = 'SELECT count(*) AS total_turns FROM turns;';
+    });
+    document.getElementById('btnSqlTplClear')?.addEventListener('click', () => {
+      sqlQueryInput.value = '';
+      sqlQueryInput.focus();
+    });
+
+    // ------------------------------------------------------------------
+    // OMNIROUTE PLAYGROUND
+    // ------------------------------------------------------------------
+    document.getElementById('btnTestOmniRoute')?.addEventListener('click', async () => {
+      const model = document.getElementById('omniModelSelect').value;
+      const prompt = document.getElementById('omniTestInput').value.trim() || 'Say hello in 1 sentence';
+      const out = document.getElementById('omniTestOutput');
+
+      out.textContent = `[Streaming from ${model} via OmniRoute Hub]...`;
+      const startT = performance.now();
+
       try {
-        const res = await fetch('/workspace/repomap?max_chars=3500').then(r => r.json());
-        document.getElementById('repoMapBox').textContent = res.repomap || 'Empty repomap.';
-      } catch (e) {
-        document.getElementById('repoMapBox').textContent = 'Error loading repomap: ' + e.message;
+        const res = await fetch(`${API_BASE}/v1/chat/completions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: model,
+            messages: [{ role: 'user', content: prompt }]
+          })
+        });
+        const data = await res.json();
+        const duration = (performance.now() - startT).toFixed(0);
+        const reply = data.choices?.[0]?.message?.content || JSON.stringify(data);
+        out.textContent = `[Latency: ${duration}ms | Tokens: ~${reply.length / 4}]
+
+${reply}`;
+      } catch (err) {
+        out.textContent = `Error testing OmniRoute: ${err.message}`;
+      }
+    });
+
+    // ------------------------------------------------------------------
+    // SUPERVISOR & JOBS
+    // ------------------------------------------------------------------
+    async function loadJobs() {
+      try {
+        const res = await fetch(`${API_BASE}/jobs/list`);
+        if (!res.ok) return;
+        const d = await res.json();
+        const jobs = d.jobs || [];
+        const body = document.getElementById('jobsTableBody');
+
+        if (jobs.length === 0) {
+          body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted);">No active background jobs</td></tr>';
+          return;
+        }
+
+        body.innerHTML = jobs.map(j => `
+          <tr>
+            <td style="font-family:'JetBrains Mono';">${j.id}</td>
+            <td style="font-family:'JetBrains Mono';font-weight:600;">${j.pid}</td>
+            <td><code>${j.command}</code></td>
+            <td><span class="status-pill running">Running</span></td>
+            <td>
+              <button type="button" class="btn-action btn-secondary" onclick="killJob('${j.id}')" style="padding:3px 8px;font-size:11px;color:var(--danger);">Kill</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (_) {}
+    }
+
+    async function killJob(id) {
+      await fetch(`${API_BASE}/jobs/kill`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      loadJobs();
+    }
+    document.getElementById('btnRefreshJobs')?.addEventListener('click', loadJobs);
+
+    // ------------------------------------------------------------------
+    // TERMINAL
+    // ------------------------------------------------------------------
+    const termInput = document.getElementById('termInput');
+    const termOutput = document.getElementById('termOutput');
+    async function runTerminalCmd() {
+      const cmd = termInput.value.trim();
+      if (!cmd) return;
+      termOutput.textContent += `
+$ ${cmd}
+`;
+      termInput.value = '';
+
+      try {
+        const res = await fetch(`${API_BASE}/terminal/exec`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ command: cmd })
+        });
+        const d = await res.json();
+        termOutput.textContent += (d.stdout || '') + (d.stderr ? '
+[ERR] ' + d.stderr : '') + '
+$ ';
+        termOutput.scrollTop = termOutput.scrollHeight;
+      } catch (err) {
+        termOutput.textContent += `Execution failed: ${err.message}
+$ `;
       }
     }
-    document.getElementById('btnRefreshRepoMap').addEventListener('click', loadRepoMap);
 
-    // Initial load
+    document.getElementById('btnRunTerm')?.addEventListener('click', runTerminalCmd);
+    termInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') runTerminalCmd();
+    });
+
+    // Boot & polling
+    document.getElementById('btnRefreshAll')?.addEventListener('click', () => {
+      fetchTelemetry();
+      loadWebsites();
+    });
+
     fetchTelemetry();
-    loadProjects();
-    loadRepoMap();
     setInterval(fetchTelemetry, 3000);
-    setInterval(loadProjects, 5000);
   </script>
 </body>
 </html>

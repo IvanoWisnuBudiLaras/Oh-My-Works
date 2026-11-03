@@ -228,6 +228,108 @@ fn check_harness_observer() -> serde_json::Value {
     serde_json::json!({ "harnesses": list })
 }
 
+
+// ----------------------------------------------------
+// SQL Studio & Website Deployer Data Models & Helpers
+// ----------------------------------------------------
+
+fn execute_sql_query(db_path: &Path, query: &str) -> serde_json::Value {
+    let start_t = std::time::Instant::now();
+    let conn = match rusqlite::Connection::open(db_path) {
+        Ok(c) => c,
+        Err(e) => return serde_json::json!({ "error": format!("Cannot open database: {}", e) }),
+    };
+
+    let trimmed = query.trim();
+    let lower = trimmed.to_ascii_lowercase();
+    let is_select = lower.starts_with("select") || lower.starts_with("pragma") || lower.starts_with("explain");
+
+    if is_select {
+        let mut stmt = match conn.prepare(trimmed) {
+            Ok(s) => s,
+            Err(e) => return serde_json::json!({ "error": format!("SQL Prepare error: {}", e) }),
+        };
+
+        let col_names: Vec<String> = stmt.column_names().into_iter().map(|s| s.to_string()).collect();
+        let mut rows = Vec::new();
+
+        let mut query_rows = match stmt.query([]) {
+            Ok(r) => r,
+            Err(e) => return serde_json::json!({ "error": format!("SQL Query error: {}", e) }),
+        };
+
+        while let Ok(Some(row)) = query_rows.next() {
+            let mut row_vals = Vec::new();
+            for i in 0..col_names.len() {
+                let val: serde_json::Value = match row.get_ref(i) {
+                    Ok(rusqlite::types::ValueRef::Null) => serde_json::Value::Null,
+                    Ok(rusqlite::types::ValueRef::Integer(n)) => serde_json::json!(n),
+                    Ok(rusqlite::types::ValueRef::Real(f)) => serde_json::json!(f),
+                    Ok(rusqlite::types::ValueRef::Text(s)) => {
+                        serde_json::json!(String::from_utf8_lossy(s).to_string())
+                    }
+                    Ok(rusqlite::types::ValueRef::Blob(b)) => {
+                        serde_json::json!(format!("<blob {}B>", b.len()))
+                    }
+                    Err(_) => serde_json::Value::Null,
+                };
+                row_vals.push(val);
+            }
+            rows.push(row_vals);
+            if rows.len() >= 500 {
+                break;
+            }
+        }
+
+        let elapsed = start_t.elapsed().as_micros() as f64 / 1000.0;
+        serde_json::json!({
+            "columns": col_names,
+            "rows": rows,
+            "row_count": rows.len(),
+            "execution_time_ms": elapsed
+        })
+    } else {
+        match conn.execute_batch(trimmed) {
+            Ok(_) => {
+                let changes = conn.changes();
+                let elapsed = start_t.elapsed().as_micros() as f64 / 1000.0;
+                serde_json::json!({
+                    "success": true,
+                    "rows_affected": changes,
+                    "execution_time_ms": elapsed
+                })
+            }
+            Err(e) => serde_json::json!({ "error": format!("SQL Execution error: {}", e) }),
+        }
+    }
+}
+
+fn load_websites_list(file_path: &Path) -> Vec<serde_json::Value> {
+    if let Ok(c) = fs::read_to_string(file_path) {
+        if let Ok(arr) = serde_json::from_str::<Vec<serde_json::Value>>(&c) {
+            return arr;
+        }
+    }
+    // Default initial website: TKA Math Web if present
+    vec![serde_json::json!({
+        "id": "site-tka-math",
+        "name": "TKA Math 2026",
+        "domain": "ivanowisnubudilaras.web.id",
+        "site_type": "proxy",
+        "port": 3000,
+        "root_dir": "/home/ivano/tka-math-web",
+        "start_cmd": "npm run preview",
+        "status": "stopped",
+        "pid": null,
+        "created_at": "2026-11-01"
+    })]
+}
+
+fn save_websites_list(file_path: &Path, list: &[serde_json::Value]) {
+    let _ = fs::write(file_path, serde_json::to_string_pretty(list).unwrap_or_else(|_| "[]".to_string()));
+}
+
+
 fn handle_client(mut stream: TcpStream) {
     let mut data = Vec::new();
     let mut buffer = [0; 8192];
@@ -899,7 +1001,228 @@ fn handle_client(mut stream: TcpStream) {
             }
         }
         ("200 OK", "application/json", serde_json::json!({ "name": name, "logs": logs }).to_string())
-    } else if uri.starts_with("/api/keys") {
+        } else if uri.starts_with("/sql/databases") {
+        let mut dbs = Vec::new();
+        let cg_db = omw.join("codegraph.db");
+        if cg_db.exists() {
+            let sz = fs::metadata(&cg_db).map(|m| m.len() / 1024).unwrap_or(0);
+            dbs.push(serde_json::json!({
+                "name": "codegraph.db (OMW Core)",
+                "path": cg_db.to_string_lossy(),
+                "size_kb": sz,
+                "is_default": true
+            }));
+        }
+        if let Ok(entries) = fs::read_dir(&omw) {
+            for entry in entries.flatten() {
+                let p = entry.path();
+                if p != cg_db && (p.extension().map_or(false, |ext| ext == "db" || ext == "sqlite" || ext == "sqlite3")) {
+                    let sz = fs::metadata(&p).map(|m| m.len() / 1024).unwrap_or(0);
+                    let fname = p.file_name().unwrap_or_default().to_string_lossy();
+                    dbs.push(serde_json::json!({
+                        "name": fname,
+                        "path": p.to_string_lossy(),
+                        "size_kb": sz,
+                        "is_default": false
+                    }));
+                }
+            }
+        }
+        ("200 OK", "application/json", serde_json::json!({ "databases": dbs }).to_string())
+    } else if uri.starts_with("/sql/tables") {
+        let db_path_str = if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            val["db_path"].as_str().unwrap_or("").to_string()
+        } else {
+            String::new()
+        };
+        let db_path = if !db_path_str.is_empty() {
+            PathBuf::from(db_path_str)
+        } else {
+            omw.join("codegraph.db")
+        };
+
+        let mut tables = Vec::new();
+        if let Ok(conn) = rusqlite::Connection::open(&db_path) {
+            if let Ok(mut stmt) = conn.prepare("SELECT name, type, sql FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' ORDER BY name") {
+                let rows_res = stmt.query_map([], |row| {
+                    Ok((
+                        row.get::<_, String>(0)?,
+                        row.get::<_, String>(1)?,
+                        row.get::<_, Option<String>>(2)?.unwrap_or_default()
+                    ))
+                });
+                if let Ok(rows) = rows_res {
+                    for r in rows.flatten() {
+                        let count_query = format!("SELECT count(*) FROM \"{}\"", r.0.replace('"', "\"\""));
+                        let row_count: i64 = conn.query_row(&count_query, [], |row| row.get(0)).unwrap_or(0);
+                        tables.push(serde_json::json!({
+                            "name": r.0,
+                            "type": r.1,
+                            "sql": r.2,
+                            "row_count": row_count
+                        }));
+                    }
+                }
+            }
+        }
+        ("200 OK", "application/json", serde_json::json!({ "tables": tables, "db_path": db_path.to_string_lossy() }).to_string())
+    } else if uri.starts_with("/sql/query") && method == "POST" {
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let db_path_str = val["db_path"].as_str().unwrap_or("");
+            let query = val["query"].as_str().unwrap_or("");
+            let db_path = if !db_path_str.is_empty() {
+                PathBuf::from(db_path_str)
+            } else {
+                omw.join("codegraph.db")
+            };
+            let res = execute_sql_query(&db_path, query);
+            ("200 OK", "application/json", res.to_string())
+        } else {
+            ("400 Bad Request", "application/json", serde_json::json!({ "error": "Invalid payload" }).to_string())
+        }
+    } else if uri.starts_with("/websites/list") {
+        let sites_file = omw.join("websites.json");
+        let mut list = load_websites_list(&sites_file);
+        for item in list.iter_mut() {
+            if let Some(obj) = item.as_object_mut() {
+                let pid = obj.get("pid").and_then(|v| v.as_u64()).map(|n| n as u32);
+                let is_alive = pid.map_or(false, is_process_alive);
+                if !is_alive && obj.get("status").and_then(|s| s.as_str()) == Some("running") {
+                    obj.insert("status".to_string(), serde_json::json!("stopped"));
+                }
+                let rss = pid.map_or(0.0, |p| if is_alive { get_process_rss_mb(p) } else { 0.0 });
+                obj.insert("rss_mb".to_string(), serde_json::json!(rss));
+            }
+        }
+        save_websites_list(&sites_file, &list);
+        ("200 OK", "application/json", serde_json::json!({ "websites": list }).to_string())
+    } else if uri.starts_with("/websites/create") && method == "POST" {
+        let sites_file = omw.join("websites.json");
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let name = val["name"].as_str().unwrap_or("New Website").to_string();
+            let domain = val["domain"].as_str().unwrap_or("localhost").to_string();
+            let site_type = val["site_type"].as_str().unwrap_or("proxy").to_string();
+            let port = val["port"].as_u64().unwrap_or(8080) as u16;
+            let root_dir = val["root_dir"].as_str().unwrap_or("").to_string();
+            let start_cmd = val["start_cmd"].as_str().unwrap_or("").to_string();
+            let id = format!("site-{}", SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis());
+
+            let mut pid = None;
+            let mut status = "stopped".to_string();
+
+            if !start_cmd.is_empty() {
+                let mut cmd = Command::new("bash");
+                cmd.arg("-c").arg(&start_cmd);
+                if !root_dir.is_empty() {
+                    cmd.current_dir(&root_dir);
+                }
+                if let Ok(child) = cmd.spawn() {
+                    pid = Some(child.id());
+                    status = "running".to_string();
+                }
+            }
+
+            let new_site = serde_json::json!({
+                "id": id,
+                "name": name,
+                "domain": domain,
+                "site_type": site_type,
+                "port": port,
+                "root_dir": root_dir,
+                "start_cmd": start_cmd,
+                "status": status,
+                "pid": pid,
+                "created_at": chrono_like_now()
+            });
+
+            let mut list = load_websites_list(&sites_file);
+            list.push(new_site.clone());
+            save_websites_list(&sites_file, &list);
+
+            ("200 OK", "application/json", serde_json::json!({ "success": true, "website": new_site }).to_string())
+        } else {
+            ("400 Bad Request", "application/json", serde_json::json!({ "error": "Invalid payload" }).to_string())
+        }
+    } else if uri.starts_with("/websites/delete") && method == "POST" {
+        let sites_file = omw.join("websites.json");
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let id = val["id"].as_str().unwrap_or("");
+            let mut list = load_websites_list(&sites_file);
+            let mut removed = false;
+            list.retain(|s| {
+                if s["id"].as_str().unwrap_or("") == id {
+                    if let Some(pid) = s["pid"].as_u64().map(|p| p as u32) {
+                        let _ = Command::new("kill").args(["-15", &pid.to_string()]).output();
+                    }
+                    removed = true;
+                    false
+                } else {
+                    true
+                }
+            });
+            save_websites_list(&sites_file, &list);
+            ("200 OK", "application/json", serde_json::json!({ "success": removed }).to_string())
+        } else {
+            ("400 Bad Request", "application/json", serde_json::json!({ "error": "Invalid payload" }).to_string())
+        }
+    } else if uri.starts_with("/websites/toggle") && method == "POST" {
+        let sites_file = omw.join("websites.json");
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let id = val["id"].as_str().unwrap_or("");
+            let mut list = load_websites_list(&sites_file);
+            let mut updated = false;
+            for s in list.iter_mut() {
+                if s["id"].as_str().unwrap_or("") == id {
+                    let cur_status = s["status"].as_str().unwrap_or("stopped");
+                    if cur_status == "running" {
+                        if let Some(pid) = s["pid"].as_u64().map(|p| p as u32) {
+                            let _ = Command::new("kill").args(["-15", &pid.to_string()]).output();
+                        }
+                        s["status"] = serde_json::json!("stopped");
+                        s["pid"] = serde_json::Value::Null;
+                    } else {
+                        let start_cmd = s["start_cmd"].as_str().unwrap_or("");
+                        let root_dir = s["root_dir"].as_str().unwrap_or("");
+                        if !start_cmd.is_empty() {
+                            let mut cmd = Command::new("bash");
+                            cmd.arg("-c").arg(start_cmd);
+                            if !root_dir.is_empty() {
+                                cmd.current_dir(root_dir);
+                            }
+                            if let Ok(child) = cmd.spawn() {
+                                s["pid"] = serde_json::json!(child.id());
+                                s["status"] = serde_json::json!("running");
+                            }
+                        } else {
+                            s["status"] = serde_json::json!("running");
+                        }
+                    }
+                    updated = true;
+                    break;
+                }
+            }
+            if updated {
+                save_websites_list(&sites_file, &list);
+            }
+            ("200 OK", "application/json", serde_json::json!({ "success": updated }).to_string())
+        } else {
+            ("400 Bad Request", "application/json", serde_json::json!({ "error": "Invalid payload" }).to_string())
+        }
+    } else if uri.starts_with("/omniroute/status") {
+        let status = serde_json::json!({
+            "active_router": "OmniRoute Native Rust Hub",
+            "proxy_endpoint": "http://127.0.0.1:9180/v1/chat/completions",
+            "lead_model": "ag/gemini-3.8-flash-high",
+            "coder_model": "mux/glm-5.3-flash",
+            "verifier_model": "cbcn/deepseek-v4-pro",
+            "total_models": 3,
+            "architecture": "2-Stage Multi-Model Ensemble",
+            "health": "healthy",
+            "uptime_seconds": SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
+        });
+        ("200 OK", "application/json", status.to_string())
+
+} else if uri.starts_with("/api/keys") {
         let keys_file = omw.join("keys.json");
         if method == "POST" {
             let _ = fs::write(&keys_file, payload);
