@@ -409,16 +409,19 @@
     }
 
     /* SQL Studio Split View */
+        /* ========================================================
+       SUPABASE STUDIO SQL EDITOR THEME & STYLES
+       ======================================================== */
     .sql-studio-grid {
       display: grid;
-      grid-template-columns: 240px 1fr;
+      grid-template-columns: 280px 1fr;
       gap: 16px;
-      height: 620px;
+      height: 640px;
     }
 
     .sql-sidebar {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
+      background: #171717;
+      border: 1px solid #282828;
       border-radius: 8px;
       display: flex;
       flex-direction: column;
@@ -427,19 +430,40 @@
 
     .sql-sidebar-header {
       padding: 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #282828;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      background: #1a1a1a;
+    }
+
+    .btn-supabase-primary {
+      background: #3ecf8e;
+      color: #121212;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      width: 100%;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-supabase-primary:hover {
+      opacity: 0.9;
     }
 
     .sql-db-select {
-      background: var(--bg-base);
-      border: 1px solid var(--border);
-      color: var(--text-bright);
+      background: #141414;
+      border: 1px solid #333;
+      color: #ededed;
       padding: 6px 8px;
       border-radius: 4px;
-      font-size: 12px;
+      font-size: 11.5px;
       outline: none;
       width: 100%;
     }
@@ -447,7 +471,7 @@
     .sql-table-list {
       flex: 1;
       overflow-y: auto;
-      padding: 8px;
+      padding: 6px 8px;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -457,23 +481,64 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 7px 10px;
+      padding: 6px 10px;
       border-radius: 4px;
-      color: var(--text);
+      color: #c9d1d9;
       font-size: 12px;
       cursor: pointer;
       transition: background 0.15s ease;
     }
 
     .sql-table-item:hover {
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-bright);
+      background: rgba(62, 207, 142, 0.08);
+      color: #ededed;
     }
 
     .sql-table-item.active {
-      background: rgba(53, 116, 240, 0.15);
-      color: var(--accent-blue);
+      background: rgba(62, 207, 142, 0.15);
+      color: #3ecf8e;
       font-weight: 600;
+    }
+
+    .badge-supabase {
+      background: rgba(62, 207, 142, 0.15);
+      color: #3ecf8e;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .sql-tpl-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+    .sql-tpl-item:hover {
+      background: rgba(62, 207, 142, 0.08);
+      color: #ededed;
+    }
+
+    .sql-history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .sql-history-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-bright);
     }
 
     .sql-main-editor {
@@ -484,8 +549,8 @@
     }
 
     .sql-editor-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
+      background: #171717;
+      border: 1px solid #282828;
       border-radius: 8px;
       display: flex;
       flex-direction: column;
@@ -494,19 +559,60 @@
 
     .sql-toolbar {
       padding: 8px 12px;
-      background: var(--bg-elevated);
-      border-bottom: 1px solid var(--border);
+      background: #1f1f1f;
+      border-bottom: 1px solid #282828;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
+    .btn-supabase-run {
+      background: #3ecf8e;
+      color: #121212;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-supabase-run:hover {
+      opacity: 0.92;
+    }
+
+    .kbd-badge {
+      background: rgba(0, 0, 0, 0.22);
+      color: #121212;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+
+    .supabase-tab-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(62, 207, 142, 0.1);
+      border: 1px solid rgba(62, 207, 142, 0.25);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #3ecf8e;
+    }
+
     .sql-textarea {
       width: 100%;
-      height: 140px;
-      background: var(--code-bg);
+      height: 150px;
+      background: #141414;
       border: none;
-      color: #e6edf3;
+      color: #ededed;
       font-family: 'JetBrains Mono', monospace;
       font-size: 12.5px;
       padding: 12px;
@@ -517,8 +623,8 @@
 
     .sql-results-box {
       flex: 1;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
+      background: #171717;
+      border: 1px solid #282828;
       border-radius: 8px;
       display: flex;
       flex-direction: column;
@@ -527,8 +633,8 @@
 
     .sql-results-header {
       padding: 8px 12px;
-      background: var(--bg-elevated);
-      border-bottom: 1px solid var(--border);
+      background: #1f1f1f;
+      border-bottom: 1px solid #282828;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -536,9 +642,414 @@
       color: var(--text-muted);
     }
 
+    .sql-badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
     .sql-results-scroll {
       flex: 1;
       overflow: auto;
+      background: #141414;
+    }
+
+    .sql-grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+    }
+    .sql-grid-table th {
+      background: #181818;
+      position: sticky;
+      top: 0;
+      padding: 8px 12px;
+      text-align: left;
+      font-size: 11px;
+      color: #8b949e;
+      border-bottom: 1px solid #2e2e2e;
+      white-space: nowrap;
+      z-index: 2;
+    }
+    .sql-grid-table td {
+      padding: 7px 12px;
+      border-bottom: 1px solid #222;
+      color: #c9d1d9;
+      white-space: nowrap;
+      max-width: 320px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sql-grid-table tr:hover td {
+      background: rgba(62, 207, 142, 0.04);
+    }
+    .sql-row-num {
+      color: #555;
+      width: 40px;
+      user-select: none;
+      text-align: right;
+      padding-right: 12px !important;
+    }
+
+    /* ========================================================
+       OMNIROUTE AI HUB (9ROUTER & OMNIROUTER PARITY)
+       ======================================================== */
+    .omni-provider-row {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      display: grid;
+      grid-template-columns: 160px 1fr 1fr 110px 80px;
+      gap: 12px;
+      align-items: center;
+      transition: border-color 0.15s;
+    }
+    .omni-provider-row:hover {
+      border-color: rgba(0, 245, 160, 0.4);
+    }
+    .omni-alias-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 11.5px;
+    }
+    .omni-cascade-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .cascade-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    /* ========================================================
+       TENCENT ORCATERM PARITY WEB TERMINAL
+       ======================================================== */
+    .orcaterm-container {
+      background: #141416;
+      border: 1px solid #282a2e;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 680px;
+    }
+    .ot-header {
+      height: 40px;
+      background: #1c1d21;
+      border-bottom: 1px solid #282a2e;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+    .ot-tabbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ot-tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: #24262b;
+      border-radius: 4px;
+      font-size: 11.5px;
+      color: #e6edf3;
+      cursor: pointer;
+    }
+    .ot-tab.active {
+      background: #2b2e35;
+      border-bottom: 2px solid #00F5A0;
+      font-weight: 600;
+    }
+    .ot-tab-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00F5A0;
+      box-shadow: 0 0 6px rgba(0, 245, 160, 0.6);
+    }
+    .ot-tab-host {
+      font-size: 10.5px;
+      color: #8b949e;
+      margin-left: 4px;
+    }
+    .ot-tab-close {
+      background: none;
+      border: none;
+      color: #8b949e;
+      font-size: 14px;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+    .ot-tab-add {
+      background: none;
+      border: none;
+      color: #8b949e;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+    .ot-mode-switcher {
+      display: flex;
+      background: #141416;
+      border: 1px solid #282a2e;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .ot-mode-btn {
+      background: none;
+      border: none;
+      color: #8b949e;
+      font-size: 11px;
+      padding: 3px 10px;
+      cursor: pointer;
+    }
+    .ot-mode-btn.active {
+      background: #2b2e35;
+      color: #00F5A0;
+      font-weight: 600;
+    }
+    .ot-toolbox {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ot-tool-btn {
+      background: none;
+      border: none;
+      color: #8b949e;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ot-tool-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .ot-main-layout {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      background: #141416;
+    }
+    .ot-aside-bar {
+      width: 44px;
+      background: #18191c;
+      border-right: 1px solid #282a2e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+      gap: 10px;
+    }
+    .ot-aside-btn {
+      background: none;
+      border: none;
+      color: #8b949e;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .ot-aside-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .ot-aside-btn.active {
+      background: #2b2e35;
+      color: #00F5A0;
+    }
+    .ot-terminal-body {
+      flex: 1;
+      padding: 12px 14px;
+      overflow-y: auto;
+      background: #141416;
+    }
+    .ot-term-screen {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      color: #7ee787;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .ot-file-manager {
+      width: 240px;
+      background: #18191c;
+      border-left: 1px solid #282a2e;
+      display: flex;
+      flex-direction: column;
+      font-size: 11.5px;
+    }
+    .ot-fm-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #282a2e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ot-fm-tree {
+      padding: 8px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .ot-bottom-panel {
+      background: #18191c;
+      border-top: 1px solid #282a2e;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ot-bottom-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+    }
+    .ot-session-badge {
+      background: #24262b;
+      border: 1px solid #33363d;
+      border-radius: 4px;
+      padding: 2px 8px;
+      color: #e6edf3;
+      font-size: 11px;
+    }
+    .ot-btn-sub {
+      background: none;
+      border: 1px solid #33363d;
+      border-radius: 4px;
+      color: #8b949e;
+      padding: 3px 10px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .ot-btn-sub:hover {
+      color: #fff;
+      border-color: #555;
+    }
+    .ot-script-menu {
+      position: absolute;
+      right: 0;
+      bottom: 100%;
+      background: #1f2126;
+      border: 1px solid #33363d;
+      border-radius: 6px;
+      padding: 4px;
+      width: 240px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      z-index: 50;
+    }
+    .ot-script-item {
+      padding: 6px 10px;
+      font-size: 11.5px;
+      color: #e6edf3;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .ot-script-item:hover {
+      background: #2b2e35;
+      color: #00F5A0;
+    }
+    .ot-command-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+    .ot-editor-input {
+      flex: 1;
+      height: 60px;
+      background: #141416;
+      border: 1px solid #282a2e;
+      border-radius: 4px;
+      color: #e6edf3;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 8px 12px;
+      resize: none;
+      outline: none;
+      line-height: 1.4;
+    }
+    .ot-btn-execute {
+      width: 90px;
+      background: transparent;
+      border: 1px solid #00F5A0;
+      border-radius: 4px;
+      color: #00F5A0;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+      transition: background 0.15s, color 0.15s;
+    }
+    .ot-btn-execute:hover {
+      background: rgba(0, 245, 160, 0.15);
+    }
+    .ot-exec-sub {
+      font-size: 9px;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+    .ot-shortcuts-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-top: 2px;
+    }
+    .ot-shortcut-label {
+      font-size: 10.5px;
+      color: #8b949e;
+      white-space: nowrap;
+    }
+    .ot-chip {
+      background: #202227;
+      border: 1px solid #2e3138;
+      border-radius: 12px;
+      color: #c9d1d9;
+      font-size: 11px;
+      padding: 2px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: 'JetBrains Mono', monospace;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .ot-chip:hover {
+      background: #2b2e35;
+      border-color: #00F5A0;
+      color: #00F5A0;
     }
 
     /* Modal */
@@ -621,20 +1132,7 @@
       background: rgba(0, 0, 0, 0.15);
     }
 
-    /* Terminal output */
-    .term-window {
-      background: #0d1117;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: #7ee787;
-      height: 480px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-    }
-  </style>
+    </style>
 </head>
 <body>
 
@@ -845,123 +1343,275 @@
       </section>
 
       <!-- TAB 3: SQL STUDIO (1Panel Database) -->
+            <!-- TAB 3: SQL STUDIO (SUPABASE STUDIO PARITY) -->
       <section class="tab-content" id="tab-sql">
         <div class="sql-studio-grid">
-          <!-- Left: Databases & Tables -->
+          <!-- Left: Supabase Sidebar -->
           <div class="sql-sidebar">
             <div class="sql-sidebar-header">
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Database</span>
+              <button type="button" class="btn-supabase-primary" id="btnNewQuery">
+                <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+                <span>New query</span>
+              </button>
+              <div style="position:relative;margin-top:6px;">
+                <input type="text" class="form-input" id="sqlTableSearch" placeholder="Filter tables..." style="padding-left:26px;font-size:11px;height:28px;">
+                <span class="material-symbols-outlined" style="position:absolute;left:6px;top:6px;font-size:14px;color:var(--text-muted);">search</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Database</span>
                 <button type="button" id="btnRefreshDbs" style="background:none;border:none;color:var(--text-muted);cursor:pointer;" title="Refresh databases">
-                  <span class="material-symbols-outlined" style="font-size:15px;">refresh</span>
+                  <span class="material-symbols-outlined" style="font-size:14px;">refresh</span>
                 </button>
               </div>
               <select class="sql-db-select" id="sqlDbSelect"></select>
             </div>
-            <div style="padding:8px 12px 4px;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">
-              Tables & Views
+
+            <!-- Tables & Views List -->
+            <div style="padding:8px 12px 4px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;display:flex;justify-content:space-between;align-items:center;">
+              <span>Tables</span>
+              <span id="sqlTableCountBadge" class="badge-supabase">0</span>
             </div>
             <div class="sql-table-list" id="sqlTableList">
               <div style="padding:10px;text-align:center;color:var(--text-muted);font-size:11px;">Scanning tables...</div>
             </div>
-          </div>
 
-          <!-- Right: SQL Editor & Results -->
-          <div class="sql-main-editor">
-            <div class="sql-editor-box">
-              <div class="sql-toolbar">
-                <div style="display:flex;gap:6px;">
-                  <button type="button" class="btn-action btn-secondary" id="btnSqlTplSelect" style="padding:3px 8px;font-size:11px;">SELECT *</button>
-                  <button type="button" class="btn-action btn-secondary" id="btnSqlTplCount" style="padding:3px 8px;font-size:11px;">COUNT(*)</button>
-                  <button type="button" class="btn-action btn-secondary" id="btnSqlTplClear" style="padding:3px 8px;font-size:11px;">Clear</button>
-                </div>
-                <button type="button" class="btn-action" id="btnRunQuery" style="padding:5px 12px;">
-                  <span class="material-symbols-outlined" style="font-size:15px;">play_arrow</span>
-                  <span>Run Query (Ctrl+Enter)</span>
-                </button>
+            <!-- Templates & Snippets -->
+            <div style="padding:8px 12px 4px;border-top:1px solid #282828;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">
+              Templates & Snippets
+            </div>
+            <div style="padding:4px 8px;display:flex;flex-direction:column;gap:2px;">
+              <div class="sql-tpl-item" onclick="loadSqlSnippet('SELECT * FROM sessions ORDER BY updated_at DESC LIMIT 50;')">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#3ecf8e;">data_object</span>
+                <span>Active Sessions</span>
               </div>
-              <textarea class="sql-textarea" id="sqlQueryInput" placeholder="SELECT * FROM sessions LIMIT 50;"></textarea>
+              <div class="sql-tpl-item" onclick="loadSqlSnippet('SELECT id, session_id, role, substr(content, 1, 80) AS snippet FROM turns ORDER BY id DESC LIMIT 50;')">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#3ecf8e;">chat</span>
+                <span>Recent Chat Turns</span>
+              </div>
+              <div class="sql-tpl-item" onclick="loadSqlSnippet('SELECT \'sessions\' AS tbl, count(*) AS cnt FROM sessions UNION ALL SELECT \'turns\', count(*) FROM turns;')">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#3ecf8e;">analytics</span>
+                <span>Record Counts</span>
+              </div>
+              <div class="sql-tpl-item" onclick="loadSqlSnippet('PRAGMA table_info(sessions);')">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#3ecf8e;">schema</span>
+                <span>Inspect Schema</span>
+              </div>
+              <div class="sql-tpl-item" onclick="loadSqlSnippet('VACUUM;')">
+                <span class="material-symbols-outlined" style="font-size:14px;color:#3ecf8e;">cleaning_services</span>
+                <span>Vacuum Database</span>
+              </div>
             </div>
 
+            <!-- Query History -->
+            <div style="padding:8px 12px 4px;border-top:1px solid #282828;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">
+              Recent History
+            </div>
+            <div id="sqlQueryHistory" style="padding:4px 8px;display:flex;flex-direction:column;gap:2px;max-height:120px;overflow-y:auto;">
+              <div style="padding:6px;color:var(--text-muted);font-size:11px;text-align:center;">No recent queries</div>
+            </div>
+          </div>
+
+          <!-- Right: Supabase Main Editor & Data Grid -->
+          <div class="sql-main-editor">
+            <!-- Supabase Editor Box -->
+            <div class="sql-editor-box">
+              <div class="sql-toolbar">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="supabase-tab-pill">
+                    <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#3ecf8e;"></span>
+                    <span id="sqlCurrentTabName">Untitled Query</span>
+                  </span>
+                  <button type="button" class="btn-action btn-secondary" id="btnSqlFormat" style="padding:3px 8px;font-size:11px;" title="Format Query">
+                    <span class="material-symbols-outlined" style="font-size:13px;">format_align_left</span>
+                    <span>Format</span>
+                  </button>
+                  <button type="button" class="btn-action btn-secondary" id="btnSqlClear" style="padding:3px 8px;font-size:11px;" title="Clear Editor">
+                    <span class="material-symbols-outlined" style="font-size:13px;">delete_sweep</span>
+                    <span>Clear</span>
+                  </button>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <button type="button" class="btn-supabase-run" id="btnRunQuery">
+                    <span class="material-symbols-outlined" style="font-size:16px;">play_arrow</span>
+                    <span>Run</span>
+                    <span class="kbd-badge">Ctrl ↵</span>
+                  </button>
+                </div>
+              </div>
+              <textarea class="sql-textarea" id="sqlQueryInput" placeholder="-- Supabase SQL Editor&#10;SELECT * FROM sessions ORDER BY updated_at DESC LIMIT 50;"></textarea>
+            </div>
+
+            <!-- Supabase Data Grid Results Box -->
             <div class="sql-results-box">
               <div class="sql-results-header">
-                <span id="sqlExecutionStatus">Ready</span>
-                <span id="sqlExecutionTime" style="font-family:'JetBrains Mono';"></span>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span id="sqlExecutionStatus" class="sql-badge-status">Ready</span>
+                  <span id="sqlExecutionTime" style="font-family:'JetBrains Mono';font-size:11px;color:#3ecf8e;"></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input type="text" class="form-input" id="sqlRowFilter" placeholder="Filter rows..." style="height:26px;font-size:11px;width:150px;padding:2px 8px;">
+                  <button type="button" class="btn-action btn-secondary" id="btnExportCsv" style="padding:3px 8px;font-size:11px;">
+                    <span class="material-symbols-outlined" style="font-size:13px;">download</span>
+                    <span>CSV</span>
+                  </button>
+                  <button type="button" class="btn-action btn-secondary" id="btnCopyJson" style="padding:3px 8px;font-size:11px;">
+                    <span class="material-symbols-outlined" style="font-size:13px;">content_copy</span>
+                    <span>JSON</span>
+                  </button>
+                </div>
               </div>
               <div class="sql-results-scroll" id="sqlResultsScroll">
-                <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:12px;">Run a query or click a table on the left to inspect records.</div>
+                <div style="padding:36px;text-align:center;color:var(--text-muted);font-size:12px;">
+                  <span class="material-symbols-outlined" style="font-size:32px;color:#3ecf8e;opacity:0.6;display:block;margin-bottom:8px;">terminal</span>
+                  Run a query with <kbd style="background:#262626;padding:2px 6px;border-radius:4px;border:1px solid #333;">Ctrl+Enter</kbd> or click a table on the left to view data.
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- TAB 4: OMNIROUTE AI HUB -->
+      <!-- TAB 4: OMNIROUTE AI HUB (9ROUTER & OMNIROUTER PARITY + BACKUP & RESTORE) -->
       <section class="tab-content" id="tab-omniroute">
+        <!-- Top Toolbar with Backup & Import -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;background:var(--bg-surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;">
+          <div>
+            <div style="font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px;">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent);">hub</span>
+              <span>OmniRoute Hub & Key Vault</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);">Unified 9Router & OmniRouter multi-provider cascade with JSON backup & restore</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="btn-action btn-secondary" id="btnOmniExport" style="padding:5px 10px;font-size:11px;">
+              <span class="material-symbols-outlined" style="font-size:14px;">download</span>
+              <span>Export Backup</span>
+            </button>
+            <button type="button" class="btn-action btn-secondary" id="btnOmniImport" style="padding:5px 10px;font-size:11px;">
+              <span class="material-symbols-outlined" style="font-size:14px;">upload</span>
+              <span>Import Backup</span>
+            </button>
+            <input type="file" id="fileOmniImport" accept=".json" style="display:none;">
+            <button type="button" class="btn-action" id="btnOmniSave" style="padding:5px 12px;font-size:11px;">
+              <span class="material-symbols-outlined" style="font-size:14px;">save</span>
+              <span>Save Changes</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Stat Cards -->
         <div class="card-grid-4">
           <div class="stat-card">
             <div class="stat-header">
-              <span>STAGE 1 LEAD ARCHITECT</span>
-              <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent);">psychology</span>
+              <span>ACTIVE PROVIDERS</span>
+              <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent);">layers</span>
             </div>
-            <div class="stat-val" style="font-size:16px;">Gemini 3.8 Flash</div>
-            <div style="font-size:11px;color:var(--accent);">High Speed / Reasoning</div>
+            <div class="stat-val" id="omniActiveProvidersVal" style="font-size:16px;">4 / 7 Active</div>
+            <div style="font-size:11px;color:var(--accent);">Gemini, OpenAI, Anthropic, DeepSeek</div>
           </div>
           <div class="stat-card">
             <div class="stat-header">
-              <span>STAGE 2 SPECIALIST CODER</span>
-              <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent-blue);">code</span>
+              <span>CASCADE ROUTING</span>
+              <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent-blue);">alt_route</span>
             </div>
-            <div class="stat-val" style="font-size:16px;">GLM 5.3 Flash</div>
-            <div style="font-size:11px;color:var(--accent-blue);">Precision Code Synthesizer</div>
+            <div class="stat-val" style="font-size:16px;">3 Tiers Active</div>
+            <div style="font-size:11px;color:var(--accent-blue);">Lead → Coder → Verifier</div>
           </div>
           <div class="stat-card">
             <div class="stat-header">
-              <span>VERIFIER & REVIEWER</span>
-              <span class="material-symbols-outlined" style="font-size:16px;color:#a855f7;">fact_check</span>
+              <span>MODEL ALIASES</span>
+              <span class="material-symbols-outlined" style="font-size:16px;color:#a855f7;">bookmarks</span>
             </div>
-            <div class="stat-val" style="font-size:16px;">DeepSeek v4 Pro</div>
-            <div style="font-size:11px;color:#a855f7;">AST & Cargo Audit</div>
+            <div class="stat-val" id="omniAliasesCountVal" style="font-size:16px;">4 Aliases</div>
+            <div style="font-size:11px;color:#a855f7;">gpt-4o, fast, coder mapped</div>
           </div>
           <div class="stat-card">
             <div class="stat-header">
-              <span>TOKEN OPTIMIZER</span>
-              <span class="material-symbols-outlined" style="font-size:16px;color:var(--warning);">compress</span>
+              <span>FAILOVER POLICY</span>
+              <span class="material-symbols-outlined" style="font-size:16px;color:var(--warning);">shield</span>
             </div>
-            <div class="stat-val" style="font-size:16px;">85-95% Saved</div>
-            <div style="font-size:11px;color:var(--warning);">Sliding 4-Turn Window</div>
+            <div class="stat-val" style="font-size:16px;">Auto-Retry</div>
+            <div style="font-size:11px;color:var(--warning);">Max 3 retries, 30s timeout</div>
           </div>
         </div>
 
+        <!-- Provider Registry Table -->
         <div class="panel-box">
           <div class="panel-box-header">
             <div class="panel-box-title">
-              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent);">hub</span>
-              <span>OpenAI-Compatible OmniRoute Endpoint</span>
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent);">key</span>
+              <span>AI Providers & API Key Vault</span>
             </div>
           </div>
-          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">
-            Oh-My-Works server daemon exposes a standardized OpenAI proxy endpoint with automatic failover and token optimization:
-          </p>
-          <div style="background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:space-between;">
-            <span style="color:#00F5A0;">POST http://127.0.0.1:9180/v1/chat/completions</span>
-            <button type="button" class="btn-action btn-secondary" onclick="navigator.clipboard.writeText('http://127.0.0.1:9180/v1/chat/completions');alert('Copied endpoint!');" style="padding:4px 8px;font-size:11px;">Copy URL</button>
+          <div id="omniProvidersList" style="display:flex;flex-direction:column;gap:10px;">
+            <!-- Dynamically populated provider cards -->
           </div>
         </div>
 
+        <!-- Model Aliases & Cascade Chain -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <!-- Left: Model Aliases -->
+          <div class="panel-box">
+            <div class="panel-box-header">
+              <div class="panel-box-title">
+                <span class="material-symbols-outlined" style="font-size:18px;color:#a855f7;">swap_horiz</span>
+                <span>Model Aliases Mapping</span>
+              </div>
+              <button type="button" class="btn-action btn-secondary" id="btnAddAlias" style="padding:3px 8px;font-size:11px;">+ Add Alias</button>
+            </div>
+            <div id="omniAliasesList" style="display:flex;flex-direction:column;gap:6px;">
+              <!-- Dynamically populated aliases -->
+            </div>
+          </div>
+
+          <!-- Right: Cascade Fallback Chain -->
+          <div class="panel-box">
+            <div class="panel-box-header">
+              <div class="panel-box-title">
+                <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-blue);">account_tree</span>
+                <span>Cascade Failover Chain</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">
+              Sequential fallback if upstream provider returns 429 rate limit, 500 error, or timeout:
+            </div>
+            <div id="omniCascadeList" style="display:flex;flex-direction:column;gap:6px;">
+              <!-- Dynamically populated cascade items -->
+            </div>
+            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:12px;">
+              <div style="flex:1;">
+                <label class="form-label">Timeout (seconds)</label>
+                <input type="number" class="form-input" id="omniTimeoutInput" value="30" style="height:30px;font-size:11px;">
+              </div>
+              <div style="flex:1;">
+                <label class="form-label">Max Retries</label>
+                <input type="number" class="form-input" id="omniRetriesInput" value="3" style="height:30px;font-size:11px;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OpenAI Proxy & Live Playground -->
         <div class="panel-box">
           <div class="panel-box-header">
             <div class="panel-box-title">
               <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-blue);">terminal</span>
-              <span>OmniRoute Live Test Playground</span>
+              <span>OpenAI Proxy Endpoint & Live Test</span>
             </div>
+          </div>
+          <div style="background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="color:#00F5A0;">POST http://127.0.0.1:9180/v1/chat/completions</span>
+            <button type="button" class="btn-action btn-secondary" onclick="navigator.clipboard.writeText('http://127.0.0.1:9180/v1/chat/completions');alert('Copied proxy endpoint!');" style="padding:4px 8px;font-size:11px;">Copy URL</button>
           </div>
           <div style="display:flex;flex-direction:column;gap:10px;">
             <div style="display:flex;gap:10px;">
               <select class="form-select" id="omniModelSelect" style="flex:1;">
-                <option value="ag/gemini-3.8-flash-high">Stage 1: ag/gemini-3.8-flash-high</option>
-                <option value="mux/glm-5.3-flash">Stage 2: mux/glm-5.3-flash</option>
-                <option value="cbcn/deepseek-v4-pro">Specialist: cbcn/deepseek-v4-pro</option>
+                <option value="gpt-4o">gpt-4o (Alias)</option>
+                <option value="fast">fast (Alias)</option>
+                <option value="coder">coder (Alias)</option>
+                <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                <option value="gpt-4o-mini">gpt-4o-mini</option>
+                <option value="deepseek-chat">deepseek-chat</option>
               </select>
               <button type="button" class="btn-action" id="btnTestOmniRoute">
                 <span class="material-symbols-outlined" style="font-size:15px;">send</span>
@@ -969,7 +1619,7 @@
               </button>
             </div>
             <textarea class="form-input" id="omniTestInput" style="height:60px;resize:none;" placeholder="Say hello in 1 sentence..."></textarea>
-            <div style="background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:12px;min-height:80px;font-family:'JetBrains Mono',monospace;font-size:12px;white-space:pre-wrap;" id="omniTestOutput">Response preview will appear here...</div>
+            <div style="background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:12px;min-height:70px;font-family:'JetBrains Mono',monospace;font-size:12px;white-space:pre-wrap;" id="omniTestOutput">Response preview will appear here...</div>
           </div>
         </div>
       </section>
@@ -1007,20 +1657,121 @@
       </section>
 
       <!-- TAB 6: TERMINAL -->
+            <!-- TAB 6: TENCENT ORCATERM PARITY WEB TERMINAL -->
       <section class="tab-content" id="tab-terminal">
-        <div class="panel-box">
-          <div class="panel-box-header">
-            <div class="panel-box-title">
-              <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent-blue);">terminal</span>
-              <span>Server Web Terminal</span>
+        <div class="orcaterm-container">
+          <!-- OrcaTerm Header Bar -->
+          <div class="ot-header">
+            <!-- Left: Tab Bar -->
+            <div class="ot-tabbar">
+              <div class="ot-tab active" id="otTabCurrent">
+                <span class="ot-tab-dot"></span>
+                <span class="ot-tab-title">1 My Server</span>
+                <span class="ot-tab-host">root@VM-0-7-debian:/root</span>
+                <button type="button" class="ot-tab-close" title="Close Session">×</button>
+              </div>
+              <button type="button" class="ot-tab-add" title="New Terminal Tab">+</button>
+            </div>
+
+            <!-- Center: Mode Switcher -->
+            <div class="ot-mode-switcher">
+              <button type="button" class="ot-mode-btn active" id="otModeShell">Shell</button>
+              <button type="button" class="ot-mode-btn" id="otModeAgent">Agent</button>
+            </div>
+
+            <!-- Right: Toolbox -->
+            <div class="ot-toolbox">
+              <button type="button" class="ot-tool-btn" id="otBtnClearTerm" title="Clear Terminal">
+                <span class="material-symbols-outlined" style="font-size:15px;">delete_sweep</span>
+              </button>
+              <button type="button" class="ot-tool-btn" id="otBtnSplitTerm" title="Split Screen">
+                <span class="material-symbols-outlined" style="font-size:15px;">vertical_split</span>
+              </button>
+              <button type="button" class="ot-tool-btn" id="otBtnFullscreenTerm" title="Fullscreen">
+                <span class="material-symbols-outlined" style="font-size:15px;">fullscreen</span>
+              </button>
+              <button type="button" class="ot-tool-btn" id="otBtnRefreshTerm" title="Reconnect">
+                <span class="material-symbols-outlined" style="font-size:15px;">refresh</span>
+              </button>
             </div>
           </div>
-          <div class="term-window" id="termOutput">OMW Web Terminal (Pure Rust Daemon)
-Type a bash command below and press Enter...
-$ </div>
-          <div style="display:flex;gap:8px;">
-            <input type="text" class="form-input" id="termInput" placeholder="uptime; free -m; ps aux | grep omw" style="flex:1;font-family:'JetBrains Mono';">
-            <button type="button" class="btn-action" id="btnRunTerm">Execute</button>
+
+          <!-- Main Layout: Sidebar + Terminal Viewport -->
+          <div class="ot-main-layout">
+            <!-- Left Vertical Icon Bar (OrcaTerm aside) -->
+            <div class="ot-aside-bar">
+              <button type="button" class="ot-aside-btn active" id="otBtnNavTerminal" title="Terminal">
+                <span class="material-symbols-outlined" style="font-size:18px;">terminal</span>
+              </button>
+              <button type="button" class="ot-aside-btn" id="otBtnNavFileManager" title="File Manager">
+                <span class="material-symbols-outlined" style="font-size:18px;">folder_open</span>
+              </button>
+              <button type="button" class="ot-aside-btn" id="otBtnNavMonitor" title="System Monitor">
+                <span class="material-symbols-outlined" style="font-size:18px;">monitoring</span>
+              </button>
+            </div>
+
+            <!-- Center Terminal Buffer -->
+            <div class="ot-terminal-body">
+              <div class="ot-term-screen" id="termOutput">Tencent Cloud OrcaTerm (Oh-My-Works Embedded Pure Rust Daemon)
+Linux VM-0-7-debian 6.1.0-28-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.119-1 x86_64
+root@VM-0-7-debian:~# </div>
+            </div>
+
+            <!-- Collapsible File Manager Panel (OrcaTerm sftp-panel) -->
+            <div class="ot-file-manager" id="otFileManagerPanel" style="display:none;">
+              <div class="ot-fm-header">
+                <span style="font-weight:600;font-size:12px;">File Manager</span>
+                <button type="button" id="otBtnCloseFm" style="background:none;border:none;color:var(--text-muted);cursor:pointer;">×</button>
+              </div>
+              <div class="ot-fm-tree" id="otFmTree">Loading server files...</div>
+            </div>
+          </div>
+
+          <!-- OrcaTerm Bottom Multi-Servers & Command Executor -->
+          <div class="ot-bottom-panel">
+            <div class="ot-bottom-header">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-size:11px;color:var(--text-muted);">send to</span>
+                <span class="ot-session-badge">current session (1 Session Connected)</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="dropdown" style="position:relative;">
+                  <button type="button" class="ot-btn-sub" id="otBtnScriptLib">Script Library ▾</button>
+                  <div class="ot-script-menu" id="otScriptMenu" style="display:none;">
+                    <div class="ot-script-item" onclick="insertOtScript('systemctl status omw-server-daemon caddy')">Check Services Status</div>
+                    <div class="ot-script-item" onclick="insertOtScript('free -h && df -h')">Check Memory & Disk</div>
+                    <div class="ot-script-item" onclick="insertOtScript('netstat -tlpn')">Inspect Open Ports</div>
+                    <div class="ot-script-item" onclick="insertOtScript('docker ps -a')">Docker Containers</div>
+                    <div class="ot-script-item" onclick="insertOtScript('journalctl -u caddy -n 50 --no-pager')">Caddy Web Logs</div>
+                  </div>
+                </div>
+                <button type="button" class="ot-btn-sub" id="otBtnClearCommand">Clear</button>
+              </div>
+            </div>
+
+            <!-- Command input row with Monaco-style editor and signature Outline Execute Button -->
+            <div class="ot-command-row">
+              <textarea class="ot-editor-input" id="termInput" placeholder="Execute the command, press Enter to wrap, press Ctrl+Enter to run command"></textarea>
+              <button type="button" class="ot-btn-execute" id="btnRunTerm">
+                <span>Execute</span>
+                <span class="ot-exec-sub">Ctrl</span>
+                <span class="ot-exec-sub">Enter</span>
+              </button>
+            </div>
+
+            <!-- OrcaTerm Shortcut Commands Bar -->
+            <div class="ot-shortcuts-row">
+              <span class="ot-shortcut-label">Shortcut Command:</span>
+              <button type="button" class="ot-chip" onclick="runOtQuickCmd('htop -b -n 1 | head -n 25')">htop</button>
+              <button type="button" class="ot-chip" onclick="runOtQuickCmd('free -m')">free -m</button>
+              <button type="button" class="ot-chip" onclick="runOtQuickCmd('df -h')">df -h</button>
+              <button type="button" class="ot-chip" onclick="runOtQuickCmd('systemctl status caddy --no-pager')">caddy status</button>
+              <button type="button" class="ot-chip" onclick="runOtQuickCmd('ps aux | grep omw')">ps omw</button>
+              <button type="button" class="ot-chip" onclick="runOtQuickCmd('docker ps')">docker ps</button>
+              <button type="button" class="ot-chip" onclick="runOtQuickCmd('uptime')">uptime</button>
+              <button type="button" class="ot-chip" onclick="runOtQuickCmd('netstat -tlpn')">netstat</button>
+            </div>
           </div>
         </div>
       </section>
@@ -1109,6 +1860,7 @@ $ </div>
 
       if (tabId === 'tab-websites') loadWebsites();
       if (tabId === 'tab-sql') loadDatabases();
+      if (tabId === 'tab-omniroute') loadOmniConfig();
       if (tabId === 'tab-supervisor') loadJobs();
     }
 
@@ -1256,14 +2008,22 @@ $ </div>
 
 
     // ------------------------------------------------------------------
-    // SQL STUDIO (1Panel Database Style)
+    // SQL STUDIO (SUPABASE STUDIO PARITY)
     // ------------------------------------------------------------------
     const sqlDbSelect = document.getElementById('sqlDbSelect');
     const sqlTableList = document.getElementById('sqlTableList');
+    const sqlTableSearch = document.getElementById('sqlTableSearch');
     const sqlQueryInput = document.getElementById('sqlQueryInput');
     const sqlResultsScroll = document.getElementById('sqlResultsScroll');
     const sqlExecutionStatus = document.getElementById('sqlExecutionStatus');
     const sqlExecutionTime = document.getElementById('sqlExecutionTime');
+    const sqlTableCountBadge = document.getElementById('sqlTableCountBadge');
+    const sqlRowFilter = document.getElementById('sqlRowFilter');
+    const sqlCurrentTabName = document.getElementById('sqlCurrentTabName');
+    const sqlQueryHistory = document.getElementById('sqlQueryHistory');
+
+    let currentSqlResult = null;
+    let cachedTables = [];
 
     async function loadDatabases() {
       try {
@@ -1279,133 +2039,484 @@ $ </div>
         if (dbs.length > 0) {
           loadTables(sqlDbSelect.value);
         }
-      } catch (_) {}
+      } catch (err) {
+        console.error('Failed to load databases:', err);
+      }
     }
 
-    sqlDbSelect?.addEventListener('change', () => loadTables(sqlDbSelect.value));
     document.getElementById('btnRefreshDbs')?.addEventListener('click', loadDatabases);
+    sqlDbSelect?.addEventListener('change', () => loadTables(sqlDbSelect.value));
 
     async function loadTables(dbPath) {
+      if (!dbPath) return;
       try {
-        sqlTableList.innerHTML = '<div style="padding:10px;text-align:center;color:var(--text-muted);font-size:11px;">Loading tables...</div>';
+        sqlTableList.innerHTML = '<div style="padding:10px;text-align:center;color:var(--text-muted);font-size:11px;">Scanning tables...</div>';
         const res = await fetch(`${API_BASE}/sql/tables`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ db_path: dbPath })
         });
-        if (!res.ok) return;
-        const data = await res.json();
-        const tables = data.tables || [];
-
-        if (tables.length === 0) {
-          sqlTableList.innerHTML = '<div style="padding:10px;text-align:center;color:var(--text-muted);font-size:11px;">No user tables found</div>';
-          return;
-        }
-
-        sqlTableList.innerHTML = tables.map(t => `
-          <div class="sql-table-item" onclick="selectTable('${t.name}')">
-            <span style="font-weight:500;">${t.name}</span>
-            <span style="font-size:10px;padding:1px 5px;background:rgba(255,255,255,0.06);border-radius:3px;font-family:'JetBrains Mono';">${t.row_count}</span>
-          </div>
-        `).join('');
+        const d = await res.json();
+        cachedTables = d.tables || [];
+        if (sqlTableCountBadge) sqlTableCountBadge.textContent = cachedTables.length;
+        renderFilteredTables();
       } catch (err) {
         sqlTableList.innerHTML = `<div style="padding:10px;color:var(--danger);font-size:11px;">${err.message}</div>`;
       }
     }
 
+    function renderFilteredTables() {
+      const q = (sqlTableSearch?.value || '').toLowerCase().trim();
+      const filtered = cachedTables.filter(t => t.name.toLowerCase().includes(q));
+
+      if (filtered.length === 0) {
+        sqlTableList.innerHTML = '<div style="padding:10px;text-align:center;color:var(--text-muted);font-size:11px;">No matching tables</div>';
+        return;
+      }
+
+      sqlTableList.innerHTML = filtered.map(t => `
+        <div class="sql-table-item" onclick="selectTable('${t.name}')">
+          <div style="display:flex;align-items:center;gap:6px;min-width:0;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:var(--text-muted);">table_chart</span>
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.name}</span>
+          </div>
+          <span style="font-size:10px;color:var(--text-muted);font-family:'JetBrains Mono';">${t.row_count}</span>
+        </div>
+      `).join('');
+    }
+
+    sqlTableSearch?.addEventListener('input', renderFilteredTables);
+
     function selectTable(tableName) {
       document.querySelectorAll('.sql-table-item').forEach(el => {
         el.classList.toggle('active', el.textContent.includes(tableName));
       });
+      if (sqlCurrentTabName) sqlCurrentTabName.textContent = tableName;
       sqlQueryInput.value = `SELECT * FROM "${tableName}" LIMIT 50;`;
       runSqlQuery();
     }
+
+    function loadSqlSnippet(query) {
+      sqlQueryInput.value = query;
+      if (sqlCurrentTabName) sqlCurrentTabName.textContent = 'Snippet';
+      sqlQueryInput.focus();
+    }
+
+    function saveQueryToHistory(query) {
+      try {
+        let hist = JSON.parse(localStorage.getItem('omw_sql_history') || '[]');
+        hist = [query, ...hist.filter(q => q !== query)].slice(0, 10);
+        localStorage.setItem('omw_sql_history', JSON.stringify(hist));
+        renderQueryHistory();
+      } catch (_) {}
+    }
+
+    function renderQueryHistory() {
+      if (!sqlQueryHistory) return;
+      try {
+        const hist = JSON.parse(localStorage.getItem('omw_sql_history') || '[]');
+        if (hist.length === 0) {
+          sqlQueryHistory.innerHTML = '<div style="padding:6px;color:var(--text-muted);font-size:11px;text-align:center;">No recent queries</div>';
+          return;
+        }
+        sqlQueryHistory.innerHTML = hist.map(q => `
+          <div class="sql-history-item" onclick="loadSqlSnippet('${q.replace(/'/g, "\'")}')" title="${q}">
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;">${q}</span>
+            <span class="material-symbols-outlined" style="font-size:12px;">history</span>
+          </div>
+        `).join('');
+      } catch (_) {}
+    }
+    renderQueryHistory();
 
     async function runSqlQuery() {
       const dbPath = sqlDbSelect.value;
       const query = sqlQueryInput.value.trim();
       if (!query) return;
 
-      sqlExecutionStatus.textContent = 'Executing query...';
+      saveQueryToHistory(query);
+
+      sqlExecutionStatus.innerHTML = '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#eab308;animation:pulse 1s infinite;"></span> Executing...';
       sqlExecutionTime.textContent = '';
-      sqlResultsScroll.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:12px;">Query in flight...</div>';
+      sqlResultsScroll.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:12px;">Executing SQL on server...</div>';
 
       try {
         const res = await fetch(`${API_BASE}/sql/query`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ db_path: dbPath, query })
+          body: JSON.stringify({ db_path: dbPath, query: query })
         });
         const d = await res.json();
+        currentSqlResult = d;
 
         if (d.error) {
-          sqlExecutionStatus.textContent = 'Error';
+          sqlExecutionStatus.innerHTML = '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--danger);"></span> Error';
           sqlResultsScroll.innerHTML = `<div style="padding:16px;color:var(--danger);font-family:'JetBrains Mono';font-size:12px;white-space:pre-wrap;">${d.error}</div>`;
           return;
         }
 
         if (d.columns && d.rows) {
-          sqlExecutionStatus.textContent = `${d.row_count} row(s) returned`;
+          sqlExecutionStatus.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#3ecf8e;"></span> ${d.row_count} row(s) returned`;
           sqlExecutionTime.textContent = `${d.execution_time_ms.toFixed(2)} ms`;
 
           if (d.rows.length === 0) {
-            sqlResultsScroll.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:12px;">No rows matched the query.</div>';
+            sqlResultsScroll.innerHTML = '<div style="padding:36px;text-align:center;color:var(--text-muted);font-size:12px;">Query executed successfully with zero records returned.</div>';
             return;
           }
 
-          const thHtml = d.columns.map(c => `<th>${c}</th>`).join('');
-          const trHtml = d.rows.map(row => `
-            <tr>
-              ${row.map(val => `<td>${val === null ? '<span style="color:var(--text-muted);font-style:italic;">NULL</span>' : String(val)}</td>`).join('')}
-            </tr>
-          `).join('');
-
-          sqlResultsScroll.innerHTML = `
-            <table class="data-table">
-              <thead><tr>${thHtml}</tr></thead>
-              <tbody>${trHtml}</tbody>
-            </table>
-          `;
+          renderSqlDataGrid(d.columns, d.rows);
         } else {
-          sqlExecutionStatus.textContent = `Executed successfully (${d.rows_affected || 0} rows affected)`;
+          sqlExecutionStatus.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#3ecf8e;"></span> Executed (${d.rows_affected || 0} rows affected)`;
           sqlExecutionTime.textContent = `${d.execution_time_ms.toFixed(2)} ms`;
-          sqlResultsScroll.innerHTML = `<div style="padding:24px;text-align:center;color:var(--accent);font-size:13px;font-weight:600;">Query succeeded. Rows affected: ${d.rows_affected || 0}</div>`;
+          sqlResultsScroll.innerHTML = `<div style="padding:24px;text-align:center;color:#3ecf8e;font-size:12px;">Query executed successfully (${d.rows_affected || 0} rows affected).</div>`;
         }
       } catch (err) {
-        sqlExecutionStatus.textContent = 'Network Failure';
+        sqlExecutionStatus.innerHTML = '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--danger);"></span> Network Failure';
         sqlResultsScroll.innerHTML = `<div style="padding:16px;color:var(--danger);font-size:12px;">${err.message}</div>`;
       }
     }
 
+    function renderSqlDataGrid(columns, rows) {
+      const q = (sqlRowFilter?.value || '').toLowerCase().trim();
+      const filteredRows = q ? rows.filter(r => r.some(v => String(v ?? '').toLowerCase().includes(q))) : rows;
+
+      sqlResultsScroll.innerHTML = `
+        <table class="sql-grid-table">
+          <thead>
+            <tr>
+              <th class="sql-row-num">#</th>
+              ${columns.map(col => `<th>${col}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${filteredRows.map((row, rIdx) => `
+              <tr>
+                <td class="sql-row-num">${rIdx + 1}</td>
+                ${row.map(cell => {
+                  if (cell === null) return '<td style="color:#666;font-style:italic;">null</td>';
+                  const s = String(cell);
+                  return `<td title="${s.replace(/"/g, '&quot;')}">${s}</td>`;
+                }).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    sqlRowFilter?.addEventListener('input', () => {
+      if (currentSqlResult && currentSqlResult.columns && currentSqlResult.rows) {
+        renderSqlDataGrid(currentSqlResult.columns, currentSqlResult.rows);
+      }
+    });
+
     document.getElementById('btnRunQuery')?.addEventListener('click', runSqlQuery);
     sqlQueryInput?.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         runSqlQuery();
       }
     });
 
-    document.getElementById('btnSqlTplSelect')?.addEventListener('click', () => {
-      sqlQueryInput.value = 'SELECT * FROM sessions LIMIT 50;';
+    document.getElementById('btnNewQuery')?.addEventListener('click', () => {
+      sqlQueryInput.value = '';
+      if (sqlCurrentTabName) sqlCurrentTabName.textContent = 'Untitled Query';
+      sqlQueryInput.focus();
     });
-    document.getElementById('btnSqlTplCount')?.addEventListener('click', () => {
-      sqlQueryInput.value = 'SELECT count(*) AS total_turns FROM turns;';
-    });
-    document.getElementById('btnSqlTplClear')?.addEventListener('click', () => {
+
+    document.getElementById('btnSqlClear')?.addEventListener('click', () => {
       sqlQueryInput.value = '';
       sqlQueryInput.focus();
     });
 
+    document.getElementById('btnSqlFormat')?.addEventListener('click', () => {
+      let q = sqlQueryInput.value;
+      q = q.replace(/\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|LIMIT|LEFT JOIN|INNER JOIN|JOIN|UNION ALL|UPDATE|INSERT INTO|VALUES|DELETE FROM)\b/gi, (m) => `\n${m.toUpperCase()}`);
+      sqlQueryInput.value = q.trim();
+    });
+
+    document.getElementById('btnExportCsv')?.addEventListener('click', () => {
+      if (!currentSqlResult || !currentSqlResult.columns || !currentSqlResult.rows) {
+        alert('Run a query with results first!');
+        return;
+      }
+      const cols = currentSqlResult.columns;
+      const rows = currentSqlResult.rows;
+      let csv = cols.map(c => `"${c.replace(/"/g, '""')}"`).join(',') + '\n';
+      rows.forEach(r => {
+        csv += r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',') + '\n';
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `query-export-${Date.now()}.csv`;
+      a.click();
+    });
+
+    document.getElementById('btnCopyJson')?.addEventListener('click', () => {
+      if (!currentSqlResult || !currentSqlResult.columns || !currentSqlResult.rows) {
+        alert('Run a query with results first!');
+        return;
+      }
+      const cols = currentSqlResult.columns;
+      const objects = currentSqlResult.rows.map(r => {
+        const obj = {};
+        cols.forEach((c, idx) => { obj[c] = r[idx]; });
+        return obj;
+      });
+      navigator.clipboard.writeText(JSON.stringify(objects, null, 2));
+      alert('Copied results as JSON to clipboard!');
+    });
+
     // ------------------------------------------------------------------
-    // OMNIROUTE PLAYGROUND
+    // OMNIROUTE AI HUB (9ROUTER & OMNIROUTER PARITY + BACKUP & RESTORE)
     // ------------------------------------------------------------------
+    let omniConfig = null;
+
+    async function loadOmniConfig() {
+      try {
+        const res = await fetch(`${API_BASE}/omniroute/config`);
+        if (!res.ok) return;
+        omniConfig = await res.json();
+        renderOmniUI();
+      } catch (err) {
+        console.error('Failed to load OmniRoute config:', err);
+      }
+    }
+
+    function renderOmniUI() {
+      if (!omniConfig) return;
+      const providers = omniConfig.providers || [];
+      const aliases = omniConfig.aliases || {};
+      const cascade = omniConfig.cascade || [];
+
+      // Update stat counters
+      const activeCount = providers.filter(p => p.enabled).length;
+      const provVal = document.getElementById('omniActiveProvidersVal');
+      if (provVal) provVal.textContent = `${activeCount} / ${providers.length} Active`;
+
+      const aliasCount = Object.keys(aliases).length;
+      const aliasVal = document.getElementById('omniAliasesCountVal');
+      if (aliasVal) aliasVal.textContent = `${aliasCount} Aliases`;
+
+      // Render Providers
+      const provList = document.getElementById('omniProvidersList');
+      if (provList) {
+        provList.innerHTML = providers.map((p, idx) => `
+          <div class="omni-provider-row">
+            <div>
+              <div style="font-weight:700;font-size:12.5px;color:var(--text-bright);display:flex;align-items:center;gap:6px;">
+                <span class="material-symbols-outlined" style="font-size:15px;color:${p.enabled ? '#00F5A0' : 'var(--text-muted)'};">
+                  ${p.enabled ? 'check_circle' : 'radio_button_unchecked'}
+                </span>
+                <span>${p.name}</span>
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);">${(p.models || []).slice(0, 2).join(', ')}</div>
+            </div>
+            <div>
+              <input type="text" class="form-input" style="font-family:'JetBrains Mono';font-size:11px;height:30px;" value="${p.base_url}" onchange="updateProviderField(${idx}, 'base_url', this.value)" placeholder="Base URL">
+            </div>
+            <div style="position:relative;">
+              <input type="password" id="keyInput_${p.id}" class="form-input" style="font-family:'JetBrains Mono';font-size:11px;height:30px;padding-right:26px;" value="${p.api_key || ''}" onchange="updateProviderField(${idx}, 'api_key', this.value)" placeholder="sk-...">
+              <span class="material-symbols-outlined" onclick="toggleKeyVisibility('${p.id}')" style="position:absolute;right:6px;top:7px;font-size:14px;color:var(--text-muted);cursor:pointer;">visibility</span>
+            </div>
+            <div>
+              <label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;">
+                <input type="checkbox" ${p.enabled ? 'checked' : ''} onchange="updateProviderField(${idx}, 'enabled', this.checked)">
+                <span>${p.enabled ? 'Enabled' : 'Disabled'}</span>
+              </label>
+            </div>
+            <div>
+              <button type="button" class="btn-action btn-secondary" id="btnTest_${p.id}" onclick="testOmniProvider('${p.id}')" style="padding:4px 8px;font-size:10.5px;width:100%;">
+                Test
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Render Aliases
+      const aliasList = document.getElementById('omniAliasesList');
+      if (aliasList) {
+        aliasList.innerHTML = Object.entries(aliases).map(([alias, target]) => `
+          <div class="omni-alias-row">
+            <span style="font-weight:700;color:var(--accent-blue);font-family:'JetBrains Mono';width:100px;">${alias}</span>
+            <span class="material-symbols-outlined" style="font-size:13px;color:var(--text-muted);">arrow_forward</span>
+            <input type="text" class="form-input" style="flex:1;height:26px;font-size:11px;font-family:'JetBrains Mono';" value="${target}" onchange="updateAlias('${alias}', this.value)">
+            <button type="button" onclick="deleteAlias('${alias}')" style="background:none;border:none;color:var(--danger);cursor:pointer;">
+              <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
+            </button>
+          </div>
+        `).join('');
+      }
+
+      // Render Cascade
+      const cascadeList = document.getElementById('omniCascadeList');
+      if (cascadeList) {
+        cascadeList.innerHTML = cascade.map((step, idx) => `
+          <div class="omni-cascade-step">
+            <span class="cascade-badge" style="background:rgba(53,116,240,0.15);color:var(--accent-blue);">Tier ${idx + 1}</span>
+            <input type="text" class="form-input" style="flex:1;height:28px;font-size:11.5px;font-family:'JetBrains Mono';" value="${step}" onchange="updateCascadeStep(${idx}, this.value)">
+            <span class="material-symbols-outlined" style="font-size:14px;color:var(--text-muted);">${idx < cascade.length - 1 ? 'south' : 'check'}</span>
+          </div>
+        `).join('');
+      }
+
+      // Populate settings
+      const timeoutInput = document.getElementById('omniTimeoutInput');
+      if (timeoutInput && omniConfig.timeout_secs) timeoutInput.value = omniConfig.timeout_secs;
+      const retriesInput = document.getElementById('omniRetriesInput');
+      if (retriesInput && omniConfig.max_retries) retriesInput.value = omniConfig.max_retries;
+    }
+
+    function updateProviderField(idx, field, val) {
+      if (!omniConfig || !omniConfig.providers) return;
+      omniConfig.providers[idx][field] = val;
+    }
+
+    function toggleKeyVisibility(id) {
+      const inp = document.getElementById(`keyInput_${id}`);
+      if (inp) {
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+      }
+    }
+
+    async function testOmniProvider(id) {
+      if (!omniConfig) return;
+      const p = omniConfig.providers.find(prov => prov.id === id);
+      if (!p) return;
+      const btn = document.getElementById(`btnTest_${id}`);
+      if (btn) btn.textContent = 'Testing...';
+
+      try {
+        const res = await fetch(`${API_BASE}/omniroute/test`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ base_url: p.base_url, api_key: p.api_key })
+        });
+        const d = await res.json();
+        if (d.ok) {
+          if (btn) {
+            btn.textContent = `✓ ${d.latency_ms}ms`;
+            btn.style.color = '#00F5A0';
+          }
+        } else {
+          if (btn) {
+            btn.textContent = '✗ Fail';
+            btn.style.color = 'var(--danger)';
+          }
+        }
+      } catch (err) {
+        if (btn) {
+          btn.textContent = '✗ Err';
+          btn.style.color = 'var(--danger)';
+        }
+      }
+    }
+
+    function updateAlias(alias, newTarget) {
+      if (!omniConfig || !omniConfig.aliases) return;
+      omniConfig.aliases[alias] = newTarget;
+    }
+
+    function deleteAlias(alias) {
+      if (!omniConfig || !omniConfig.aliases) return;
+      delete omniConfig.aliases[alias];
+      renderOmniUI();
+    }
+
+    document.getElementById('btnAddAlias')?.addEventListener('click', () => {
+      const name = prompt('Enter alias name (e.g. smart-model):');
+      if (!name) return;
+      const target = prompt('Enter target model identifier (e.g. gemini-2.5-pro):');
+      if (!target) return;
+      if (!omniConfig) omniConfig = { aliases: {} };
+      if (!omniConfig.aliases) omniConfig.aliases = {};
+      omniConfig.aliases[name.trim()] = target.trim();
+      renderOmniUI();
+    });
+
+    function updateCascadeStep(idx, val) {
+      if (!omniConfig || !omniConfig.cascade) return;
+      omniConfig.cascade[idx] = val;
+    }
+
+    // Save OmniRoute Configuration
+    document.getElementById('btnOmniSave')?.addEventListener('click', async () => {
+      if (!omniConfig) return;
+      const timeoutInput = document.getElementById('omniTimeoutInput');
+      if (timeoutInput) omniConfig.timeout_secs = parseInt(timeoutInput.value, 10) || 30;
+      const retriesInput = document.getElementById('omniRetriesInput');
+      if (retriesInput) omniConfig.max_retries = parseInt(retriesInput.value, 10) || 3;
+
+      try {
+        const res = await fetch(`${API_BASE}/omniroute/config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(omniConfig)
+        });
+        const d = await res.json();
+        alert('OmniRoute configuration saved successfully!');
+      } catch (err) {
+        alert(`Failed to save: ${err.message}`);
+      }
+    });
+
+    // Backup & Export
+    document.getElementById('btnOmniExport')?.addEventListener('click', async () => {
+      try {
+        const res = await fetch(`${API_BASE}/omniroute/backup`);
+        const data = await res.json();
+        const str = JSON.stringify(data, null, 2);
+        const blob = new Blob([str], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `omniroute-backup-${Date.now()}.json`;
+        a.click();
+      } catch (err) {
+        alert(`Backup failed: ${err.message}`);
+      }
+    });
+
+    // Import & Restore
+    document.getElementById('btnOmniImport')?.addEventListener('click', () => {
+      document.getElementById('fileOmniImport')?.click();
+    });
+
+    document.getElementById('fileOmniImport')?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        try {
+          const jsonVal = JSON.parse(evt.target.result);
+          const res = await fetch(`${API_BASE}/omniroute/restore`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(jsonVal)
+          });
+          const d = await res.json();
+          if (d.success) {
+            alert(`OmniRoute backup restored successfully! (${d.providers} providers loaded)`);
+            loadOmniConfig();
+          } else {
+            alert(`Restore error: ${d.error || 'Unknown'}`);
+          }
+        } catch (err) {
+          alert(`Invalid JSON file: ${err.message}`);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Playground test
     document.getElementById('btnTestOmniRoute')?.addEventListener('click', async () => {
       const model = document.getElementById('omniModelSelect').value;
-      const prompt = document.getElementById('omniTestInput').value.trim() || 'Say hello in 1 sentence';
+      const prompt = document.getElementById('omniTestInput').value.trim() || 'Say hello in 1 sentence...';
       const out = document.getElementById('omniTestOutput');
 
-      out.textContent = `[Streaming from ${model} via OmniRoute Hub]...`;
-      const startT = performance.now();
+      out.textContent = `Streaming from OmniRoute Hub with model: ${model}...`;
+      const t0 = performance.now();
 
       try {
         const res = await fetch(`${API_BASE}/v1/chat/completions`, {
@@ -1416,12 +2527,10 @@ $ </div>
             messages: [{ role: 'user', content: prompt }]
           })
         });
+        const duration = Math.round(performance.now() - t0);
         const data = await res.json();
-        const duration = (performance.now() - startT).toFixed(0);
         const reply = data.choices?.[0]?.message?.content || JSON.stringify(data);
-        out.textContent = `[Latency: ${duration}ms | Tokens: ~${reply.length / 4}]
-
-${reply}`;
+        out.textContent = `[Latency: ${duration}ms | Tokens: ~${Math.round(reply.length / 4)}]\n\n${reply}`;
       } catch (err) {
         out.textContent = `Error testing OmniRoute: ${err.message}`;
       }
@@ -1468,16 +2577,18 @@ ${reply}`;
     document.getElementById('btnRefreshJobs')?.addEventListener('click', loadJobs);
 
     // ------------------------------------------------------------------
-    // TERMINAL
+    // TENCENT ORCATERM PARITY WEB TERMINAL
     // ------------------------------------------------------------------
     const termInput = document.getElementById('termInput');
     const termOutput = document.getElementById('termOutput');
+    const otFileManagerPanel = document.getElementById('otFileManagerPanel');
+    const otFmTree = document.getElementById('otFmTree');
+    const otScriptMenu = document.getElementById('otScriptMenu');
+
     async function runTerminalCmd() {
       const cmd = termInput.value.trim();
       if (!cmd) return;
-      termOutput.textContent += `
-$ ${cmd}
-`;
+      termOutput.textContent += `\n$ ${cmd}\n`;
       termInput.value = '';
 
       try {
@@ -1487,18 +2598,107 @@ $ ${cmd}
           body: JSON.stringify({ command: cmd })
         });
         const d = await res.json();
-        const errTxt = d.stderr ? `\n[ERR] ${d.stderr}` : '';
-        termOutput.textContent += `${d.stdout || ''}${errTxt}\n$ `;
+        const errTxt = d.stderr ? `\n[STDERR]\n${d.stderr}` : '';
+        termOutput.textContent += `${d.output || d.stdout || ''}${errTxt}\nroot@VM-0-7-debian:~# `;
         termOutput.scrollTop = termOutput.scrollHeight;
       } catch (err) {
-        termOutput.textContent += `Execution failed: ${err.message}
-$ `;
+        termOutput.textContent += `Execution failed: ${err.message}\nroot@VM-0-7-debian:~# `;
+        termOutput.scrollTop = termOutput.scrollHeight;
       }
     }
 
+    function runOtQuickCmd(cmd) {
+      if (termInput) {
+        termInput.value = cmd;
+        runTerminalCmd();
+      }
+    }
+
+    function insertOtScript(script) {
+      if (termInput) {
+        termInput.value = script;
+        termInput.focus();
+      }
+      if (otScriptMenu) otScriptMenu.style.display = 'none';
+    }
+
+    document.getElementById('otBtnScriptLib')?.addEventListener('click', () => {
+      if (otScriptMenu) {
+        otScriptMenu.style.display = otScriptMenu.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+
+    document.getElementById('otBtnClearCommand')?.addEventListener('click', () => {
+      if (termInput) {
+        termInput.value = '';
+        termInput.focus();
+      }
+    });
+
+    document.getElementById('otBtnClearTerm')?.addEventListener('click', () => {
+      if (termOutput) {
+        termOutput.textContent = 'root@VM-0-7-debian:~# ';
+      }
+    });
+
+    document.getElementById('otBtnRefreshTerm')?.addEventListener('click', () => {
+      if (termOutput) {
+        termOutput.textContent += '\n[Reconnected session]\nroot@VM-0-7-debian:~# ';
+        termOutput.scrollTop = termOutput.scrollHeight;
+      }
+    });
+
+    // File Manager toggle
+    document.getElementById('otBtnNavFileManager')?.addEventListener('click', async () => {
+      if (!otFileManagerPanel) return;
+      const isOpen = otFileManagerPanel.style.display !== 'none';
+      otFileManagerPanel.style.display = isOpen ? 'none' : 'flex';
+      if (!isOpen) {
+        loadServerFiles();
+      }
+    });
+
+    document.getElementById('otBtnCloseFm')?.addEventListener('click', () => {
+      if (otFileManagerPanel) otFileManagerPanel.style.display = 'none';
+    });
+
+    async function loadServerFiles() {
+      if (!otFmTree) return;
+      otFmTree.innerHTML = '<div style="padding:10px;color:var(--text-muted);">Loading files...</div>';
+      try {
+        const res = await fetch(`${API_BASE}/workspace/files`);
+        const d = await res.json();
+        const files = d.files || [];
+        otFmTree.innerHTML = files.slice(0, 30).map(f => `
+          <div style="padding:3px 6px;cursor:pointer;display:flex;align-items:center;gap:6px;border-radius:3px;" onclick="insertOtScript('cat \'${f.path}\'')">
+            <span class="material-symbols-outlined" style="font-size:14px;color:var(--accent);">${f.is_dir ? 'folder' : 'description'}</span>
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</span>
+          </div>
+        `).join('');
+      } catch (err) {
+        otFmTree.innerHTML = `<div style="padding:10px;color:var(--danger);">${err.message}</div>`;
+      }
+    }
+
+    // OrcaTerm Shell / Agent mode toggle
+    const otModeShell = document.getElementById('otModeShell');
+    const otModeAgent = document.getElementById('otModeAgent');
+    otModeShell?.addEventListener('click', () => {
+      otModeShell.classList.add('active');
+      otModeAgent.classList.remove('active');
+    });
+    otModeAgent?.addEventListener('click', () => {
+      otModeAgent.classList.add('active');
+      otModeShell.classList.remove('active');
+      termOutput.textContent += '\n[Agent Mode Active: Autonomous task loop ready]\nroot@VM-0-7-debian:~# ';
+    });
+
     document.getElementById('btnRunTerm')?.addEventListener('click', runTerminalCmd);
     termInput?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') runTerminalCmd();
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey || !e.shiftKey)) {
+        e.preventDefault();
+        runTerminalCmd();
+      }
     });
 
     // Boot & polling
@@ -1522,6 +2722,17 @@ $ `;
     window.selectTable = selectTable;
     window.killJob = killJob;
     window.runSqlQuery = runSqlQuery;
+    window.loadSqlSnippet = loadSqlSnippet;
+    window.runOtQuickCmd = runOtQuickCmd;
+    window.insertOtScript = insertOtScript;
+    window.updateProviderField = updateProviderField;
+    window.toggleKeyVisibility = toggleKeyVisibility;
+    window.testOmniProvider = testOmniProvider;
+    window.updateAlias = updateAlias;
+    window.deleteAlias = deleteAlias;
+    window.updateCascadeStep = updateCascadeStep;
+    window.exportOmniBackup = exportOmniBackup;
+    window.importOmniBackup = importOmniBackup;
 
     fetchTelemetry();
     setInterval(fetchTelemetry, 3000);

@@ -329,6 +329,100 @@ fn save_websites_list(file_path: &Path, list: &[serde_json::Value]) {
     let _ = fs::write(file_path, serde_json::to_string_pretty(list).unwrap_or_else(|_| "[]".to_string()));
 }
 
+fn load_omniroute_config(file_path: &Path) -> serde_json::Value {
+    if let Ok(c) = fs::read_to_string(file_path) {
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(&c) {
+            return val;
+        }
+    }
+    serde_json::json!({
+        "version": "1.0",
+        "providers": [
+            {
+                "id": "gemini",
+                "name": "Google Gemini",
+                "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+                "api_key": "",
+                "models": ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-1.5-flash"],
+                "enabled": true,
+                "priority": 1
+            },
+            {
+                "id": "openai",
+                "name": "OpenAI",
+                "base_url": "https://api.openai.com/v1",
+                "api_key": "",
+                "models": ["gpt-4o", "gpt-4o-mini", "o3-mini"],
+                "enabled": true,
+                "priority": 2
+            },
+            {
+                "id": "anthropic",
+                "name": "Anthropic Claude",
+                "base_url": "https://api.anthropic.com/v1",
+                "api_key": "",
+                "models": ["claude-3-7-sonnet", "claude-3-5-haiku"],
+                "enabled": true,
+                "priority": 3
+            },
+            {
+                "id": "deepseek",
+                "name": "DeepSeek",
+                "base_url": "https://api.deepseek.com/v1",
+                "api_key": "",
+                "models": ["deepseek-chat", "deepseek-reasoner"],
+                "enabled": true,
+                "priority": 4
+            },
+            {
+                "id": "groq",
+                "name": "Groq LPU",
+                "base_url": "https://api.groq.com/openai/v1",
+                "api_key": "",
+                "models": ["llama-3.3-70b-versatile"],
+                "enabled": false,
+                "priority": 5
+            },
+            {
+                "id": "openrouter",
+                "name": "OpenRouter",
+                "base_url": "https://openrouter.ai/api/v1",
+                "api_key": "",
+                "models": ["auto", "anthropic/claude-3.5-sonnet"],
+                "enabled": false,
+                "priority": 6
+            },
+            {
+                "id": "ollama",
+                "name": "Ollama Local",
+                "base_url": "http://127.0.0.1:11434/v1",
+                "api_key": "ollama",
+                "models": ["llama3", "qwen2.5-coder"],
+                "enabled": false,
+                "priority": 7
+            }
+        ],
+        "aliases": {
+            "gpt-4o": "gemini-2.5-pro",
+            "gpt-4o-mini": "gemini-2.5-flash",
+            "fast": "gemini-2.5-flash",
+            "coder": "deepseek-chat"
+        },
+        "cascade": [
+            "ag/gemini-3.8-flash-high",
+            "mux/glm-5.3-flash",
+            "cbcn/deepseek-v4-pro"
+        ],
+        "routing_policy": "cascade_failover",
+        "timeout_secs": 30,
+        "max_retries": 3,
+        "token_optimization": true
+    })
+}
+
+fn save_omniroute_config(file_path: &Path, val: &serde_json::Value) -> bool {
+    fs::write(file_path, serde_json::to_string_pretty(val).unwrap_or_else(|_| "{}".to_string())).is_ok()
+}
 
 fn handle_client(mut stream: TcpStream) {
     let mut data = Vec::new();
@@ -1209,19 +1303,75 @@ fn handle_client(mut stream: TcpStream) {
             ("400 Bad Request", "application/json", serde_json::json!({ "error": "Invalid payload" }).to_string())
         }
     } else if uri.starts_with("/omniroute/status") {
+        let omni_file = omw.join("omniroute.json");
+        let cfg = load_omniroute_config(&omni_file);
+        let providers_cnt = cfg.get("providers").and_then(|p| p.as_array()).map_or(0, |a| a.len());
+        let aliases_cnt = cfg.get("aliases").and_then(|p| p.as_object()).map_or(0, |o| o.len());
         let status = serde_json::json!({
             "active_router": "OmniRoute Native Rust Hub",
             "proxy_endpoint": "http://127.0.0.1:9180/v1/chat/completions",
             "lead_model": "ag/gemini-3.8-flash-high",
             "coder_model": "mux/glm-5.3-flash",
             "verifier_model": "cbcn/deepseek-v4-pro",
-            "total_models": 3,
-            "architecture": "2-Stage Multi-Model Ensemble",
+            "total_providers": providers_cnt,
+            "total_aliases": aliases_cnt,
+            "architecture": "OmniRoute Unified Hub (9Router/OmniRouter Parity)",
             "health": "healthy",
             "uptime_seconds": SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
         });
         ("200 OK", "application/json", status.to_string())
-
+    } else if uri.starts_with("/omniroute/config") {
+        let omni_file = omw.join("omniroute.json");
+        if method == "POST" {
+            if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+                save_omniroute_config(&omni_file, &val);
+                ("200 OK", "application/json", serde_json::json!({ "success": true, "message": "OmniRoute configuration saved" }).to_string())
+            } else {
+                ("400 Bad Request", "application/json", serde_json::json!({ "error": "Invalid JSON" }).to_string())
+            }
+        } else {
+            let cfg = load_omniroute_config(&omni_file);
+            ("200 OK", "application/json", cfg.to_string())
+        }
+    } else if uri.starts_with("/omniroute/backup") {
+        let omni_file = omw.join("omniroute.json");
+        let cfg = load_omniroute_config(&omni_file);
+        ("200 OK", "application/json", cfg.to_string())
+    } else if uri.starts_with("/omniroute/restore") && method == "POST" {
+        let omni_file = omw.join("omniroute.json");
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            save_omniroute_config(&omni_file, &val);
+            let providers_cnt = val.get("providers").and_then(|p| p.as_array()).map_or(0, |a| a.len());
+            ("200 OK", "application/json", serde_json::json!({ "success": true, "status": "RESTORED", "providers": providers_cnt }).to_string())
+        } else {
+            ("400 Bad Request", "application/json", serde_json::json!({ "error": "Invalid backup JSON format" }).to_string())
+        }
+    } else if uri.starts_with("/omniroute/test") && method == "POST" {
+        let mut ok = false;
+        let mut latency_ms = 0u64;
+        let mut err_msg = String::new();
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            let base_url = val["base_url"].as_str().unwrap_or("https://api.openai.com/v1");
+            let api_key = val["api_key"].as_str().unwrap_or("");
+            let test_url = format!("{}/models", base_url.trim_end_matches('/'));
+            let t0 = std::time::Instant::now();
+            let mut cmd = Command::new("curl");
+            cmd.args(["-s", "-m", "5", "-X", "GET", &test_url]);
+            if !api_key.is_empty() {
+                cmd.args(["-H", &format!("Authorization: Bearer {}", api_key)]);
+            }
+            if let Ok(out) = cmd.output() {
+                latency_ms = t0.elapsed().as_millis() as u64;
+                if out.status.success() {
+                    ok = true;
+                } else {
+                    err_msg = format!("HTTP {}", out.status.code().unwrap_or(0));
+                }
+            } else {
+                err_msg = "Failed to run curl".to_string();
+            }
+        }
+        ("200 OK", "application/json", serde_json::json!({ "ok": ok, "latency_ms": latency_ms, "error": err_msg }).to_string())
 } else if uri.starts_with("/api/keys") {
         let keys_file = omw.join("keys.json");
         if method == "POST" {
