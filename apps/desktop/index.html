@@ -1583,7 +1583,270 @@
     body.companion-mode .combo-badge { display: none !important; }
     body.companion-mode .chat-pane { padding: 6px !important; }
     body.companion-mode .prompt-container { padding: 6px 8px !important; }
-</style>
+
+    /* ChatGPT / Claude Desktop Parity UI Polish */
+    .topbar {
+      height: 48px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      font-size: 13px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .topbar-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .topbar-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-bright);
+    }
+
+    .btn-topbar-model {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-bright);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-topbar-model:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .topbar-mode-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+
+    .topbar-mode-pill:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-bright);
+    }
+
+    .topbar-mode-pill.collab {
+      background: rgba(53, 116, 240, 0.12);
+      border-color: rgba(53, 116, 240, 0.35);
+      color: #3574F0;
+    }
+
+    .topbar-mode-pill.solo {
+      background: rgba(0, 245, 160, 0.08);
+      border-color: rgba(0, 245, 160, 0.25);
+      color: var(--accent);
+    }
+
+    /* Sidebar User Profile Row (ChatGPT / Claude Footer Parity) */
+    .sidebar-user-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .sidebar-user-row:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .user-avatar-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ChatGPT Style Empty State Hero */
+    .chat-empty-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 52vh;
+      text-align: center;
+      padding: 24px 16px;
+      max-width: 680px;
+      margin: 0 auto;
+      user-select: none;
+    }
+
+    .hero-logo {
+      margin-bottom: 6px;
+    }
+
+    .hero-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin: 12px 0 20px 0;
+      letter-spacing: -0.2px;
+    }
+
+    .hero-suggestions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+
+    .hero-suggestion-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .hero-suggestion-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.18);
+      color: var(--text-bright);
+      transform: translateY(-1px);
+    }
+
+    .hero-suggestion-card .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* Modern Prompt Container & Circular Send Button */
+    .prompt-container {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 800px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      padding: 10px 14px;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .prompt-container:focus-within {
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .prompt-textarea {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-bright);
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.5;
+      resize: none;
+      min-height: 38px;
+      max-height: 160px;
+    }
+
+    .prompt-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 4px;
+    }
+
+    .btn-submit {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.12s, opacity 0.12s;
+      flex-shrink: 0;
+    }
+
+    .btn-submit:hover {
+      transform: scale(1.06);
+      filter: brightness(1.1);
+    }
+
+    /* Message User Bubble Alignment */
+    .msg-user {
+      align-self: flex-end;
+    }
+    .msg-user .msg-content {
+      background: var(--panel);
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px 16px 4px 16px;
+      max-width: 85%;
+      margin-left: auto;
+    }
+
+  </style>
 </head>
 <body>
 
@@ -1618,17 +1881,18 @@
     </div>
 
     <div class="sidebar-footer">
-      <div class="telemetry-line">
-        <span>Kernel PSI</span>
-        <span style="color:var(--green)" id="psiVal">0.00% SAFE</span>
+      <div class="sidebar-user-row" id="btnOpenSettingsSide" title="Pengaturan IDE &amp; Sistem">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="user-avatar-circle">
+            <span class="material-symbols-outlined" style="font-size:16px;color:#fff;">person</span>
+          </div>
+          <div style="display:flex;flex-direction:column;line-height:1.2;">
+            <span style="font-weight:600;font-size:12.5px;color:var(--text-bright);">Workspace</span>
+            <span style="font-size:10px;color:var(--text-muted);">Developer</span>
+          </div>
+        </div>
+        <span class="material-symbols-outlined" style="font-size:18px;color:var(--text-muted);">settings</span>
       </div>
-      <div class="telemetry-line">
-        <span>System RAM</span>
-        <span id="ramVal">5,901 MB Free</span>
-      </div>
-      <button type="button" class="btn-secondary" id="btnOpenSettingsSide" style="margin-top:4px;width:100%;text-align:center;">
-        IDE Settings
-      </button>
     </div>
   </aside>
 
@@ -1636,40 +1900,35 @@
   <main class="main">
     <header class="topbar">
       <div class="topbar-left">
-        <div class="brand-badge" style="display:inline-flex;align-items:center;gap:6px;padding:2px 7px;font-size:11px;font-weight:700;color:var(--text-bright);border-radius:4px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);margin-right:2px;user-select:none;">
-          <svg viewBox="0 0 512 512" width="14" height="14" style="flex-shrink:0;">
-            <defs>
-              <linearGradient id="omwMini" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#3574F0"/>
-                <stop offset="100%" stop-color="#00F5A0"/>
-              </linearGradient>
-            </defs>
-            <rect x="24" y="24" width="464" height="464" rx="100" fill="#181A1F" stroke="#3574F0" stroke-width="20"/>
-            <polygon points="256,120 370,256 256,392 142,256" fill="url(#omwMini)"/>
-            <circle cx="256" cy="256" r="32" fill="#00F5A0"/>
-          </svg>
-          <span style="letter-spacing:0.5px;">OMW</span>
-        </div>
-        <button type="button" class="btn-topbar" id="btnToggleSidebar" title="Toggle left sidebar (minimize/expand)">
-          <span id="sidebarIcon">&LeftArrowBar;</span> Sidebar
+        <button type="button" class="topbar-icon-btn" id="btnToggleSidebar" title="Tutup / Buka Sidebar (Ctrl+B)">
+          <span class="material-symbols-outlined" id="sidebarIcon" style="font-size:18px;">dock_to_left</span>
         </button>
-        <button type="button" class="btn-topbar" id="btnModelPicker">
-          Engine: <span id="currentModelLabel">cbcn/deepseek-v4-pro</span>
+        <button type="button" class="topbar-icon-btn" id="btnTopNewChat" title="Chat Baru (Ctrl+N)">
+          <span class="material-symbols-outlined" style="font-size:18px;">edit_square</span>
         </button>
-        <span class="combo-badge" id="activeRouterBadge">Unified 9Router + OmniRoute</span>
-        <span class="combo-badge" id="tokenSaverBadge" style="display:inline-flex;align-items:center;gap:4px;background:rgba(0,245,160,0.08);color:var(--accent);border:1px solid rgba(0,245,160,0.22);font-family:monospace;font-size:11px;padding:2px 7px;border-radius:4px;" title="Token Optimizer: Sliding context window + historical code compaction"><span class="material-symbols-outlined" style="font-size:13px;">compress</span><span id="tokenSaverText">Tokens: Optimized</span></span>
-        <button type="button" class="btn-topbar" id="btnToggleCollabMode" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:4px;transition:all 0.15s ease;background:rgba(0,245,160,0.08);color:var(--accent);border:1px solid rgba(0,245,160,0.22);" title="Klik untuk switch Mode: Solo (Mandiri) vs Kolaborasi (Minta Izin)">
-          <span class="material-symbols-outlined" id="collabModeIcon" style="font-size:14px;color:var(--accent);">person</span>
-          <span id="collabModeLabel" style="font-weight:600;">Solo Mode</span>
+        <div style="width:1px;height:16px;background:var(--border);margin:0 4px;"></div>
+        <button type="button" class="btn-topbar-model" id="btnModelPicker" title="Pilih Model AI">
+          <span id="currentModelLabel">DeepSeek V4 Pro</span>
+          <span class="material-symbols-outlined" style="font-size:16px;color:var(--text-muted);">expand_more</span>
         </button>
       </div>
       <div class="topbar-right">
-        <button type="button" class="btn-topbar" id="btnToggleCompanion" title="Toggle Compact Companion Mini-Mode (Ctrl+Shift+M)"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:3px;">picture_in_picture_alt</span>Mini</button>
-        <button type="button" class="btn-topbar" id="btnToggleSideCanvas" title="Toggle right side canvas (show/hide preview & terminal)">
-          Canvas &RightArrowBar;
+        <button type="button" class="topbar-mode-pill solo" id="btnToggleCollabMode" title="Mode eksekusi: Solo (Mandiri) vs Kolaborasi (Izin Diff)">
+          <span class="material-symbols-outlined" id="collabModeIcon" style="font-size:14px;">person</span>
+          <span id="collabModeLabel">Solo</span>
         </button>
-        <button type="button" class="btn-topbar" id="btnSettingsTop">Settings</button>
-        <button type="button" class="btn-topbar" id="btnThemeToggle">Theme: Dark</button>
+        <button type="button" class="topbar-icon-btn" id="btnToggleSideCanvas" title="Side Canvas (Web Preview &amp; Terminal)">
+          <span class="material-symbols-outlined" style="font-size:18px;">splitscreen</span>
+        </button>
+        <button type="button" class="topbar-icon-btn" id="btnToggleCompanion" title="Mini Companion Mode (Ctrl+Shift+M)">
+          <span class="material-symbols-outlined" style="font-size:18px;">picture_in_picture_alt</span>
+        </button>
+        <button type="button" class="topbar-icon-btn" id="btnThemeToggle" title="Ganti Tema">
+          <span class="material-symbols-outlined" id="themeIcon" style="font-size:18px;">dark_mode</span>
+        </button>
+        <button type="button" class="topbar-icon-btn" id="btnSettingsTop" title="Pengaturan">
+          <span class="material-symbols-outlined" style="font-size:18px;">settings</span>
+        </button>
       </div>
     </header>
 
@@ -1678,12 +1937,46 @@
       <!-- Chat Pane -->
       <section class="chat-pane" id="chatPane">
         <div class="messages-scroll" id="messagesScroll">
+          <div class="chat-empty-hero" id="chatEmptyHero">
+            <div class="hero-logo">
+              <svg viewBox="0 0 512 512" width="44" height="44">
+                <defs>
+                  <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#3574F0"/>
+                    <stop offset="100%" stop-color="#00F5A0"/>
+                  </linearGradient>
+                </defs>
+                <rect x="24" y="24" width="464" height="464" rx="100" fill="#181A1F" stroke="#3574F0" stroke-width="16"/>
+                <polygon points="256,120 370,256 256,392 142,256" fill="url(#heroGrad)"/>
+                <circle cx="256" cy="256" r="32" fill="#00F5A0"/>
+              </svg>
+            </div>
+            <h2 class="hero-title">Ada yang bisa dibantu hari ini?</h2>
+            <div class="hero-suggestions">
+              <button type="button" class="hero-suggestion-card" data-prompt="Jelaskan arsitektur codebase ini secara ringkas">
+                <span class="material-symbols-outlined">account_tree</span>
+                <span>Jelaskan arsitektur codebase ini</span>
+              </button>
+              <button type="button" class="hero-suggestion-card" data-prompt="Periksa dan audit keamanan file sensitif di workspace">
+                <span class="material-symbols-outlined">security</span>
+                <span>Audit keamanan file sensitif</span>
+              </button>
+              <button type="button" class="hero-suggestion-card" data-prompt="Buat rancangan fitur baru sesuai best practice">
+                <span class="material-symbols-outlined">code</span>
+                <span>Rancang fitur baru</span>
+              </button>
+              <button type="button" class="hero-suggestion-card" data-prompt="Bantu perbaiki bug atau optimasi performa">
+                <span class="material-symbols-outlined">bug_report</span>
+                <span>Perbaiki bug atau optimasi</span>
+              </button>
+            </div>
+          </div>
           <div id="messagesList"></div>
         </div>
 
         <!-- Prompt Bar -->
         <div class="prompt-container">
-          <textarea id="promptInput" class="prompt-textarea" placeholder="Instruct lead engine or run multi-agent task..."></textarea>
+          <textarea id="promptInput" class="prompt-textarea" placeholder="Kirim pesan ke Oh My Works..."></textarea>
           <div class="prompt-footer">
             <div class="chips-group">
               <button type="button" class="chip-btn active" data-agent="@all">@all (Combo)</button>
@@ -1692,13 +1985,15 @@
               <button type="button" class="chip-btn" data-agent="@cindy">@cindy</button>
             </div>
             <div style="display:flex;align-items:center;gap:6px;">
-              <button type="button" class="btn-prompt-action" id="btnCaptureScreen" title="Attach Screen Context (Ctrl+Shift+S)" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);border-radius:6px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;">
+              <button type="button" class="btn-prompt-action" id="btnCaptureScreen" title="Attach Screen Context (Ctrl+Shift+S)" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);border-radius:6px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;">
                 <span class="material-symbols-outlined" style="font-size:16px;">screenshot_monitor</span>
               </button>
-              <button type="button" class="btn-prompt-action" id="btnVoiceInput" title="Dictate / Voice Mode" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);border-radius:6px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;">
+              <button type="button" class="btn-prompt-action" id="btnVoiceInput" title="Dictate / Voice Mode" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);border-radius:6px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;">
                 <span class="material-symbols-outlined" style="font-size:16px;">mic</span>
               </button>
-              <button type="button" class="btn-submit" id="btnSubmit">Send</button>
+              <button type="button" class="btn-submit" id="btnSubmit" title="Kirim pesan (Enter)">
+                <span class="material-symbols-outlined" style="font-size:16px;">arrow_upward</span>
+              </button>
             </div>
           </div>
         </div>
@@ -2944,13 +3239,22 @@ const FIGMA_PALETTES = {
       const modelSearchInput = document.getElementById('modelSearchInput');
       const modalModelList = document.getElementById('modalModelList');
 
-      // Theme toggle
-      btnThemeToggle.textContent = 'Theme: ' + (currentTheme === 'dark' ? 'Dark' : 'Light');
+      // Theme toggle (ChatGPT/Claude Icon Parity)
+      function updateThemeToggleUI() {
+        const themeIcon = document.getElementById('themeIcon');
+        if (themeIcon) {
+          themeIcon.textContent = (currentTheme === 'dark' ? 'dark_mode' : 'light_mode');
+        }
+        if (btnThemeToggle) {
+          btnThemeToggle.title = 'Theme: ' + (currentTheme === 'dark' ? 'Dark' : 'Light');
+        }
+      }
+      updateThemeToggleUI();
       btnThemeToggle.addEventListener('click', () => {
         currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', currentTheme);
         localStorage.setItem('omw_theme', currentTheme);
-        btnThemeToggle.textContent = 'Theme: ' + (currentTheme === 'dark' ? 'Dark' : 'Light');
+        updateThemeToggleUI();
       });
 
       // Sidebar Tab Switching
@@ -3392,7 +3696,7 @@ const FIGMA_PALETTES = {
         }
       }
 
-      // + New Chat: instant clean conversation creation
+      // + New Chat: instant clean conversation creation (ChatGPT Parity)
       document.getElementById('btnNewRootSession').addEventListener('click', async () => {
         const newRootId = 'sess-chat-' + Date.now();
         const defaultTitle = 'New Chat';
@@ -3400,6 +3704,8 @@ const FIGMA_PALETTES = {
         currentSessionId = newRootId;
         currentMessages = [];
         messagesList.innerHTML = '';
+        const chatEmptyHero = document.getElementById('chatEmptyHero');
+        if (chatEmptyHero) chatEmptyHero.style.display = 'flex';
         renderWebPreview(EMPTY_PREVIEW_HTML);
         promptInput.focus();
         rootSessions.unshift({ id: newRootId, title: defaultTitle, branch_label: 'main' });
@@ -3446,17 +3752,27 @@ const FIGMA_PALETTES = {
       async function loadSessionTurns(sessionId) {
         messagesList.innerHTML = '';
         currentMessages = [];
+        const chatEmptyHero = document.getElementById('chatEmptyHero');
         try {
           const res = await fetch(`${config.daemonUrl}/sessions/turns?session_id=${encodeURIComponent(sessionId)}`);
           if (res.ok) {
             const data = await res.json();
             const turns = data.turns || [];
-            turns.forEach(t => {
-              currentMessages.push({ role: t.role, content: t.content, author: t.author });
-              appendMessage(t.role, t.content, t.author);
-            });
+            if (turns.length > 0) {
+              if (chatEmptyHero) chatEmptyHero.style.display = 'none';
+              turns.forEach(t => {
+                currentMessages.push({ role: t.role, content: t.content, author: t.author });
+                appendMessage(t.role, t.content, t.author);
+              });
+            } else {
+              if (chatEmptyHero) chatEmptyHero.style.display = 'flex';
+            }
+          } else {
+            if (chatEmptyHero) chatEmptyHero.style.display = 'flex';
           }
-        } catch (e) {}
+        } catch (e) {
+          if (chatEmptyHero) chatEmptyHero.style.display = 'flex';
+        }
 
         // Restore session-scoped Web Preview
         const sessPal = localStorage.getItem('omw_preview_palette_' + sessionId);
@@ -3905,6 +4221,8 @@ RULES:
       }
 
       function appendMessage(role, content, author) {
+        const chatEmptyHero = document.getElementById('chatEmptyHero');
+        if (chatEmptyHero) chatEmptyHero.style.display = 'none';
         const row = document.createElement('div');
         row.className = `msg-row ${role === 'user' ? 'msg-user' : 'msg-ai'}`;
 
@@ -4414,7 +4732,7 @@ RULES:
           div.innerHTML = `<span>${escapeHtml(m)}</span><span>${m === activeModel ? '[Active]' : ''}</span>`;
           div.addEventListener('click', () => {
             activeModel = m;
-            currentModelLabel.textContent = m;
+            updateModelLabel();
             modelModal.classList.remove('show');
           });
           modalModelList.appendChild(div);
@@ -4426,12 +4744,29 @@ RULES:
         renderModalModels(allModels.filter(m => m.toLowerCase().includes(q)));
       });
 
+            function formatModelName(m) {
+        if (!m) return 'Select Model';
+        const parts = m.split('/');
+        const name = parts[parts.length - 1];
+        return name
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, l => l.toUpperCase());
+      }
+
+      function updateModelLabel() {
+        if (currentModelLabel) {
+          currentModelLabel.textContent = formatModelName(activeModel);
+        }
+      }
+
       async function syncModels() {
         const primaryServer = serversList.find(s => s.enabled)?.url || 'http://127.0.0.1:20128';
         const modelsUrl = `${primaryServer.replace(/\/+$/, '')}/v1/models`;
         const auth = config.apiKey.startsWith('Bearer ') ? config.apiKey : `Bearer ${config.apiKey}`;
         try {
-          const res = await fetch(modelsUrl, { headers: { 'Authorization': auth } });
+          const res = await fetch(modelsUrl, {
+            headers: { 'Authorization': auth }
+          });
           if (res.ok) {
             const data = await res.json();
             const list = data.data?.map(m => m.id);
@@ -4443,7 +4778,30 @@ RULES:
             }
           }
         } catch (e) {}
+        updateModelLabel();
       }
+
+      // Suggestion cards click handler (ChatGPT Parity)
+      document.querySelectorAll('.hero-suggestion-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const p = card.getAttribute('data-prompt');
+          if (p && promptInput) {
+            promptInput.value = p;
+            handleSend();
+          }
+        });
+      });
+
+      // Standard desktop shortcuts (Ctrl+N: new chat, Ctrl+B: sidebar)
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
+          e.preventDefault();
+          document.getElementById('btnNewRootSession')?.click();
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+          e.preventDefault();
+          document.getElementById('btnToggleSidebar')?.click();
+        }
+      });
 
       // Agent Test Harness & Live Inspection Bridge (No Computer-Use needed)
       // Periodically syncs active UI state to daemon (/agent/state) and executes commands from (/agent/action)
@@ -4863,7 +5221,7 @@ RULES:
         previewLayoutSelect.addEventListener('change', (e) => updatePreviewLayout(e.target.value));
       }
 
-      // Sidebar minimize/expand toggle button
+      // Sidebar minimize/expand toggle button & Top New Chat (ChatGPT Parity)
       const btnToggleSidebar = document.getElementById('btnToggleSidebar');
       const sidebarEl = document.querySelector('.sidebar');
       const sidebarIcon = document.getElementById('sidebarIcon');
@@ -4871,8 +5229,15 @@ RULES:
         btnToggleSidebar.addEventListener('click', () => {
           const isCollapsed = sidebarEl.classList.toggle('collapsed');
           if (sidebarIcon) {
-            sidebarIcon.innerHTML = isCollapsed ? '&RightArrowBar;' : '&LeftArrowBar;';
+            sidebarIcon.textContent = isCollapsed ? 'menu' : 'dock_to_left';
           }
+        });
+      }
+
+      const btnTopNewChat = document.getElementById('btnTopNewChat');
+      if (btnTopNewChat) {
+        btnTopNewChat.addEventListener('click', () => {
+          document.getElementById('btnNewRootSession')?.click();
         });
       }
 
@@ -5084,18 +5449,12 @@ RULES:
         if (!btnToggleCollabMode) return;
         if (currentCollabMode === 'collab') {
           collabModeIcon.textContent = 'groups';
-          collabModeIcon.style.color = '#3574F0';
-          collabModeLabel.textContent = 'Collab Mode (Protected)';
-          btnToggleCollabMode.style.background = 'rgba(53, 116, 240, 0.12)';
-          btnToggleCollabMode.style.borderColor = 'rgba(53, 116, 240, 0.4)';
-          btnToggleCollabMode.style.color = '#3574F0';
+          collabModeLabel.textContent = 'Collab';
+          btnToggleCollabMode.className = 'topbar-mode-pill collab';
         } else {
           collabModeIcon.textContent = 'person';
-          collabModeIcon.style.color = 'var(--accent)';
-          collabModeLabel.textContent = 'Solo Mode';
-          btnToggleCollabMode.style.background = 'rgba(0, 245, 160, 0.08)';
-          btnToggleCollabMode.style.borderColor = 'rgba(0, 245, 160, 0.22)';
-          btnToggleCollabMode.style.color = 'var(--accent)';
+          collabModeLabel.textContent = 'Solo';
+          btnToggleCollabMode.className = 'topbar-mode-pill solo';
         }
       }
 
@@ -5192,6 +5551,7 @@ RULES:
         }
       });
 
+      updateModelLabel();
       syncSystemProfile();
       loadHierarchicalSessions();
       loadWorktreesAndFiles();
