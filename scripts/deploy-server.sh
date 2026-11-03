@@ -1,46 +1,50 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Oh My Works (OMW) - Ultra-Lightweight Server Migration & Deployment Script
-# Optimized for 2-Core / 2GB RAM Linux VPS (Tencent Cloud / Debian / Ubuntu)
+# Oh My Works (OMW) - 1Panel Lite Server Deployment Script
+# Optimized for 2-Core / 2GB RAM Linux VPS (Tencent Cloud / Debian / Ubuntu / Arch)
 # ==============================================================================
 set -e
 
-echo "=== [1/6] Auditing Host Specs & Memory Pressure ==="
+echo "=== [1/6] Auditing Host Specs & RAM ==="
 nproc
 free -h
 
 # 1. Ensure 2GB Swap exists with 600 permissions
 if [ ! -f /swapfile ]; then
   echo "Creating 2GB swapfile..."
-  fallocate -l 2G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=2048
+  fallocate -l 2G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=2048
   chmod 600 /swapfile
   mkswap /swapfile
   swapon /swapfile
-  echo '/swapfile none swap sw 0 0' >> /etc/fstab
+  grep -q '/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
 fi
 
-# 2. Eliminate Bloat: Stop and remove heavy Node.js / PM2 / Next.js runtimes
-echo "=== [2/6] Removing Heavy Dependencies (Node.js/Next.js/PM2 Bloat) ==="
-which pm2 && pm2 kill || true
+# 2. Free RAM: Stop heavy legacy processes if any
+echo "=== [2/6] Stopping Bloated Runtimes (PM2 / Next.js) ==="
+which pm2 >/dev/null 2>&1 && pm2 kill || true
 pkill -9 -f 9router || true
 pkill -9 -f next-server || true
-pkill -9 -f node || true
-rm -rf /root/.pm2 /root/.npm/_cacache /var/log/pm2
 
-# 3. Install OMW Native Daemon Binary (Single binary, ~6MB RSS)
-echo "=== [3/6] Installing OMW Server Daemon (< 10MB RAM footprint) ==="
+# 3. Install OMW 1Panel Native Rust Daemon Binary (< 5MB RAM)
+echo "=== [3/6] Installing OMW 1Panel Native Daemon ==="
 mkdir -p /root/.omw/projects
 mkdir -p /usr/local/bin
 
 if [ -f "./omw-server-daemon" ]; then
   cp -f ./omw-server-daemon /usr/local/bin/omw-server-daemon
-  chmod +x /usr/local/bin/omw-server-daemon
+else
+  echo "Downloading precompiled OMW Server Daemon from GitHub Releases..."
+  curl -fsSL "https://github.com/IvanoWisnuBudiLaras/Oh-My-Works/releases/latest/download/omw-server-daemon" -o /usr/local/bin/omw-server-daemon || \
+  curl -fsSL "https://github.com/IvanoWisnuBudiLaras/Oh-My-Works/releases/download/v0.1.0/omw-server-daemon" -o /usr/local/bin/omw-server-daemon
 fi
 
-# 4. Create Systemd Service for OMW Daemon
+chmod +x /usr/local/bin/omw-server-daemon
+
+# 4. Create & Enable Systemd Service
+echo "=== [4/6] Configuring Systemd Service (omw-daemon) ==="
 cat << 'EOF' > /etc/systemd/system/omw-daemon.service
 [Unit]
-Description=Oh My Works (OMW) Cloud Panel & Harness Daemon
+Description=Oh My Works (OMW) 1Panel Lite & OmniRoute Daemon
 After=network.target
 
 [Service]
@@ -60,26 +64,26 @@ EOF
 
 systemctl daemon-reload
 systemctl enable omw-daemon
-systemctl restart omw-daemon || true
+systemctl restart omw-daemon
 
-# 5. Restore Hermes Multi-Agent Configuration
-echo "=== [5/6] Restoring Hermes Agent from Verified Backup ==="
+# 5. Restore Hermes Multi-Agent Config if present
 if [ -f "./hermes-server-backup-latest.tar.gz" ]; then
+  echo "=== [5/6] Restoring Hermes Agent Configuration ==="
   tar -xzvf ./hermes-server-backup-latest.tar.gz -C /root/
-  if [ -d "/root/hermes-personal-setup" ]; then
-    bash /root/hermes-personal-setup/restore.sh /root/.hermes
-  fi
 fi
 
-# 6. Configure Caddy / Lightweight Port Routing
-echo "=== [6/6] Verifying Ports & Services ==="
+# 6. Status and Instructions
+echo "=== [6/6] Verifying Daemon Status ==="
+sleep 1
 systemctl status omw-daemon --no-pager || true
 
 echo ""
 echo "=========================================================================="
-echo "  Oh My Works (OMW) Cloud Panel Deployed Successfully!"
-echo "  - Web Dashboard: http://<server-ip>:9180/dashboard"
-echo "  - OmniRoute API: http://<server-ip>:9180/v1/models"
-echo "  - Memory Usage: ~6MB RAM (vs 800MB previously)"
-echo "  - Anti-OOM Guard & Native Supervisor: ACTIVE"
+echo "  Oh My Works (OMW) 1Panel Lite Deployed Successfully on Server!"
+echo "  - Local Port: http://127.0.0.1:9180/dashboard"
+echo "  - Footprint:  ~4.8MB binary / ~5.7MB RAM"
+echo ""
+echo "  Next: Connect via Caddy Reverse Proxy for HTTPS:"
+echo "    echo 'panel.ivanowisnubudilaras.web.id { reverse_proxy 127.0.0.1:9180 }' >> /etc/caddy/Caddyfile"
+echo "    systemctl reload caddy"
 echo "=========================================================================="

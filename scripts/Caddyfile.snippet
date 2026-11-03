@@ -1,0 +1,29 @@
+# ==============================================================================
+# Oh My Works (OMW) 1Panel Lite Caddy Reverse Proxy Configuration
+# Append this to /etc/caddy/Caddyfile on your server
+# ==============================================================================
+
+# Option A: Access via Dedicated Subdomain (Recommended)
+# Replace panel.ivanowisnubudilaras.web.id with your chosen domain
+panel.ivanowisnubudilaras.web.id {
+    reverse_proxy 127.0.0.1:9180
+}
+
+# Option B: Sub-path on Existing Domain (e.g. ivanowisnubudilaras.web.id)
+# Put these handle blocks inside your existing domain block BEFORE any SPA try_files
+#
+# handle /dashboard* {
+#     reverse_proxy 127.0.0.1:9180
+# }
+# handle /sql/* {
+#     reverse_proxy 127.0.0.1:9180
+# }
+# handle /websites/* {
+#     reverse_proxy 127.0.0.1:9180
+# }
+# handle /omniroute/* {
+#     reverse_proxy 127.0.0.1:9180
+# }
+# handle /v1/* {
+#     reverse_proxy 127.0.0.1:9180
+# }
