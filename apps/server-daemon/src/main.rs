@@ -158,6 +158,100 @@ fn parse_query(uri: &str) -> std::collections::HashMap<String, String> {
     map
 }
 
+fn is_sensitive_path(path_str: &str) -> bool {
+        let file_name = Path::new(path_str)
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or("")
+        .to_lowercase();
+
+    let sensitive_exact = [
+        ".env", ".env.local", ".env.production", ".env.development",
+        "id_rsa", "id_ed25519", "id_ecdsa", "credentials.json", "auth.json",
+    ];
+    let sensitive_exts = [
+        ".pem", ".key", ".enc", ".gpg", ".pfx", ".p12", ".keystore",
+    ];
+
+    if file_name.starts_with(".env") {
+        return true;
+    }
+    for exact in sensitive_exact {
+        if file_name == exact {
+            return true;
+        }
+    }
+    for ext in sensitive_exts {
+        if file_name.ends_with(ext) {
+            return true;
+        }
+    }
+    false
+}
+
+fn detect_collab_context(target_dir: &Path) -> serde_json::Value {
+    let is_git = Command::new("git")
+        .args(["rev-parse", "--is-inside-work-tree"])
+        .current_dir(target_dir)
+        .output()
+        .map(|o| o.status.success())
+        .unwrap_or(false);
+
+    if !is_git {
+        return serde_json::json!({
+            "is_git": false,
+            "authors_count": 1,
+            "suggested_mode": "solo",
+            "reason": "Not a Git repository (Local standalone project)"
+        });
+    }
+
+    let authors_output = Command::new("git")
+        .args(["shortlog", "-sn", "--all"])
+        .current_dir(target_dir)
+        .output()
+        .map(|o| String::from_utf8_lossy(&o.stdout).to_string())
+        .unwrap_or_default();
+
+    let authors_count = authors_output.lines().filter(|l| !l.trim().is_empty()).count();
+
+    let remote_url = Command::new("git")
+        .args(["remote", "get-url", "origin"])
+        .current_dir(target_dir)
+        .output()
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+        .unwrap_or_default();
+
+    let git_user = Command::new("git")
+        .args(["config", "user.name"])
+        .current_dir(target_dir)
+        .output()
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+        .unwrap_or_default();
+
+    let is_multi_author = authors_count > 1;
+    let is_external_repo = !remote_url.is_empty() && !git_user.is_empty() && 
+        !remote_url.to_lowercase().contains(&git_user.to_lowercase().replace(' ', ""));
+
+    let suggested_mode = if is_multi_author || is_external_repo { "collab" } else { "solo" };
+    let reason = if is_multi_author {
+        format!("Multi-author repository ({} contributors detected)", authors_count)
+    } else if is_external_repo {
+        format!("Remote origin ({}) may belong to another team or organization", remote_url)
+    } else {
+        "Single-author private repository".to_string()
+    };
+
+    serde_json::json!({
+        "is_git": true,
+        "authors_count": authors_count,
+        "remote_url": remote_url,
+        "git_user": git_user,
+        "suggested_mode": suggested_mode,
+        "reason": reason
+    })
+}
+
 fn scan_dir_recursive(dir: &Path, max_depth: usize) -> Vec<serde_json::Value> {
     if max_depth == 0 {
         return Vec::new();
@@ -708,26 +802,78 @@ fn handle_client(mut stream: TcpStream) {
             .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
         let tree = scan_dir_recursive(&target_path, 3);
         ("200 OK", "application/json", serde_json::json!({ "files": tree }).to_string())
+    } else if uri.starts_with("/workspace/collab_context") {
+        let target_path = query_map.get("path")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+        let ctx = detect_collab_context(&target_path);
+        ("200 OK", "application/json", ctx.to_string())
+    } else if uri.starts_with("/workspace/diff") && method == "POST" {
+        let mut res = serde_json::json!({ "error": "Invalid payload" });
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
+            if let (Some(p), Some(proposed)) = (val["path"].as_str(), val["content"].as_str()) {
+                let is_protected = is_sensitive_path(p);
+                if is_protected {
+                    res = serde_json::json!({
+                        "path": p,
+                        "is_protected": true,
+                        "error": "Access denied: protected sensitive/encrypted file."
+                    });
+                } else {
+                    let original = fs::read_to_string(p).unwrap_or_default();
+                    let exists = Path::new(p).exists();
+                    res = serde_json::json!({
+                        "path": p,
+                        "exists": exists,
+                        "is_protected": false,
+                        "original": original,
+                        "proposed": proposed
+                    });
+                }
+            }
+        }
+        ("200 OK", "application/json", res.to_string())
     } else if uri.starts_with("/workspace/file_read") && method == "POST" {
         let mut file_content = String::new();
+        let mut is_protected = false;
         if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
             if let Some(p) = val["path"].as_str() {
-                file_content = fs::read_to_string(p).unwrap_or_else(|e| format!("Error reading file: {}", e));
+                if is_sensitive_path(p) {
+                    is_protected = true;
+                } else if let Ok(c) = fs::read_to_string(p) {
+                    file_content = c;
+                }
             }
         }
-        ("200 OK", "application/json", serde_json::json!({ "content": file_content }).to_string())
+        if is_protected {
+            ("403 Forbidden", "application/json", serde_json::json!({ "error": "Protected: encrypted or sensitive credential file cannot be read directly." }).to_string())
+        } else {
+            ("200 OK", "application/json", serde_json::json!({ "content": file_content }).to_string())
+        }
     } else if uri.starts_with("/workspace/file_write") && method == "POST" {
         let mut ok = false;
+        let mut err_msg = String::new();
         if let Ok(val) = serde_json::from_str::<serde_json::Value>(payload) {
             if let (Some(p), Some(content)) = (val["path"].as_str(), val["content"].as_str()) {
-                let pb = PathBuf::from(p);
-                if let Some(parent) = pb.parent() {
-                    let _ = fs::create_dir_all(parent);
+                if is_sensitive_path(p) {
+                    err_msg = "Access denied: file is protected (contains sensitive/encrypted credentials or keys).".to_string();
+                } else {
+                    let pb = PathBuf::from(p);
+                    if let Some(parent) = pb.parent() {
+                        let _ = fs::create_dir_all(parent);
+                    }
+                    ok = fs::write(&pb, content).is_ok();
+                    if !ok {
+                        err_msg = "Failed writing file to disk".to_string();
+                    }
                 }
-                ok = fs::write(&pb, content).is_ok();
             }
         }
-        ("200 OK", "application/json", serde_json::json!({ "success": ok }).to_string())
+        if !err_msg.is_empty() && !ok {
+            ("403 Forbidden", "application/json", serde_json::json!({ "success": false, "error": err_msg }).to_string())
+        } else {
+            ("200 OK", "application/json", serde_json::json!({ "success": ok }).to_string())
+        }
     } else if uri.starts_with("/workspace/repomap") {
         let target_path = query_map.get("path")
             .map(PathBuf::from)

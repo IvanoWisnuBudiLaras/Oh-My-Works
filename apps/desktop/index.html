@@ -1658,6 +1658,10 @@
         </button>
         <span class="combo-badge" id="activeRouterBadge">Unified 9Router + OmniRoute</span>
         <span class="combo-badge" id="tokenSaverBadge" style="display:inline-flex;align-items:center;gap:4px;background:rgba(0,245,160,0.08);color:var(--accent);border:1px solid rgba(0,245,160,0.22);font-family:monospace;font-size:11px;padding:2px 7px;border-radius:4px;" title="Token Optimizer: Sliding context window + historical code compaction"><span class="material-symbols-outlined" style="font-size:13px;">compress</span><span id="tokenSaverText">Tokens: Optimized</span></span>
+        <button type="button" class="btn-topbar" id="btnToggleCollabMode" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:4px;transition:all 0.15s ease;background:rgba(0,245,160,0.08);color:var(--accent);border:1px solid rgba(0,245,160,0.22);" title="Klik untuk switch Mode: Solo (Mandiri) vs Kolaborasi (Minta Izin)">
+          <span class="material-symbols-outlined" id="collabModeIcon" style="font-size:14px;color:var(--accent);">person</span>
+          <span id="collabModeLabel" style="font-weight:600;">Solo Mode</span>
+        </button>
       </div>
       <div class="topbar-right">
         <button type="button" class="btn-topbar" id="btnToggleCompanion" title="Toggle Compact Companion Mini-Mode (Ctrl+Shift+M)"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:3px;">picture_in_picture_alt</span>Mini</button>
@@ -2012,6 +2016,51 @@ $ </div>
       </div>
     </div>
   </div>
+
+  <!-- Modal: Collaborative Diff Confirmation (Persetujuan Perubahan Kode) -->
+  <div class="modal-overlay" id="diffConfirmModal">
+    <div style="width: 780px; max-width: calc(100vw - 32px); max-height: calc(100vh - 40px); background: #1e1f22; border: 1px solid #3574f0; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.6);">
+      <div style="padding: 10px 16px; background: #26282d; border-bottom: 1px solid #2b2d30; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="material-symbols-outlined" style="color: #3574f0; font-size: 18px;">rule</span>
+          <span style="font-weight: 700; font-size: 13px;">Konfirmasi Perubahan Kode (Mode Kolaborasi)</span>
+          <span style="font-size: 10px; background: rgba(53, 116, 240, 0.15); color: #3574f0; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Wajib Izin</span>
+        </div>
+        <button type="button" class="btn-close-canvas" id="btnCloseDiffModal">[Esc]</button>
+      </div>
+
+      <div style="padding: 10px 16px; background: #1b1c1e; border-bottom: 1px solid #2b2d30; display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+        <div style="display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace;">
+          <span class="material-symbols-outlined" style="font-size: 14px; color: var(--text-muted);">description</span>
+          <span id="diffModalFilePath" style="color: var(--accent); font-weight: 600;">path/to/file</span>
+        </div>
+        <div id="diffStatsBadge" style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted);">
+          +0 -0 baris
+        </div>
+      </div>
+
+      <div style="flex: 1; overflow-y: auto; padding: 12px; background: #141416; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.5;" id="diffModalContent">
+        <!-- Diff lines dynamically inserted here -->
+      </div>
+
+      <div style="padding: 12px 16px; background: #26282d; border-top: 1px solid #2b2d30; display: flex; align-items: center; justify-content: space-between;">
+        <div style="font-size: 11px; color: var(--text-muted);">
+          Mode Kolaborasi aktif: Perubahan file membutuhkan persetujuan eksplisit Anda.
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-action btn-secondary" id="btnRejectDiff" style="padding: 5px 12px; font-size: 12px;">
+            <span class="material-symbols-outlined" style="font-size: 14px; color: var(--danger);">close</span>
+            <span>Tolak</span>
+          </button>
+          <button type="button" class="btn-action" id="btnApproveDiff" style="padding: 5px 14px; font-size: 12px; background: #3574f0; color: #fff;">
+            <span class="material-symbols-outlined" style="font-size: 14px;">check</span>
+            <span>Setujui &amp; Terapkan</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <script>
     window.onerror = function(msg, url, line, col, error) {
@@ -2712,6 +2761,10 @@ const FIGMA_PALETTES = {
       // Worktree State
       let currentWorktreePath = '';
 
+      // Workspace Collaboration Mode State ('solo' | 'collab')
+      let currentCollabMode = 'solo';
+      let pendingDiffApply = null;
+
       // Elements
       const tabBtnSessions = document.getElementById('tabBtnSessions');
       const tabBtnFiles = document.getElementById('tabBtnFiles');
@@ -2774,9 +2827,53 @@ const FIGMA_PALETTES = {
           const encCode = btnApply.getAttribute('data-code');
           if (!relPath || !encCode) return;
           const rawCode = decodeURIComponent(encCode);
-          btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">sync</span>Writing...';
+          const targetPath = (currentWorktreePath ? (currentWorktreePath.replace(/\/+$/, '') + '/' + relPath.replace(/^\/+/, '')) : relPath);
+
+          // Zero-trust barrier: check sensitive / encrypted files
+          const lowerRel = relPath.toLowerCase();
+          const isSensitive = lowerRel.includes('.env') || lowerRel.endsWith('.pem') || lowerRel.endsWith('.key') ||
+                              lowerRel.includes('id_rsa') || lowerRel.includes('id_ed25519') || lowerRel.endsWith('.enc') ||
+                              lowerRel.endsWith('.gpg') || lowerRel.endsWith('credentials.json');
+          if (isSensitive) {
+            alert(`File "${relPath}" dilindungi! File rahasia / terenkripsi dilarang diubah.`);
+            appendMessage('assistant', `Akses ditolak: File \`${relPath}\` dilindungi (berisi kredensial/kunci rahasia) dan tidak boleh diubah.`, 'SECURITY GUARD');
+            return;
+          }
+
+          if (currentCollabMode === 'collab') {
+            // Collaborative Mode: fetch diff, show diff confirmation modal, and post conversational message
+            btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">hourglass_top</span>Diff...';
+            try {
+              const diffRes = await fetch(`${config.daemonUrl}/workspace/diff`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: targetPath, content: rawCode })
+              });
+              const diffData = await diffRes.json();
+              if (diffData.is_protected) {
+                alert(`File "${relPath}" dilindungi oleh sistem!`);
+                btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">shield</span>Protected';
+                return;
+              }
+
+              // Store pending apply
+              pendingDiffApply = { targetPath, rawCode, btnApply, relPath };
+
+              // Render modal
+              openDiffModal(relPath, diffData.original || '', rawCode);
+
+              // Polite conversational notification in chat
+              appendMessage('assistant', `Saya telah menyiapkan usulan perubahan untuk file \`${relPath}\`. Jendela pratinjau diff telah dibuka untuk Anda tinjau. Silakan periksa perbedaan kode atau tanyakan apa pun sebelum menyetujui perubahan.`, activeModel);
+              btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">pending_actions</span>Menunggu Izin';
+            } catch (err) {
+              btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">error</span>Gagal Diff';
+            }
+            return;
+          }
+
+          // Solo Mode: direct write
+          btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">sync</span>Menulis...';
           try {
-            const targetPath = (currentWorktreePath ? (currentWorktreePath.replace(/\/+$/, '') + '/' + relPath.replace(/^\/+/, '')) : relPath);
             const res = await fetch(`${config.daemonUrl}/workspace/file_write`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -2786,9 +2883,13 @@ const FIGMA_PALETTES = {
             if (d.success) {
               btnApply.classList.add('applied');
               btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">check_circle</span>Applied';
+              appendMessage('assistant', `File \`${relPath}\` berhasil diterapkan ke workspace (Solo Mode).`, activeModel);
               loadWorktreesAndFiles();
             } else {
-              btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">error</span>Failed';
+              btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">error</span>' + (d.error ? 'Ditolak' : 'Failed');
+              if (d.error) {
+                appendMessage('assistant', `Gagal menerapkan perubahan ke \`${relPath}\`: ${d.error}`, 'SECURITY GUARD');
+              }
             }
           } catch (err) {
             btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">error</span>Error';
@@ -4924,10 +5025,178 @@ RULES:
       updatePreviewPalette(activePaletteKey);
       updatePreviewFont(previewFont);
 
+
+      function computeLineDiff(originalStr, proposedStr) {
+        const origLines = originalStr ? originalStr.split('\n') : [];
+        const propLines = proposedStr ? proposedStr.split('\n') : [];
+        let addCount = 0;
+        let delCount = 0;
+
+        if (origLines.length === 0) {
+          addCount = propLines.length;
+          const html = propLines.map((l, i) => `<div style="background:rgba(0,245,160,0.1);color:#00F5A0;padding:2px 8px;border-left:3px solid #00F5A0;"><span style="color:#555;width:34px;display:inline-block;user-select:none;">+${i+1}</span> ${escapeHtml(l)}</div>`).join('');
+          return { html, addCount, delCount };
+        }
+
+        const diffItems = [];
+        let i = 0, j = 0;
+        while (i < origLines.length || j < propLines.length) {
+          if (i < origLines.length && j < propLines.length && origLines[i] === propLines[j]) {
+            diffItems.push({ type: 'same', text: origLines[i], num: i + 1 });
+            i++;
+            j++;
+          } else if (j < propLines.length && (i >= origLines.length || !origLines.slice(i, i + 6).includes(propLines[j]))) {
+            diffItems.push({ type: 'add', text: propLines[j], num: j + 1 });
+            addCount++;
+            j++;
+          } else if (i < origLines.length) {
+            diffItems.push({ type: 'del', text: origLines[i], num: i + 1 });
+            delCount++;
+            i++;
+          }
+        }
+
+        const html = diffItems.map(item => {
+          if (item.type === 'add') {
+            return `<div style="background:rgba(0,245,160,0.12);color:#00F5A0;padding:2px 8px;border-left:3px solid #00F5A0;"><span style="color:#555;width:34px;display:inline-block;user-select:none;">+${item.num}</span> ${escapeHtml(item.text)}</div>`;
+          } else if (item.type === 'del') {
+            return `<div style="background:rgba(244,63,94,0.15);color:#f43f5e;padding:2px 8px;border-left:3px solid #f43f5e;"><span style="color:#555;width:34px;display:inline-block;user-select:none;">-${item.num}</span> ${escapeHtml(item.text)}</div>`;
+          } else {
+            return `<div style="color:#8b949e;padding:1px 8px;border-left:3px solid transparent;"><span style="color:#444;width:34px;display:inline-block;user-select:none;"> ${item.num}</span> ${escapeHtml(item.text)}</div>`;
+          }
+        }).join('');
+
+        return { html, addCount, delCount };
+      }
+
+      const diffConfirmModal = document.getElementById('diffConfirmModal');
+      const diffModalFilePath = document.getElementById('diffModalFilePath');
+      const diffStatsBadge = document.getElementById('diffStatsBadge');
+      const diffModalContent = document.getElementById('diffModalContent');
+      const btnApproveDiff = document.getElementById('btnApproveDiff');
+      const btnRejectDiff = document.getElementById('btnRejectDiff');
+      const btnCloseDiffModal = document.getElementById('btnCloseDiffModal');
+      const btnToggleCollabMode = document.getElementById('btnToggleCollabMode');
+      const collabModeIcon = document.getElementById('collabModeIcon');
+      const collabModeLabel = document.getElementById('collabModeLabel');
+
+      function updateCollabModeUI() {
+        if (!btnToggleCollabMode) return;
+        if (currentCollabMode === 'collab') {
+          collabModeIcon.textContent = 'groups';
+          collabModeIcon.style.color = '#3574F0';
+          collabModeLabel.textContent = 'Collab Mode (Protected)';
+          btnToggleCollabMode.style.background = 'rgba(53, 116, 240, 0.12)';
+          btnToggleCollabMode.style.borderColor = 'rgba(53, 116, 240, 0.4)';
+          btnToggleCollabMode.style.color = '#3574F0';
+        } else {
+          collabModeIcon.textContent = 'person';
+          collabModeIcon.style.color = 'var(--accent)';
+          collabModeLabel.textContent = 'Solo Mode';
+          btnToggleCollabMode.style.background = 'rgba(0, 245, 160, 0.08)';
+          btnToggleCollabMode.style.borderColor = 'rgba(0, 245, 160, 0.22)';
+          btnToggleCollabMode.style.color = 'var(--accent)';
+        }
+      }
+
+      async function initCollabMode() {
+        try {
+          const res = await fetch(`${config.daemonUrl}/workspace/collab_context?path=${encodeURIComponent(currentWorktreePath || '')}`);
+          if (res.ok) {
+            const d = await res.json();
+            currentCollabMode = d.suggested_mode || 'solo';
+            updateCollabModeUI();
+            if (currentCollabMode === 'collab') {
+              appendMessage('assistant', `[Mode Kolaborasi Terdeteksi]: ${d.reason}. Setiap modifikasi file memerlukan pratinjau diff dan izin eksplisit Anda.`, 'OMW WORKSPACE');
+            }
+          }
+        } catch (_) {
+          updateCollabModeUI();
+        }
+      }
+
+      btnToggleCollabMode?.addEventListener('click', () => {
+        currentCollabMode = (currentCollabMode === 'solo' ? 'collab' : 'solo');
+        updateCollabModeUI();
+        if (currentCollabMode === 'collab') {
+          appendMessage('assistant', `Mode dialihkan ke [Kolaborasi]: Perubahan file kini memerlukan persetujuan eksplisit dan pratinjau diff.`, 'OMW WORKSPACE');
+        } else {
+          appendMessage('assistant', `Mode dialihkan ke [Solo]: AI dapat menerapkan perubahan file secara mandiri. File rahasia / kunci terenkripsi tetap dilindungi.`, 'OMW WORKSPACE');
+        }
+      });
+
+      function openDiffModal(filePath, original, proposed) {
+        if (!diffConfirmModal) return;
+        diffModalFilePath.textContent = filePath;
+        const diffRes = computeLineDiff(original, proposed);
+        diffStatsBadge.textContent = `+${diffRes.addCount} -${diffRes.delCount} baris`;
+        diffModalContent.innerHTML = diffRes.html;
+        diffConfirmModal.classList.add('show');
+      }
+
+      function closeDiffModal() {
+        if (diffConfirmModal) diffConfirmModal.classList.remove('show');
+      }
+
+      btnCloseDiffModal?.addEventListener('click', closeDiffModal);
+
+      btnRejectDiff?.addEventListener('click', () => {
+        if (pendingDiffApply) {
+          if (pendingDiffApply.btnApply) {
+            pendingDiffApply.btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">cancel</span>Ditolak';
+          }
+          appendMessage('assistant', `Perubahan pada \`${pendingDiffApply.relPath}\` dibatalkan (Ditolak oleh pengguna). Berikan arahan berikutnya jika ingin pendekatan lain.`, activeModel);
+          pendingDiffApply = null;
+        }
+        closeDiffModal();
+      });
+
+      btnApproveDiff?.addEventListener('click', async () => {
+        if (!pendingDiffApply) {
+          closeDiffModal();
+          return;
+        }
+        const { targetPath, rawCode, btnApply, relPath } = pendingDiffApply;
+        btnApproveDiff.disabled = true;
+        btnApproveDiff.textContent = 'Menerapkan...';
+
+        try {
+          const res = await fetch(`${config.daemonUrl}/workspace/file_write`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: targetPath, content: rawCode })
+          });
+          const d = await res.json();
+          if (d.success) {
+            if (btnApply) {
+              btnApply.classList.add('applied');
+              btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">check_circle</span>Applied';
+            }
+            appendMessage('assistant', `Perubahan pada \`${relPath}\` telah disetujui dan berhasil diterapkan ke workspace.`, activeModel);
+            loadWorktreesAndFiles();
+          } else {
+            if (btnApply) {
+              btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">error</span>Gagal';
+            }
+            appendMessage('assistant', `Gagal menerapkan perubahan ke \`${relPath}\`: ${d.error || 'Unknown error'}`, 'SECURITY GUARD');
+          }
+        } catch (err) {
+          if (btnApply) {
+            btnApply.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">error</span>Error';
+          }
+        } finally {
+          btnApproveDiff.disabled = false;
+          btnApproveDiff.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">check</span><span>Setujui &amp; Terapkan</span>';
+          pendingDiffApply = null;
+          closeDiffModal();
+        }
+      });
+
       syncSystemProfile();
       loadHierarchicalSessions();
       loadWorktreesAndFiles();
       syncModels();
+      initCollabMode();
     })();
   </script>
 </body>
