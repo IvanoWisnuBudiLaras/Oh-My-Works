@@ -2239,6 +2239,7 @@ dependencies = [
  "omw-memory",
  "omw-session",
  "omw-terminal",
+ "rusqlite",
  "serde_json",
 ]
 
