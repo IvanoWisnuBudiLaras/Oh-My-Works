@@ -891,7 +891,7 @@
       }
     }
 
-    .canvas-size-btn {
+        .canvas-size-btn {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 4px;
@@ -901,6 +901,11 @@
       padding: 2px 6px;
       cursor: pointer;
       transition: all 0.12s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .canvas-size-btn:hover {
       color: var(--text-bright);
@@ -919,29 +924,43 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 8px;
       font-size: 11.5px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--text-muted);
       flex-shrink: 0;
+      gap: 6px;
+      min-width: 0;
+      overflow: hidden;
     }
 
     .canvas-tab-bar {
       display: flex;
-      gap: 3px;
+      gap: 2px;
       align-items: center;
+      flex: 1;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
+    .canvas-tab-bar::-webkit-scrollbar { display: none; }
 
     .canvas-tab-btn {
-      padding: 4px 8px;
+      padding: 4px 7px;
       background: transparent;
       border: 1px solid transparent;
-      border-radius: 6px;
+      border-radius: 5px;
       color: var(--text-muted);
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       cursor: pointer;
       transition: all 0.12s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
     }
 
     .canvas-tab-btn:hover { color: var(--text-bright); }
@@ -952,6 +971,19 @@
       font-weight: 600;
     }
 
+    .canvas-header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .canvas-size-group {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+
     .btn-close-canvas {
       background: transparent;
       border: none;
@@ -959,11 +991,31 @@
       cursor: pointer;
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      padding: 4px 6px;
+      padding: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     .btn-close-canvas:hover { color: var(--text-bright); }
 
+    /* Responsive Adaptation for Mobile Size Canvas Header */
+    .side-canvas.size-mobile .tab-long,
+    .side-canvas.size-mobile .size-text {
+      display: none;
+    }
+    .side-canvas.size-mobile .canvas-tab-btn {
+      padding: 3px 5px;
+      font-size: 10.5px;
+    }
+    .side-canvas.size-mobile .canvas-size-btn {
+      padding: 3px 4px;
+    }
+    .side-canvas.size-mobile .canvas-header {
+      padding: 0 5px;
+      gap: 3px;
+    }
     .canvas-viewport-container {
       flex: 1;
       overflow: hidden;
@@ -2434,17 +2486,17 @@
       <section class="side-canvas" id="sideCanvas">
         <div class="canvas-header">
           <div class="canvas-tab-bar">
-            <button type="button" class="canvas-tab-btn active" data-canvas="web">Web Preview</button>
+            <button type="button" class="canvas-tab-btn active" data-canvas="web"><span class="tab-long">Web </span>Preview</button>
             <button type="button" class="canvas-tab-btn" data-canvas="terminal">Terminal</button>
-            <button type="button" class="canvas-tab-btn" data-canvas="harness">Harnesses</button>
+            <button type="button" class="canvas-tab-btn" data-canvas="harness">Harness<span class="tab-long">es</span></button>
             <button type="button" class="canvas-tab-btn" data-canvas="editor">Editor</button>
-            <button type="button" class="canvas-tab-btn" data-canvas="jobs">Jobs &amp; System</button>
+            <button type="button" class="canvas-tab-btn" data-canvas="jobs">Jobs<span class="tab-long"> &amp; System</span></button>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <div style="display:flex;gap:3px;align-items:center;" title="Ukuran Layar (Mobile / Tablet / Desktop)">
-              <button type="button" class="canvas-size-btn" data-size="mobile" title="Mobile viewport (375px)"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:2px;">smartphone</span>Mobile</button>
-              <button type="button" class="canvas-size-btn" data-size="tablet" title="Tablet viewport (768px)"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:2px;">tablet</span>Tablet</button>
-              <button type="button" class="canvas-size-btn active" data-size="desktop" title="Desktop viewport (100% Full)"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:2px;">desktop_windows</span>Desktop</button>
+          <div class="canvas-header-right">
+            <div class="canvas-size-group" title="Ukuran Layar (Mobile / Tablet / Desktop)">
+              <button type="button" class="canvas-size-btn" data-size="mobile" title="Mobile viewport (375px)"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">smartphone</span><span class="size-text">Mobile</span></button>
+              <button type="button" class="canvas-size-btn" data-size="tablet" title="Tablet viewport (768px)"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">tablet</span><span class="size-text">Tablet</span></button>
+              <button type="button" class="canvas-size-btn active" data-size="desktop" title="Desktop viewport (100% Full)"><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">desktop_windows</span><span class="size-text">Desktop</span></button>
             </div>
             <button type="button" class="btn-close-canvas" id="btnCloseCanvas" title="Close side canvas"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">close</span></button>
           </div>
