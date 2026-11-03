@@ -73,6 +73,22 @@ if [ -f "./hermes-server-backup-latest.tar.gz" ]; then
 fi
 
 # 6. Status and Instructions
+# 6. Auto-configure Caddy if installed
+echo "=== [6/6] Auto-configuring Caddy Reverse Proxy ==="
+if [ -f /etc/caddy/Caddyfile ]; then
+  if ! grep -q "panel.ivanowisnubudilaras.web.id" /etc/caddy/Caddyfile; then
+    echo "Adding panel.ivanowisnubudilaras.web.id to /etc/caddy/Caddyfile..."
+    cat << 'CADDY_EOF' >> /etc/caddy/Caddyfile
+
+panel.ivanowisnubudilaras.web.id {
+    reverse_proxy 127.0.0.1:9180
+}
+CADDY_EOF
+  fi
+  systemctl reload caddy || true
+  echo "Caddy reloaded with HTTPS on panel.ivanowisnubudilaras.web.id!"
+fi
+
 echo "=== [6/6] Verifying Daemon Status ==="
 sleep 1
 systemctl status omw-daemon --no-pager || true
