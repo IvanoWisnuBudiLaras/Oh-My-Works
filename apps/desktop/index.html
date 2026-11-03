@@ -8,10 +8,11 @@
   <script>
     window.onerror = function(msg, url, line, col, error) {
       try {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://127.0.0.1:9180/agent/state", false);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify({ headError: { msg: String(msg), line: line, col: col, stack: error ? error.stack : "" } }));
+        fetch("http://127.0.0.1:9180/agent/state", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ headError: { msg: String(msg), line: line, col: col, stack: error ? error.stack : "" } })
+        }).catch(function() {});
       } catch (e) {}
     };
   </script>
@@ -3294,23 +3295,26 @@ const FIGMA_PALETTES = {
       document.getElementById('btnNewRootSession').addEventListener('click', async () => {
         const newRootId = 'sess-chat-' + Date.now();
         const defaultTitle = 'New Chat';
-        await fetch(`${config.daemonUrl}/sessions/branch`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: newRootId,
-            root_id: newRootId,
-            title: defaultTitle,
-            branch_label: 'main'
-          })
-        });
         currentRootId = newRootId;
         currentSessionId = newRootId;
         currentMessages = [];
         messagesList.innerHTML = '';
         renderWebPreview(EMPTY_PREVIEW_HTML);
-        await loadHierarchicalSessions();
         promptInput.focus();
+        rootSessions.unshift({ id: newRootId, title: defaultTitle, branch_label: 'main' });
+        renderHierarchicalSessions();
+        try {
+          await fetch(`${config.daemonUrl}/sessions/branch`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: newRootId,
+              root_id: newRootId,
+              title: defaultTitle,
+              branch_label: 'main'
+            })
+          });
+        } catch (_) {}
       });
 
       // New Branch Thread under active root

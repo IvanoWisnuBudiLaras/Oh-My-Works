@@ -987,7 +987,11 @@ fn main() {
 
     if let Ok(listener) = TcpListener::bind(&addr) {
         for stream in listener.incoming().flatten() {
-            handle_client(stream);
+            let _ = stream.set_read_timeout(Some(std::time::Duration::from_secs(5)));
+            let _ = stream.set_write_timeout(Some(std::time::Duration::from_secs(5)));
+            std::thread::spawn(move || {
+                handle_client(stream);
+            });
         }
     } else {
         eprintln!("Failed to bind daemon to {}", addr);
