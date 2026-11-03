@@ -1846,6 +1846,375 @@
       margin-left: auto;
     }
 
+  
+    /* Floating Selection Menu (Clip & Quote Reply) */
+    .selection-floating-menu {
+      position: fixed;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      gap: 2px;
+      background: #1e1f22;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      padding: 3px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      transform: translate(-50%, -100%);
+      margin-top: -8px;
+      user-select: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .selection-floating-menu::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px 5px 0 5px;
+      border-style: solid;
+      border-color: #1e1f22 transparent transparent transparent;
+    }
+
+    .sel-menu-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-bright);
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .sel-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .sel-menu-btn .material-symbols-outlined {
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    /* Message Actions Footer (Bottom of Message Bubble) */
+    .msg-actions-footer {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 4px;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      user-select: none;
+    }
+
+    .msg-user .msg-actions-footer {
+      justify-content: flex-end;
+    }
+
+    .msg-row:hover .msg-actions-footer {
+      opacity: 1;
+    }
+
+    .btn-msg-action {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.12s ease;
+    }
+
+    .btn-msg-action:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-bright);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-msg-action .material-symbols-outlined {
+      font-size: 14px;
+    }
+
+    /* Collapsible Reasoning / Thinking Box */
+    .thinking-box {
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 2.5px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      margin: 8px 0 10px 0;
+      padding: 6px 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+
+    .thinking-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      color: var(--text-bright);
+      user-select: none;
+      list-style: none;
+      padding: 3px 0;
+      font-weight: 500;
+    }
+
+    .thinking-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .thinking-icon {
+      font-size: 16px;
+      color: var(--accent);
+      animation: pulseThinking 2.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseThinking {
+      0%, 100% { opacity: 0.6; transform: scale(0.96); }
+      50% { opacity: 1; transform: scale(1.08); }
+    }
+
+    .thinking-chevron {
+      font-size: 18px;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .thinking-box[open] .thinking-chevron {
+      transform: rotate(180deg);
+    }
+
+    .thinking-body {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    /* Animated AI Thinking State (While Generating) */
+    .ai-thinking-state {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      margin: 4px 0;
+      width: fit-content;
+    }
+
+    .thinking-spinner-ring {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(53, 116, 240, 0.2);
+      border-top-color: var(--accent);
+      animation: spinRing 0.8s linear infinite;
+    }
+
+    @keyframes spinRing {
+      to { transform: rotate(360deg); }
+    }
+
+    .thinking-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .thinking-step-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .thinking-step-desc {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    /* Autocomplete Command / Mention Popup */
+    .command-suggest-popup {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 100%;
+      max-width: 360px;
+      background: #18191c;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+      z-index: 1050;
+      backdrop-filter: blur(12px);
+    }
+
+    .suggest-header {
+      padding: 6px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .suggest-list {
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .suggest-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-bright);
+      font-size: 12px;
+      transition: background 0.1s;
+    }
+
+    .suggest-item:hover, .suggest-item.active {
+      background: rgba(53, 116, 240, 0.15);
+      color: #fff;
+    }
+
+    .suggest-item-icon {
+      font-size: 15px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .suggest-item-cmd {
+      font-weight: 600;
+      font-family: monospace;
+      color: var(--accent);
+    }
+
+    .suggest-item-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-left: auto;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    /* Human Cognitive Semantic Color System */
+    /* Green: Aman / Lewati / Minor / Routine */
+    .callout-safe {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.22);
+      border-left: 3.5px solid #10b981;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin: 8px 0;
+      font-size: 12.5px;
+      color: #a7f3d0;
+      line-height: 1.5;
+    }
+
+    .tag-safe {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+
+    /* Yellow: Perhatian Lebih Lanjut / Catatan Penting / Caution */
+    .callout-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.32);
+      border-left: 3.5px solid #f59e0b;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin: 8px 0;
+      font-size: 12.5px;
+      color: #fde68a;
+      line-height: 1.5;
+    }
+
+    .tag-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.36);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+
+    mark.cognitive-yellow {
+      background: rgba(245, 158, 11, 0.24);
+      color: #fef08a;
+      padding: 1px 5px;
+      border-radius: 3px;
+      border-bottom: 2px solid #f59e0b;
+    }
+
+    /* Red: Peringatan Bahaya / Error / Security / Destruktif */
+    .callout-danger {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-left: 3.5px solid #ef4444;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin: 8px 0;
+      font-size: 12.5px;
+      color: #fca5a5;
+      line-height: 1.5;
+    }
+
+    .tag-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+
   </style>
 </head>
 <body>
@@ -1935,7 +2304,23 @@
     <!-- Workspace -->
     <div class="workspace">
       <!-- Chat Pane -->
-      <section class="chat-pane" id="chatPane">
+          <!-- Floating Selection Menu (Clip & Quote Reply) -->
+    <div class="selection-floating-menu" id="selectionFloatingMenu">
+      <button type="button" class="sel-menu-btn" id="btnQuoteSelection" title="Kutip teks terpilih ke input (Quote Reply)">
+        <span class="material-symbols-outlined">format_quote</span>
+        <span>Reply</span>
+      </button>
+      <button type="button" class="sel-menu-btn" id="btnCopySelection" title="Salin kata terpilih">
+        <span class="material-symbols-outlined">content_copy</span>
+        <span>Copy</span>
+      </button>
+      <button type="button" class="sel-menu-btn" id="btnExplainSelection" title="Minta AI jelaskan kata ini">
+        <span class="material-symbols-outlined">psychology</span>
+        <span>Explain</span>
+      </button>
+    </div>
+
+<section class="chat-pane" id="chatPane">
         <div class="messages-scroll" id="messagesScroll">
           <div class="chat-empty-hero" id="chatEmptyHero">
             <div class="hero-logo">
@@ -1976,6 +2361,10 @@
 
         <!-- Prompt Bar -->
         <div class="prompt-container">
+          <div class="command-suggest-popup" id="commandSuggestPopup" style="display:none;">
+            <div class="suggest-header" id="suggestHeader">Perintah Cepat</div>
+            <div class="suggest-list" id="suggestList"></div>
+          </div>
           <textarea id="promptInput" class="prompt-textarea" placeholder="Kirim pesan ke Oh My Works..."></textarea>
           <div class="prompt-footer">
             <div class="chips-group">
@@ -3101,7 +3490,7 @@ const FIGMA_PALETTES = {
           return;
         }
 
-        // Copy Message Card Button
+        // Message Action Buttons: Copy, Quote, Edit, Retry
         const copyMsgBtn = e.target.closest('.btn-copy-msg');
         if (copyMsgBtn) {
           const row = copyMsgBtn.closest('.msg-row');
@@ -3110,9 +3499,50 @@ const FIGMA_PALETTES = {
             try {
               await navigator.clipboard.writeText(content.innerText);
               const orig = copyMsgBtn.innerHTML;
-              copyMsgBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;">check</span>';
-              setTimeout(() => { copyMsgBtn.innerHTML = orig; }, 1500);
+              copyMsgBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;color:var(--accent);">check</span>';
+              setTimeout(() => { copyMsgBtn.innerHTML = orig; }, 1200);
             } catch (_) {}
+          }
+          return;
+        }
+
+        const quoteMsgBtn = e.target.closest('.btn-quote-msg');
+        if (quoteMsgBtn) {
+          const row = quoteMsgBtn.closest('.msg-row');
+          const content = row ? row.querySelector('.msg-content') : null;
+          if (content) {
+            const rawText = content.innerText.slice(0, 300);
+            promptInput.value = `> "${rawText}"\n\n` + promptInput.value;
+            promptInput.focus();
+            promptInput.setSelectionRange(promptInput.value.length, promptInput.value.length);
+          }
+          return;
+        }
+
+        const editMsgBtn = e.target.closest('.btn-edit-msg');
+        if (editMsgBtn) {
+          const row = editMsgBtn.closest('.msg-row');
+          const content = row ? row.querySelector('.msg-content') : null;
+          if (content) {
+            promptInput.value = content.innerText;
+            promptInput.focus();
+          }
+          return;
+        }
+
+        const retryMsgBtn = e.target.closest('.btn-retry-msg');
+        if (retryMsgBtn) {
+          const rows = Array.from(messagesList.querySelectorAll('.msg-row'));
+          const curIdx = rows.indexOf(retryMsgBtn.closest('.msg-row'));
+          for (let i = curIdx - 1; i >= 0; i--) {
+            if (rows[i].classList.contains('msg-user')) {
+              const uText = rows[i].querySelector('.msg-content')?.innerText;
+              if (uText) {
+                promptInput.value = uText;
+                handleSend();
+                break;
+              }
+            }
           }
           return;
         }
@@ -3916,6 +4346,73 @@ const FIGMA_PALETTES = {
         const text = promptInput.value.trim();
         if (!text) return;
 
+        if (commandSuggestPopup) commandSuggestPopup.style.display = 'none';
+
+        // 1. Slash Commands Execution Gate
+        if (text.startsWith('/')) {
+          const parts = text.split(' ');
+          const cmd = parts[0].toLowerCase();
+          promptInput.value = '';
+
+          if (cmd === '/clear') {
+            messagesList.innerHTML = '';
+            currentMessages = [];
+            checkEmptyChatState();
+            return;
+          }
+          if (cmd === '/compact') {
+            appendMessage('assistant', '[safe: Konteks percakapan berhasil dikompresi. Jendela geser riwayat aktif.]', 'System');
+            return;
+          }
+          if (cmd === '/diff') {
+            btnToggleCollabMode?.click();
+            return;
+          }
+          if (cmd === '/settings') {
+            document.getElementById('btnSettingsTop')?.click();
+            return;
+          }
+          if (cmd === '/model') {
+            document.getElementById('btnModelPicker')?.click();
+            return;
+          }
+          if (cmd === '/terminal') {
+            if (!sideCanvas.classList.contains('open')) sideCanvas.classList.add('open');
+            switchCanvasTab('terminal');
+            updateCanvasLayout();
+            return;
+          }
+          if (cmd === '/preview') {
+            if (!sideCanvas.classList.contains('open')) sideCanvas.classList.add('open');
+            switchCanvasTab('web');
+            updateCanvasLayout();
+            return;
+          }
+          if (cmd === '/skills') {
+            document.getElementById('btnSettingsTop')?.click();
+            switchTab('skills');
+            return;
+          }
+          if (cmd === '/help') {
+            appendMessage('assistant', `### Panduan Pintasan & Perintah Cepat:
+- \`/clear\` : Bersihkan layar riwayat chat
+- \`/compact\` : Kompresi & optimasi token
+- \`/diff\` : Buka mode kolaborasi & visual diff
+- \`/model\` : Buka menu pilihan model AI
+- \`/terminal\` : Buka Canvas Terminal
+- \`/preview\` : Buka Web Preview
+- \`/settings\` : Buka pengaturan IDE
+- \`@all\` : Multi-agent combo (Architect + Coder)
+- \`@terminal\` : Eksekusi perintah di shell
+- \`@guardian\` : Audit memori & anti-OOM
+- \`@skills\` : Panggil tools skill terdaftar
+- \`@mcp\` : Panggil tool MCP
+- \`@workspace\` : Sertakan struktur proyek
+[safe: Highlight teks apapun di pesan untuk memunculkan menu Quote Reply, Copy, atau Explain!]`, 'System');
+            return;
+          }
+        }
+
         currentMessages.push({ role: 'user', content: text, author: 'USER' });
         appendMessage('user', text, 'USER');
         promptInput.value = '';
@@ -3958,15 +4455,50 @@ const FIGMA_PALETTES = {
 
         const aiMsg = { role: 'assistant', content: '', author: activeModel };
         currentMessages.push(aiMsg);
-        const aiBody = appendMessage('assistant', '...', activeModel);
+        const aiBody = appendMessage('assistant', '', activeModel);
+
+        // Animated Thinking State
+        aiBody.innerHTML = `
+          <div class="ai-thinking-state" id="aiThinkingState">
+            <div class="thinking-spinner-ring"></div>
+            <div class="thinking-meta">
+              <div class="thinking-step-title" id="thinkingStageTitle">Sedang menalar konteks...</div>
+              <div class="thinking-step-desc" id="thinkingStageDesc">Menganalisis instruksi &amp; dependensi workspace</div>
+            </div>
+          </div>
+        `;
+
+        let thinkStep = 0;
+        const thinkInterval = setInterval(() => {
+          thinkStep++;
+          const tTitle = document.getElementById('thinkingStageTitle');
+          const tDesc = document.getElementById('thinkingStageDesc');
+          if (!tTitle || !tDesc) return;
+          if (thinkStep === 1) {
+            tTitle.textContent = 'Menganalisis berkas & dependensi...';
+            tDesc.textContent = 'Memeriksa worktree dan batasan keamanan';
+          } else if (thinkStep === 2) {
+            tTitle.textContent = 'Menyusun solusi terstruktur...';
+            tDesc.textContent = 'Memformulasikan jawaban ringkas tanpa kode berlebih';
+          } else if (thinkStep >= 3) {
+            tTitle.textContent = 'Menyelesaikan tanggapan...';
+            tDesc.textContent = 'Menerapkan pemformatan semantik';
+          }
+        }, 1200);
 
         // Fetch Live CodeGraph Reflections & Telemetry
         let sysPrompt = `You are Oh My Works (OMW) workspace orchestrator.
 RULES:
 1. ZERO EMOJIS: Never use emojis. Use Google Material Symbols: <span class="material-symbols-outlined">icon</span> or inline SVG.
-2. DESIGN: Restrained palette (max 2-3 colors: Bg, Surface, 1 Accent: ${previewColor}). High editorial contrast, 1px subtle borders (rgba(255,255,255,0.08)). Bento/Golden Ratio layouts. Tabular numbers (font-variant-numeric: tabular-nums).
-3. CODE: Complete production-ready. For every file, header: \`// FILE: path/to/file\`. Run shell in \`\`\`bash\`\`\`.
-4. PREVIEW: Isolated links only (<a href="javascript:void(0)" onclick="event.preventDefault()">).
+2. CONCISE EXPLANATIONS & MINIMAL CODE: Jawab langsung, jelas, dan padat. JANGAN menampilkan blok kode panjang jika user tidak memintanya secara eksplisit. Utamakan penjelasan langsung atau satu baris perintah.
+3. HUMAN COGNITIVE SEMANTIC FORMATTING:
+   - Gunakan [safe: pesan...] untuk status aman, berhasil, atau langkah rutin yang bisa dilewati user.
+   - Gunakan [note: pesan...] untuk hal penting atau catatan yang patut diperhatikan lebih lanjut.
+   - Gunakan [danger: pesan...] untuk peringatan keras, risiko bahaya, security blocker, atau error.
+   - Teks biasa (putih) untuk narasi normal dan konjungsi.
+4. REASONING PROCESS: Jika melakukan analisis mendalam atau penalaran teknis rumit, bungkus proses berpikir di dalam tag <think>...</think> agar rapi dan bisa dibuka-tutup user.
+5. DESIGN: Restrained palette. High editorial contrast.
+6. PREVIEW: Isolated links only (<a href="javascript:void(0)" onclick="event.preventDefault()">).
 [PREVIEW CONFIG] Palette: ${activePaletteKey}, Layout: ${previewLayout}, Font: ${previewFont}`;
 
         if (systemProfile) {
@@ -3974,16 +4506,22 @@ RULES:
           sysPrompt += `\n[HOST: ${systemProfile.os || 'Linux'}, WM=${systemProfile.compositor || 'hyprland'}, RAM=${Math.round((m.available_mb || 0)/1024)}G/${Math.round((m.total_mb || 0)/1024)}G free]`;
         }
 
-        // Real-Time Token Telemetry Counter
-        const rawCharCount = userMsgs.reduce((acc, m) => acc + (m.content ? m.content.length : 0), 0) + 2100;
-        const compactCharCount = compactMsgs.reduce((acc, m) => acc + (m.content ? m.content.length : 0), 0) + sysPrompt.length;
-        const rawTokEst = Math.max(1, Math.round(rawCharCount / 4));
-        const compactTokEst = Math.max(1, Math.round(compactCharCount / 4));
-        const savedPct = Math.max(0, Math.round((1 - (compactTokEst / rawTokEst)) * 100));
-        const tokenBadgeText = document.getElementById('tokenSaverText');
-        if (tokenBadgeText) {
-          tokenBadgeText.textContent = `~${compactTokEst} tok (${savedPct}% saved)`;
+        // Handle @workspace mention
+        if (text.includes('@workspace')) {
+          try {
+            const fRes = await fetch(`${config.daemonUrl}/workspace/files`);
+            if (fRes.ok) {
+              const fData = await fRes.json();
+              sysPrompt += `\n[WORKSPACE FILES CONTEXT: ${JSON.stringify(fData.files ? fData.files.slice(0, 30) : [])}]`;
+            }
+          } catch (_) {}
         }
+
+        // Handle @skills or @mcp mention
+        if (text.includes('@skills') || text.includes('@mcp')) {
+          sysPrompt += `\n[ACTIVE SKILLS/TOOLS: serena-prime, code-navigation, terminal-exec, memory-graph, workspace-diff]`;
+        }
+
         try {
           const [telem, refl] = await Promise.all([
             fetch(`${config.daemonUrl}`).then(r => r.json()).catch(() => null),
@@ -4019,71 +4557,46 @@ RULES:
           const isLatest = idx === windowedMsgs.length - 1;
           let content = m.content || '';
           if (!isLatest) {
-            if (m.role === 'assistant') {
-              // 1. Compact code blocks
-              content = content.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
-                const lines = code.trim().split('\n');
-                if (lines.length > 5) {
-                  const fMatch = code.match(/^(?:\/\/|#|<!--)\s*(?:FILE:\s*)?([^\n\r]+)/m);
-                  const tag = fMatch ? fMatch[1].trim() : (lang || 'code');
-                  return `\n\`\`\`${lang}\n// [OMW: ${tag} (${lines.length} lines) persisted]\n\`\`\`\n`;
-                }
-                return match;
-              });
-              // 2. Compact long conversational prose around code blocks
-              const parts = content.split('\n\n');
-              const pruned = parts.map(p => {
-                const tr = p.trim();
-                if (tr.startsWith('```')) return tr;
-                return tr.length > 140 ? tr.slice(0, 130) + '...' : tr;
-              }).filter(Boolean);
-              content = pruned.join('\n\n');
-            } else if (m.role === 'user') {
-              // Prune large historical user file pastes or error dumps
-              if (content.length > 250) {
-                content = content.slice(0, 220) + '\n...[omw: user paste truncated]';
+            content = content.replace(/```[a-zA-Z0-9_-]*\n([\s\S]*?)```/g, (match, code) => {
+              const codeLines = code.trim().split('\n');
+              if (codeLines.length > 5) {
+                const headerLine = codeLines[0].trim();
+                const footerLine = codeLines[codeLines.length - 1].trim();
+                return `\`\`\`\n${headerLine}\n/* ... [omitted ${codeLines.length - 2} lines of code for context optimization] ... */\n${footerLine}\n\`\`\``;
               }
+              return match;
+            });
+            if (content.length > 600) {
+              content = content.slice(0, 500) + '\n\n[... historical turn compacted ...]';
             }
           }
-          // Clean excessive newlines
-          content = content.replace(/\n{3,}/g, '\n\n').trim();
-          return { role: m.role, content };
+          return { role: m.role, content: content };
         });
 
+        // 2-Stage Multi-Model Ensemble Pipeline: Lead Architect -> Specialist Coder
         const isEnsemble = text.startsWith('@all') || activeModel === 'auto' || activeModel === 'all' || activeModel.includes('combo');
-        const cleanText = text.replace(/^@all\s*/i, '');
-        aiMsg.content = '';
 
-        async function streamChatCompletion(modelName, messages, onDelta) {
+        async function streamChatCompletion(modelToUse, payload, onDelta) {
           const primaryServer = serversList.find(s => s.enabled)?.url || 'http://127.0.0.1:20128';
-          const completionUrl = `${primaryServer.replace(/\/+$/, '')}/v1/chat/completions`;
-          const defaultKey = 'sk-9d6e79acb260096f-53jdmp-b86fbd6e';
-          const key = config.apiKey && config.apiKey.trim().length > 10 ? config.apiKey.trim() : defaultKey;
-          const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': key.startsWith('Bearer ') ? key : `Bearer ${key}`
-          };
+          const completionsUrl = `${primaryServer.replace(/\/+$/, '')}/v1/chat/completions`;
+          const auth = config.apiKey.startsWith('Bearer ') ? config.apiKey : `Bearer ${config.apiKey}`;
 
-          const candidateModels = [modelName, 'ag/gemini-3.8-flash-high', 'ag/claude-opus-5-5-high', 'mux/glm-5.3-flash'].filter((v, i, a) => v && a.indexOf(v) === i);
-          let res = null;
-          let usedModel = modelName;
+          const res = await fetch(completionsUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': auth
+            },
+            body: JSON.stringify({
+              model: modelToUse,
+              messages: payload,
+              stream: true,
+              temperature: 0.2
+            })
+          });
 
-          for (const m of candidateModels) {
-            try {
-              const attempt = await fetch(completionUrl, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({ model: m, messages: messages, stream: true })
-              });
-              if (attempt.ok) {
-                res = attempt;
-                usedModel = m;
-                break;
-              }
-            } catch (_) {}
-          }
-
-          if (!res || !res.ok) throw new Error('Model upstream unavailable. Check 9Router status.');
+          if (!res.ok) throw new Error(`Engine HTTP ${res.status}: ${res.statusText}`);
+          if (!res.body) throw new Error('Streaming unavailable.');
 
           const reader = res.body.getReader();
           const decoder = new TextDecoder();
@@ -4108,58 +4621,63 @@ RULES:
               }
             }
           }
-          return usedModel;
+          return modelToUse;
         }
 
+        let firstDeltaReceived = false;
         try {
           if (isEnsemble) {
             const leadModel = (allModels.includes(config.leadEngine) && config.leadEngine !== 'ag/gemini-4-argon-high') ? config.leadEngine : 'ag/gemini-3.8-flash-high';
             const specModel = (allModels.includes(config.specialistEngine) && config.specialistEngine !== 'cbcn/deepseek-v4-pro') ? config.specialistEngine : 'mux/glm-5.3-flash';
 
-            // Stage 1: Lead Architect / Planner
-            aiMsg.content = `### 1. Architectural Plan (${leadModel})\n\n`;
+            clearInterval(thinkInterval);
+            aiMsg.content = `### 1. Rencana Arsitektur (${formatModelName(leadModel)})\n\n`;
             aiBody.innerHTML = formatMarkdown(aiMsg.content);
-            const planPayload = [
-              { role: 'system', content: sysPrompt + '\n[ROLE: LEAD ARCHITECT]\nBe concise, max 120 words. Formulate system architecture, specify required files, and execution sequence.' },
-              ...compactMsgs.slice(0, -1),
-              { role: 'user', content: cleanText }
-            ];
 
-            const finalLead = await streamChatCompletion(leadModel, planPayload, (delta) => {
-              aiMsg.content += delta;
+            let planOutput = '';
+            const stage1Payload = [
+              { role: 'system', content: sysPrompt + '\n[ROLE: LEAD ARCHITECT]\nBe concise, max 120 words. Formulate system architecture, specify required files, and execution sequence.' },
+              ...compactMsgs
+            ];
+            await streamChatCompletion(leadModel, stage1Payload, (delta) => {
+              planOutput += delta;
+              aiMsg.content = `### 1. Rencana Arsitektur (${formatModelName(leadModel)})\n\n${planOutput}`;
               aiBody.innerHTML = formatMarkdown(aiMsg.content);
               messagesScroll.scrollTop = messagesScroll.scrollHeight;
-              checkAiAutoSplit(aiMsg.content);
             });
 
-            // Stage 2: Specialist Implementation / Coder
-            const rawPlan = aiMsg.content;
-            const stage1Plan = rawPlan.length > 600 ? rawPlan.slice(0, 580) + '...' : rawPlan;
-            aiMsg.content += `\n\n---\n\n### 2. Specialist Implementation (${specModel})\n\n`;
+            aiMsg.content += `\n\n---\n\n### 2. Implementasi Kode (${formatModelName(specModel)})\n\n`;
             aiBody.innerHTML = formatMarkdown(aiMsg.content);
-            const coderPayload = [
-              { role: 'system', content: sysPrompt + '\n[ROLE: SPECIALIST CODER]\nImplement complete, production-ready code. For EVERY file created or edited, start the code block with `// FILE: path/to/file` (or `# FILE:` or `<!-- FILE: -->`). Provide shell check commands in ```bash code blocks.' },
-              ...compactMsgs.slice(0, -1),
-              { role: 'user', content: cleanText },
-              { role: 'assistant', content: stage1Plan },
-              { role: 'user', content: 'Generate the complete implementation files and verification commands following the Architectural Plan above.' }
-            ];
 
-            await streamChatCompletion(specModel, coderPayload, (delta) => {
-              aiMsg.content += delta;
+            let coderOutput = '';
+            const stage2Payload = [
+              { role: 'system', content: sysPrompt + '\n[ROLE: SPECIALIST CODER]\nImplement complete, production-ready code. For EVERY file created or edited, start the code block with \`// FILE: path/to/file\` (or \`# FILE:\` or \`<!-- FILE: -->\`). Provide shell check commands in \`\`\`bash code blocks.' },
+              ...compactMsgs,
+              { role: 'assistant', content: planOutput },
+              { role: 'user', content: 'Lanjutkan dengan implementasi lengkap sesuai rencana arsitektur di atas.' }
+            ];
+            await streamChatCompletion(specModel, stage2Payload, (delta) => {
+              coderOutput += delta;
+              aiMsg.content = `### 1. Rencana Arsitektur (${formatModelName(leadModel)})\n\n${planOutput}\n\n---\n\n### 2. Implementasi Kode (${formatModelName(specModel)})\n\n${coderOutput}`;
               aiBody.innerHTML = formatMarkdown(aiMsg.content);
               messagesScroll.scrollTop = messagesScroll.scrollHeight;
-              checkAiAutoSplit(aiMsg.content);
+              checkAiAutoSplit(coderOutput);
             });
           } else {
             const apiPayload = [{ role: 'system', content: sysPrompt }, ...compactMsgs];
             await streamChatCompletion(activeModel, apiPayload, (delta) => {
+              if (!firstDeltaReceived) {
+                firstDeltaReceived = true;
+                clearInterval(thinkInterval);
+                aiBody.innerHTML = '';
+              }
               aiMsg.content += delta;
               aiBody.innerHTML = formatMarkdown(aiMsg.content);
               messagesScroll.scrollTop = messagesScroll.scrollHeight;
               checkAiAutoSplit(aiMsg.content);
             });
           }
+
           // Save assistant turn to SQLite
           try {
             await fetch(`${config.daemonUrl}/sessions/save_turn`, {
@@ -4174,23 +4692,11 @@ RULES:
               })
             });
           } catch (e) {}
-
         } catch (err) {
-          aiMsg.content = '[Router Notice: ' + err.message + ']. Verifikasi konfigurasi di IDE Settings.';
-          aiBody.innerHTML = formatMarkdown(aiMsg.content);
-          try {
-            await fetch(`${config.daemonUrl}/sessions/save_turn`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                id: 't-err-' + Date.now(),
-                session_id: currentSessionId,
-                role: 'assistant',
-                content: `ERROR: ${err.message}`,
-                author: 'ERROR'
-              })
-            });
-          } catch (e) {}
+          clearInterval(thinkInterval);
+          aiBody.innerHTML = `<span style="color:var(--red);">Error: ${escapeHtml(err.message)}</span>`;
+        } finally {
+          clearInterval(thinkInterval);
         }
       }
 
@@ -4228,14 +4734,33 @@ RULES:
 
         const auth = document.createElement('div');
         auth.className = `msg-author ${role === 'user' ? 'user' : 'ai'}`;
-        auth.innerHTML = `<span>${escapeHtml(author || (role === 'user' ? 'USER' : activeModel))}</span><button type="button" class="btn-copy-msg" title="Salin pesan"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;">content_copy</span></button>`;
+        const displayAuthor = author || (role === 'user' ? 'You' : formatModelName(activeModel));
+        auth.innerHTML = `<span>${escapeHtml(displayAuthor)}</span>`;
 
         const body = document.createElement('div');
         body.className = 'msg-content';
         body.innerHTML = formatMarkdown(content);
 
+        // Actions toolbar placed cleanly at the BOTTOM of the message
+        const actions = document.createElement('div');
+        actions.className = 'msg-actions-footer';
+        if (role === 'user') {
+          actions.innerHTML = `
+            <button type="button" class="btn-msg-action btn-copy-msg" title="Salin prompt"><span class="material-symbols-outlined">content_copy</span></button>
+            <button type="button" class="btn-msg-action btn-quote-msg" title="Kutip pesan"><span class="material-symbols-outlined">format_quote</span></button>
+            <button type="button" class="btn-msg-action btn-edit-msg" title="Edit prompt"><span class="material-symbols-outlined">edit</span></button>
+          `;
+        } else {
+          actions.innerHTML = `
+            <button type="button" class="btn-msg-action btn-copy-msg" title="Salin tanggapan"><span class="material-symbols-outlined">content_copy</span></button>
+            <button type="button" class="btn-msg-action btn-quote-msg" title="Kutip tanggapan"><span class="material-symbols-outlined">format_quote</span></button>
+            <button type="button" class="btn-msg-action btn-retry-msg" title="Regenerate / Ulangi tanggapan"><span class="material-symbols-outlined">replay</span></button>
+          `;
+        }
+
         row.appendChild(auth);
         row.appendChild(body);
+        row.appendChild(actions);
         messagesList.appendChild(row);
         messagesScroll.scrollTop = messagesScroll.scrollHeight;
         return body;
@@ -4264,6 +4789,13 @@ RULES:
       function formatMarkdown(text) {
         if (!text) return '';
         let s = escapeHtml(text);
+
+        // 1. Thinking / Reasoning Block (<think>...</think>)
+        s = s.replace(/&lt;think&gt;([\s\S]*?)&lt;\/think&gt;/gi, (m, thought) => {
+          return `<details class="thinking-box" open><summary class="thinking-summary"><div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined thinking-icon">psychology</span><span style="font-weight:600;font-size:12px;">Proses Pemikiran</span></div><span class="material-symbols-outlined thinking-chevron">expand_more</span></summary><div class="thinking-body">${thought.trim()}</div></details>`;
+        });
+
+        // 2. Code blocks (```lang ... ```)
         s = s.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (m, lang, code) => {
           const rawCode = unescapeHtml(code);
           const copyBtn = `<button type="button" class="btn-code-action btn-copy-code" data-code="${encodeURIComponent(rawCode)}"><span class="material-symbols-outlined" style="font-size:12px;vertical-align:middle;margin-right:3px;">content_copy</span>Copy</button>`;
@@ -4280,6 +4812,22 @@ RULES:
           }
           return `<div class="code-container"><div class="code-header"><span class="code-filepath">${lang || 'code'}</span><div style="display:flex;gap:6px;">${copyBtn}${previewBtn}</div></div><pre class="code-block"><code>${code}</code></pre></div>`;
         });
+
+        // 3. Human Cognitive Semantic Callouts:
+        // Green: Safe / Passed / Routine / Skim
+        s = s.replace(/\[(?:safe|ok|tip):\s*([\s\S]*?)\]/gi, '<div class="callout-safe"><span class="material-symbols-outlined" style="font-size:16px;">check_circle</span><div>$1</div></div>');
+        // Yellow: Note / Warning / Attention / Caution
+        s = s.replace(/\[(?:note|warn|caution|perhatian):\s*([\s\S]*?)\]/gi, '<div class="callout-note"><span class="material-symbols-outlined" style="font-size:16px;">info</span><div>$1</div></div>');
+        // Red: Danger / Error / Alert / Security
+        s = s.replace(/\[(?:danger|error|alert|peringatan):\s*([\s\S]*?)\]/gi, '<div class="callout-danger"><span class="material-symbols-outlined" style="font-size:16px;">warning</span><div>$1</div></div>');
+
+        // 4. Inline tags and highlighting
+        s = s.replace(/==(.*?)==/g, '<mark class="cognitive-yellow">$1</mark>');
+        s = s.replace(/\b(PASSED|BERHASIL|SUCCESS|SAFE)\b/g, '<span class="tag-safe">$1</span>');
+        s = s.replace(/\b(WARNING|CAUTION|PERHATIAN|CATATAN)\b/g, '<span class="tag-note">$1</span>');
+        s = s.replace(/\b(ERROR|FAILED|GAGAL|DANGER|BLOCKED)\b/g, '<span class="tag-danger">$1</span>');
+
+        // 5. Standard Markdown Inline
         s = s.replace(/`([^`]+)`/g, '<code style="background: var(--code-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
         s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         s = s.replace(/### (.*?)(?:<br\/>|\n|$)/g, '<h3>$1</h3>');
@@ -4300,6 +4848,175 @@ RULES:
         });
       });
 
+      
+      // Floating Selection Menu (Clip & Quote Reply)
+      let currentSelectedText = '';
+      const selectionFloatingMenu = document.getElementById('selectionFloatingMenu');
+
+      document.addEventListener('selectionchange', () => {
+        const sel = window.getSelection();
+        const text = sel ? sel.toString().trim() : '';
+        if (!text && selectionFloatingMenu) {
+          selectionFloatingMenu.style.display = 'none';
+        }
+      });
+
+      document.addEventListener('mouseup', (e) => {
+        if (selectionFloatingMenu && selectionFloatingMenu.contains(e.target)) return;
+        const sel = window.getSelection();
+        const text = sel ? sel.toString().trim() : '';
+
+        if (text && text.length > 0) {
+          const messagesScroll = document.getElementById('messagesScroll');
+          if (messagesScroll && messagesScroll.contains(sel.anchorNode)) {
+            currentSelectedText = text;
+            const range = sel.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+              selectionFloatingMenu.style.display = 'flex';
+              selectionFloatingMenu.style.left = `${rect.left + rect.width / 2}px`;
+              selectionFloatingMenu.style.top = `${rect.top - 8}px`;
+              return;
+            }
+          }
+        }
+        if (selectionFloatingMenu) selectionFloatingMenu.style.display = 'none';
+      });
+
+      document.getElementById('btnQuoteSelection')?.addEventListener('click', () => {
+        if (currentSelectedText) {
+          const quoted = `> "${currentSelectedText}"\n\n`;
+          promptInput.value = quoted + promptInput.value;
+          promptInput.focus();
+          promptInput.setSelectionRange(promptInput.value.length, promptInput.value.length);
+          window.getSelection()?.removeAllRanges();
+          if (selectionFloatingMenu) selectionFloatingMenu.style.display = 'none';
+        }
+      });
+
+      document.getElementById('btnCopySelection')?.addEventListener('click', async () => {
+        if (currentSelectedText) {
+          await navigator.clipboard.writeText(currentSelectedText);
+          const btn = document.getElementById('btnCopySelection');
+          const orig = btn.innerHTML;
+          btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;color:var(--accent);">check</span><span>Copied!</span>';
+          setTimeout(() => {
+            btn.innerHTML = orig;
+            if (selectionFloatingMenu) selectionFloatingMenu.style.display = 'none';
+          }, 900);
+        }
+      });
+
+      document.getElementById('btnExplainSelection')?.addEventListener('click', () => {
+        if (currentSelectedText) {
+          promptInput.value = `Jelaskan secara ringkas maksud dari istilah berikut: "${currentSelectedText}"`;
+          if (selectionFloatingMenu) selectionFloatingMenu.style.display = 'none';
+          handleSend();
+        }
+      });
+
+      // Autocomplete Commands & Mentions (@ and /)
+      const SLASH_COMMANDS = [
+        { cmd: '/clear', desc: 'Bersihkan riwayat tampilan chat', icon: 'clear_all' },
+        { cmd: '/compact', desc: 'Kompresi & hemat token konteks', icon: 'compress' },
+        { cmd: '/diff', desc: 'Buka visual diff & mode kolaborasi', icon: 'difference' },
+        { cmd: '/model', desc: 'Pilih model AI aktif', icon: 'smart_toy' },
+        { cmd: '/terminal', desc: 'Buka side canvas terminal PTY', icon: 'terminal' },
+        { cmd: '/preview', desc: 'Buka side canvas web preview', icon: 'visibility' },
+        { cmd: '/settings', desc: 'Buka pengaturan IDE & sistem', icon: 'settings' },
+        { cmd: '/skills', desc: 'Kelola Skills & tools eksternal', icon: 'extension' },
+        { cmd: '/help', desc: 'Panduan shortcut dan sintaks', icon: 'help' }
+      ];
+
+      const MENTION_COMMANDS = [
+        { tag: '@all', desc: 'Multi-agent combo (Architect + Coder)', icon: 'hub' },
+        { tag: '@terminal', desc: 'Jalankan perintah di shell terminal', icon: 'terminal' },
+        { tag: '@guardian', desc: 'Inspeksi resource RAM, CPU & anti-OOM', icon: 'shield' },
+        { tag: '@skills', desc: 'Panggil alat skill terdaftar', icon: 'handyman' },
+        { tag: '@mcp', desc: 'Panggil tool dari server MCP', icon: 'integration_instructions' },
+        { tag: '@workspace', desc: 'Sertakan konteks berkas proyek', icon: 'folder_open' }
+      ];
+
+      const commandSuggestPopup = document.getElementById('commandSuggestPopup');
+      const suggestHeader = document.getElementById('suggestHeader');
+      const suggestList = document.getElementById('suggestList');
+      let activeSuggestItems = [];
+      let activeSuggestIdx = 0;
+
+      function renderSuggestions(type, filter) {
+        if (!suggestList) return;
+        suggestList.innerHTML = '';
+        activeSuggestIdx = 0;
+
+        if (type === 'slash') {
+          suggestHeader.textContent = 'Perintah Cepat (Slash Commands)';
+          activeSuggestItems = SLASH_COMMANDS.filter(c => c.cmd.toLowerCase().includes(filter.toLowerCase()));
+        } else {
+          suggestHeader.textContent = 'Mention Target (@ Mentions)';
+          activeSuggestItems = MENTION_COMMANDS.filter(m => m.tag.toLowerCase().includes(filter.toLowerCase()));
+        }
+
+        if (activeSuggestItems.length === 0) {
+          commandSuggestPopup.style.display = 'none';
+          return;
+        }
+
+        activeSuggestItems.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = `suggest-item ${idx === 0 ? 'active' : ''}`;
+          div.innerHTML = `
+            <span class="material-symbols-outlined suggest-item-icon">${item.icon}</span>
+            <span class="suggest-item-cmd">${item.cmd || item.tag}</span>
+            <span class="suggest-item-desc">${item.desc}</span>
+          `;
+          div.addEventListener('click', () => {
+            applySuggestion(item);
+          });
+          suggestList.appendChild(div);
+        });
+        commandSuggestPopup.style.display = 'block';
+      }
+
+      function updateActiveSuggestHighlight() {
+        if (!suggestList) return;
+        const items = suggestList.querySelectorAll('.suggest-item');
+        items.forEach((it, idx) => {
+          it.classList.toggle('active', idx === activeSuggestIdx);
+        });
+      }
+
+      function applySuggestion(item) {
+        const val = promptInput.value;
+        const target = item.cmd || item.tag;
+        if (target.startsWith('/')) {
+          promptInput.value = target + ' ';
+        } else {
+          promptInput.value = val.replace(/@\w*$/, target + ' ');
+        }
+        commandSuggestPopup.style.display = 'none';
+        promptInput.focus();
+      }
+
+      promptInput.addEventListener('input', () => {
+        const val = promptInput.value;
+        const cursorPos = promptInput.selectionStart;
+        const textBeforeCursor = val.slice(0, cursorPos);
+
+        if (textBeforeCursor.startsWith('/')) {
+          renderSuggestions('slash', textBeforeCursor);
+          return;
+        }
+
+        const atMatch = textBeforeCursor.match(/@(\w*)$/);
+        if (atMatch) {
+          renderSuggestions('mention', atMatch[0]);
+          return;
+        }
+
+        if (commandSuggestPopup) commandSuggestPopup.style.display = 'none';
+      });
+
+
       btnSubmit.addEventListener('click', handleSend);
 
       // Terminal-Style Prompt History Navigation (Up/Down Arrow)
@@ -4308,6 +5025,37 @@ RULES:
       let promptDraft = '';
 
       promptInput.addEventListener('keydown', (e) => {
+        if (commandSuggestPopup && commandSuggestPopup.style.display === 'block') {
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (activeSuggestItems.length > 0) {
+              activeSuggestIdx = (activeSuggestIdx + 1) % activeSuggestItems.length;
+              updateActiveSuggestHighlight();
+            }
+            return;
+          }
+          if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (activeSuggestItems.length > 0) {
+              activeSuggestIdx = (activeSuggestIdx - 1 + activeSuggestItems.length) % activeSuggestItems.length;
+              updateActiveSuggestHighlight();
+            }
+            return;
+          }
+          if (e.key === 'Enter' || e.key === 'Tab') {
+            e.preventDefault();
+            if (activeSuggestItems[activeSuggestIdx]) {
+              applySuggestion(activeSuggestItems[activeSuggestIdx]);
+            }
+            return;
+          }
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            commandSuggestPopup.style.display = 'none';
+            return;
+          }
+        }
+
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           handleSend();
